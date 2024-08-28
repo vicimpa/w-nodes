@@ -5,7 +5,8 @@ import { effect } from "@preact/signals-react";
 export default (ctx: NodeItem) => (
   effect(() => {
     const size = Vec2.fromSize(ctx);
-    const pos = size.cdiv(2).times(-1).plus(ctx);
+    const _ctx = new Vec2(ctx).round();
+    const pos = size.cdiv(2).times(-1).plus(_ctx);
 
     if (!ctx.view.value)
       return;

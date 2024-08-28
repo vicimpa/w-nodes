@@ -17,8 +17,6 @@ export interface INodeItemProps extends PropsWithChildren {
   y?: number;
 }
 
-var id = 0;
-
 @provide()
 @connect(
   detectResize,
@@ -31,7 +29,9 @@ export class NodeItem extends Component<INodeItemProps> {
   @inject(() => NodeMap) map!: NodeMap;
   @inject(() => NodeList) list!: NodeList;
 
-  id = id++;
+  constructor(props: INodeItemProps, protected __view?: () => ReactNode) {
+    super(props);
+  }
 
   view = signalRef<SVGForeignObjectElement>();
   fill = signalRef<HTMLDivElement>();
@@ -58,7 +58,7 @@ export class NodeItem extends Component<INodeItemProps> {
         >
           <div className={s.contain}>
             <div ref={this.fill} className={s.fill}>
-              {this.props.children}
+              {(this.__view ? <this.__view /> : this.props.children)}
             </div>
           </div>
         </foreignObject>

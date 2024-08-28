@@ -1,5 +1,5 @@
 import { Signal, batch } from "@preact/signals-react";
-import { abs, cos, hypot, iters, max, min, rem, rems, sign, sin } from "$library/math";
+import { abs, ceil, cos, floor, hypot, iters, max, min, rem, rems, round, sign, sin } from "$library/math";
 
 export type TMutation = (x: number, y: number) => any;
 export type TPointVec2 = { x: number, y: number; };
@@ -180,6 +180,24 @@ export class Vec2 {
     return this;
   }
 
+  round() {
+    this.x = round(this.x);
+    this.y = round(this.y);
+    return this;
+  }
+
+  ceil() {
+    this.x = ceil(this.x);
+    this.y = ceil(this.y);
+    return this;
+  }
+
+  floor() {
+    this.x = floor(this.x);
+    this.y = floor(this.y);
+    return this;
+  }
+
   inverse() {
     [this.x, this.y] = [this.y, this.x];
     return this;
@@ -249,6 +267,19 @@ export class Vec2 {
 
   cabs() {
     return this.clone().abs();
+  }
+
+
+  cround() {
+    return this.clone().round();
+  }
+
+  cceil() {
+    return this.clone().ceil();
+  }
+
+  cfloor() {
+    return this.clone().floor();
   }
 
   length() {

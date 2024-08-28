@@ -11,7 +11,7 @@
   border: 3px solid #182F51
 
   .head
-    padding: 5px 10px
+    padding: 3px 10px
     border-bottom: 1px solid #a1a1a129
     background-color: #182F51
     display: flex
@@ -27,5 +27,12 @@
 
   .content
     flex-grow: 1
-    display: block
-    padding: 5px
+    padding: 5px 0px
+    display: flex
+
+    .side, .main
+      display: flex
+      flex-direction: column
+
+    .main
+      flex-grow: 1

@@ -15,6 +15,6 @@ export const NodeLinesBack = () => {
 
   return createElement(Fragment, {}, ...lines.connects.map(connect => {
     const [from, to] = connect;
-    return <NodeLineBack connect={connect} key={`${from.item.id}:${from.id}:${to.item.id}:${to.id}`} />;
+    return <NodeLineBack connect={connect} key={`${from.id}:${to.id}`} />;
   }));
 };

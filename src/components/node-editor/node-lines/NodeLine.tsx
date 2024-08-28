@@ -38,7 +38,7 @@ export const NodeLine: FC<TNodeLineProps> = ({
   useSignals();
 
   const style: CSSProperties = {
-    pointerEvents: onMouseDown ? 'all' : 'none',
+    pointerEvents: onMouseDown ? 'visibleStroke' : 'none',
     cursor: 'pointer'
   };
 

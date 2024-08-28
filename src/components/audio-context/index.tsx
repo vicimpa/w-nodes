@@ -1,10 +1,17 @@
-import { Node } from "./node";
+import "./_nodes";
 
-export const AudioContext = () => (
-  <>
-    <Node />
-    <Node />
-    <Node />
-    <Node />
-  </>
-);
+import { Destination } from "./nodes/Destination";
+import { Gain } from "./nodes/effects/Gain";
+
+export const AudioContext = () => {
+
+  return (
+    <>
+      <Destination />
+      <Gain />
+      <Gain />
+      <Gain />
+      <Gain />
+    </>
+  );
+};
