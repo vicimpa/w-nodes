@@ -1,5 +1,5 @@
 type HTMLS = HTMLElementTagNameMap;
-// type SVGS = SVGElementTagNameMap;
+type SVGS = SVGElementTagNameMap;
 
 type PropsKeys<E extends object> = {
   [K in keyof E]: E[K] extends string | number | boolean ? K : never
@@ -29,3 +29,10 @@ export const dom = <K extends keyof HTMLS>(tag: K, { ref, style, ...props }: Pro
   return (ref?.(elem), elem);
 };
 
+export const svg = <K extends keyof SVGS>(tag: K, { ref, style, ...props }: Props<SVGS[K]>, ...children: Element[]) => {
+  const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.assign(elem, props);
+  Object.assign(elem.style, style);
+  children.forEach(_e => elem.appendChild(_e));
+  return (ref?.(elem), elem);
+};

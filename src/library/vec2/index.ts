@@ -279,6 +279,14 @@ export class Vec2 {
     });
   }
 
+  toObject(o: { x: number, y: number; }) {
+    return batch(() => {
+      o.x = this.x;
+      o.y = this.y;
+      return this;
+    });
+  }
+
   toRect(...args: TParameter) {
     return mutation(args, (x, y) => {
       const xRect = min(this.x, x);

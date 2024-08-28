@@ -10,7 +10,7 @@ export const provide = <T extends Component>() => {
       {
         [target.name]: (
           class extends (target as typeof Component) {
-            render(): ReactNode {
+            render(this: T): ReactNode {
               return (
                 <ctx.Provider value={this}>
                   {super.render()}
