@@ -1,4 +1,4 @@
-export const store = <T>(init: () => T, name = 'store') => {
+export const makeStore = <T>(init: () => T, name = 'store') => {
   const symbol = Symbol(name);
   const stored = new WeakMap<object, T>();
 

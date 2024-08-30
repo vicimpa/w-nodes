@@ -2,23 +2,22 @@ import { MouseEvent as ReactMouseEvent } from "react";
 import { Vec2 } from "$library/vec2";
 import { windowEvents } from "$library/events";
 
-export type TDragEvent<T = {}> = {
+export type TDragEvent = {
   start: Vec2;
   current: Vec2;
   delta: Vec2;
   target: EventTarget | null;
-  meta?: T;
 };
 
-export type TDragStop<T = {}> = (e: TDragEvent<T>) => void;
-export type TDragMove<T = {}> = (e: TDragEvent<T>) => void | TDragStop<T>;
-export type TDragStart<T = {}> = (e: TDragEvent<T>) => void | TDragMove<T>;
+export type TDragStop<T extends any[] = []> = (e: TDragEvent, ...meta: T) => void;
+export type TDragMove<T extends any[] = []> = (e: TDragEvent, ...meta: T) => void | TDragStop<T>;
+export type TDragStart<T extends any[] = []> = (e: TDragEvent, ...meta: T) => void | TDragMove<T>;
 
-export const makeDrag = <T = {}>(
+export const makeDrag = <T extends any[] = []>(
   dragStart: TDragStart<T>,
   btn = 0,
   fromOffset = false
-) => (e: MouseEvent | ReactMouseEvent, meta?: T) => {
+) => (e: MouseEvent | ReactMouseEvent, ...meta: T) => {
   if (e.button !== btn)
     return;
 
@@ -39,18 +38,15 @@ export const makeDrag = <T = {}>(
     get delta() {
       return delta.clone();
     },
-    get meta() {
-      return meta ?? undefined;
-    },
     target: e.target
   };
 
   const update = () => {
     if (!move) return;
-    stop = move(event);
+    stop = move(event, ...meta);
   };
 
-  let move = dragStart(event);
+  let move = dragStart(event, ...meta);
   let stop: TDragStop<T> | void;
 
   update();
@@ -60,7 +56,7 @@ export const makeDrag = <T = {}>(
       if ('button' in e && e.button !== btn)
         return;
 
-      stop?.(event);
+      stop?.(event, ...meta);
       unsub.forEach(u => u?.());
     }),
     windowEvents('mousemove', (e) => {

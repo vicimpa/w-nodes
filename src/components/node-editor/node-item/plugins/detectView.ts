@@ -8,12 +8,12 @@ export default (ctx: NodeItem) => (
     const _ctx = new Vec2(ctx).round();
     const pos = size.cdiv(2).times(-1).plus(_ctx);
 
-    if (!ctx.view.value)
+    if (!ctx.viewRef.value)
       return;
 
-    ctx.view.value.x.baseVal.value = pos.x;
-    ctx.view.value.y.baseVal.value = pos.y;
-    ctx.view.value.width.baseVal.value = size.x;
-    ctx.view.value.height.baseVal.value = size.y;
+    ctx.viewRef.value.x.baseVal.value = pos.x;
+    ctx.viewRef.value.y.baseVal.value = pos.y;
+    ctx.viewRef.value.width.baseVal.value = size.x;
+    ctx.viewRef.value.height.baseVal.value = size.y;
   })
 );

@@ -4,9 +4,9 @@ import { resizeObserver } from "$library/observers";
 
 export default (ctx: NodeItem) => (
   effect(() => (
-    resizeObserver(ctx.fill.value, ({ contentRect }) => {
-      ctx.width = contentRect.width;
-      ctx.height = contentRect.height;
+    resizeObserver(ctx.fillRef.value, ({ contentRect }) => {
+      ctx.width = contentRect.width + ctx.padding * 2;
+      ctx.height = contentRect.height + ctx.padding * 2;
     })
   ))
 );

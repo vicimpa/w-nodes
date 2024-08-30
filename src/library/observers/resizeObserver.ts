@@ -1,7 +1,7 @@
-import { store } from "$library/store";
+import { makeStore } from "$library/store";
 
 type Listener = (entry: ResizeObserverEntry) => void;
-const _store = store(() => new Set<Listener>());
+const _store = makeStore(() => new Set<Listener>());
 
 const observer = new ResizeObserver((entries) => {
   entries.forEach(entry => {

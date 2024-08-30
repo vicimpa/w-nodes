@@ -21,7 +21,7 @@ export const NodeLineBack: FC<{ connect: NodeConnect; }> = ({ connect }) => {
       .sort((a, b) => b.distance - a.distance)[0];
 
     lines.disconnect(connect);
-    lines.fromStart(e.nativeEvent, [port]);
+    lines.fromStart(e.nativeEvent, port);
   }, [connect]);
 
   const [from, to] = connect;
@@ -30,7 +30,7 @@ export const NodeLineBack: FC<{ connect: NodeConnect; }> = ({ connect }) => {
   if (from.hover || to.hover)
     return (
       <NodeLayersItem post>
-        <NodeLine from={from} to={to} size={4} />
+        <NodeLine from={from} to={to} size={6} />
       </NodeLayersItem>
     );
 

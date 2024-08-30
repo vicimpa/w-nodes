@@ -26,8 +26,8 @@ export class NodeLines extends Component<PropsWithChildren> {
   @prop from: NodePort[] = [];
   @prop connects: NodeConnect[] = [];
 
-  fromStart = makeDrag<NodePort[]>(({ current, meta }) => {
-    this.from = meta ?? [];
+  fromStart = makeDrag<NodePort[]>(({ current }, ...from) => {
+    this.from = from ?? [];
 
     if (!this.from.length)
       return () => {

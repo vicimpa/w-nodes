@@ -7,7 +7,7 @@ import { intersectionObserver } from "$library/observers/intersectionObserver";
 export default (ctx: NodePort) => (
   effect(() => {
     const { value: port } = ctx.port;
-    const { value: fill } = ctx.item.fill;
+    const { value: fill } = ctx.item.fillRef;
 
     if (!port || !fill) return;
 
