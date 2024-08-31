@@ -15,17 +15,7 @@ export const App = () => (
         <NodeList>
           <NodeLines>
             <NodeSelection>
-              <NodeProject>
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
-                <TestNode />
+              <NodeProject nodes={[TestNode]}>
               </NodeProject>
             </NodeSelection>
           </NodeLines>

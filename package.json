@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@preact/signals-react": "^2.2.0",
+    "@sinclair/typebox": "^0.33.7",
     "@vicimpa/rsp": "^0.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
