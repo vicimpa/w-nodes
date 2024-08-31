@@ -1,46 +1,42 @@
-import { NodeItem, NodeProject } from "$components/node-editor";
-import { prop, reactive, signalRef } from "$library/signals";
-
 import { Destination } from "./nodes/Destination";
+import { DynamicsCompressor } from "./nodes/DynamicsCompressor";
 import { Gain } from "./nodes/Gain";
 import { HudPortal } from "$components/node-editor/node-hud/HudPortal";
+import { NodeProject } from "$components/node-editor";
 import { Oscillator } from "./nodes/Oscillator";
 import { ReactNode } from "react";
+import { Vec2 } from "$library/vec2";
 
-@reactive()
 export class AudioProject extends NodeProject {
-  nodes = [Destination, Oscillator, Gain];
-
-  @prop store = [
-    {
-      id: -2,
-      node: this.nodes[0],
-      props: {},
-      ref: signalRef<NodeItem>()
-    },
-    {
-      id: -1,
-      node: this.nodes[1],
-      props: {},
-      ref: signalRef<NodeItem>()
-    },
-  ];
+  nodes = [Destination, Oscillator, Gain, DynamicsCompressor];
 
   render(): ReactNode {
     return (
       <>
         {super.render()}
         <HudPortal>
-          {this.nodes.map((node, key) => (
-            <button
-              onMouseDown={
-                () => this.append(node as any).then(e => this.selection.select = [e])
-              }
-              key={key}
-            >
-              {node.name}
-            </button>
-          ))}
+          <div style={{ display: "flex", flexDirection: 'column' }}>
+
+            {this.nodes.map((node, key) => (
+              <button
+                style={{ textAlign: 'left' }}
+                draggable
+                onDragEnd={(event) => {
+                  this.append(node as any)
+                    .then(e => {
+                      this.selection.select = [e];
+                      this.map.offset(Vec2.fromPageXY(event)).toObject(e);
+                    });
+                }}
+                onClick={
+                  () => this.append(node as any).then(e => this.selection.select = [e])
+                }
+                key={key}
+              >
+                {node.name}
+              </button>
+            ))}
+          </div>
         </HudPortal>
       </>
     );

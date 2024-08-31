@@ -70,11 +70,13 @@ export class NodeMap extends Component<INodeMapProps> {
 
   render(): ReactNode {
     return (
-      <div ref={this.div} className={s.map}>
-        <svg ref={this.svg} viewBox="0 0 0 0">
-          {this.props.children}
-        </svg>
-      </div>
+      <>
+        <div ref={this.div} className={s.map}>
+          <svg ref={this.svg} viewBox="0 0 0 0">
+            {this.props.children}
+          </svg>
+        </div>
+      </>
     );
   }
 }
