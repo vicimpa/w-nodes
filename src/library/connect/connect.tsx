@@ -7,7 +7,7 @@ const Connect = <T,>(props: { plugins: TMixin<T>[], target: T; }) => {
 
   useEffect(() => {
     const dispose = plugins.map(plugin => plugin(target));
-    return () => dispose.forEach(d => d && d());;
+    return () => dispose.forEach(d => d && d());
   }, []);
 
   return null;

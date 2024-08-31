@@ -23,6 +23,9 @@ export const App = () => (
                 <TestNode />
                 <TestNode />
                 <TestNode />
+                <TestNode />
+                <TestNode />
+                <TestNode />
               </NodeProject>
             </NodeSelection>
           </NodeLines>

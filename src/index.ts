@@ -5,7 +5,6 @@ import { dom } from "$library/dom";
 
 oncontextmenu = (e) => e.preventDefault();
 
-
 createRoot(
   dom('div', {
     style: {

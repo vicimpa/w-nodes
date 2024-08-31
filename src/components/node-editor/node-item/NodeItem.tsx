@@ -33,10 +33,6 @@ export class NodeItem extends Component<INodeItemProps> {
   @inject(() => NodeList) list!: NodeList;
   @inject(() => NodeSelection) selection!: NodeSelection;
 
-  constructor(props: INodeItemProps) {
-    super(props);
-  }
-
   viewRef = signalRef<SVGForeignObjectElement>();
   fillRef = signalRef<HTMLDivElement>();
   itemRef = signalRef<NodeListItem>();

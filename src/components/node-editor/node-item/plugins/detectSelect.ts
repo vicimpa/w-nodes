@@ -1,11 +1,16 @@
+import { effect, untracked } from "@preact/signals-react";
+
 import { NodeItem } from "../NodeItem";
-import { effect } from "@preact/signals-react";
 
 export default (ctx: NodeItem) => (
   effect(() => {
-    ctx.select = ctx.selection.select.includes(ctx);
-    return () => {
-      ctx.select = false;
-    };
+    var select = ctx.selection.select.includes(ctx);
+
+    if (select !== untracked(() => ctx.select))
+      ctx.select = select;
+  }),
+  effect(() => {
+    if (ctx.select)
+      ctx.itemRef.current?.up();
   })
 );
