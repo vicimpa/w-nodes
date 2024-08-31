@@ -56,7 +56,6 @@ export class NodeItem extends Component<INodeItemProps> {
 
   view: FC = () => null;
 
-
   render(): ReactNode {
     return (
       <NodeListItem ref={this.itemRef}>
@@ -69,7 +68,32 @@ export class NodeItem extends Component<INodeItemProps> {
               ref={this.fillRef}
               style={{ padding: this.padding }}
               className={s.fill}
-              onKeyDown={e => e.stopPropagation()}
+              onKeyDown={e => {
+                if (!(e.target instanceof HTMLElement))
+                  return;
+
+                if (e.target.contentEditable === 'false')
+                  return;
+
+                if (e.target.contentEditable === 'inherit')
+                  return;
+
+                if (e.target.tagName === 'textarea')
+                  return e.stopPropagation();
+
+                if (e.target instanceof HTMLInputElement) {
+                  if (e.target.type === 'range')
+                    return;
+                  if (e.target.type === 'buntton')
+                    return;
+                  if (e.target.type === 'checkbox')
+                    return;
+                  if (e.target.type === 'radio')
+                    return;
+                }
+
+                e.stopPropagation();
+              }}
             >
               {<this.view />}
             </div>

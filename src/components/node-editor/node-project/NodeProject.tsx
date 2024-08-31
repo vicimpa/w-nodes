@@ -4,7 +4,6 @@ import { Signal, computed } from "@preact/signals-react";
 import { inject, provide } from "$library/provider";
 import { prop, reactive, signalRef } from "$library/signals";
 
-import { HudPortal } from "../node-hud/HudPortal";
 import { NodeItem } from "../node-item";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
@@ -14,7 +13,7 @@ import { connect } from "$library/connect";
 import detectCopy from "./plugins/detectCopy";
 import detectDelete from "./plugins/detectDelete";
 
-type TConnect = [
+export type TConnect = [
   from: [n: number, p: number],
   to: [n: number, p: number] | NodePort,
 ];
@@ -180,18 +179,6 @@ export class NodeProject extends Component<TNodeProjectProps> {
           ))
         }
         {this.props.children}
-        <HudPortal>
-          {this.nodes.map((node, key) => (
-            <button
-              onMouseDown={
-                () => this.append(node).then(e => this.selection.select = [e])
-              }
-              key={key}
-            >
-              {node.name}
-            </button>
-          ))}
-        </HudPortal>
       </>
     );
   }

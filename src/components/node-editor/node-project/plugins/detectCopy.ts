@@ -1,4 +1,5 @@
-import { NodeProject } from "../NodeProject";
+import { NodeProject, TConnect } from "../NodeProject";
+
 import { Vec2 } from "$library/vec2";
 import { dispose } from "$library/dispose";
 import { Type as t } from '@sinclair/typebox';
@@ -19,6 +20,9 @@ const copyDTO = t.Object({
     t.Any()
   )
 });
+
+var store: { nodes: number[], connect: TConnect[], configs: any[]; } | null = null;
+var storeString: string = '';
 
 export default (ctx: NodeProject) => (
   dispose(
@@ -41,28 +45,31 @@ export default (ctx: NodeProject) => (
         e.preventDefault();
         const copy = [...ctx.selection.select];
         const nodes = copy.map(e => ctx.nodes.indexOf(ctx.find(e)!));
-        const connect = ctx.saveConnections(...copy).filter(e => Array.isArray(e[0]) && Array.isArray(e[1]));
+        const connect = ctx.saveConnections(...copy);
         const configs = copy.map(e => {
           const data = ctx.save(e);
           if ('x' in data && 'y' in data) {
             const _data = data as { x: number, y: number; };
-            new Vec2(_data).minus(ctx.map).toObject(_data);
+            new Vec2(_data).minus(ctx.map).plus(10).toObject(_data);
           }
           return data;
         });
 
-        navigator.clipboard.writeText(JSON.stringify({ nodes, connect, configs }));
+        store = { nodes, connect, configs };
+        storeString = JSON.stringify({ ...store, connect: connect.filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) });
+        navigator.clipboard.writeText(storeString);
       }
     }),
     windowEvents('keydown', e => {
       if ((e.metaKey || e.ctrlKey) && e.key == 'v') {
         e.preventDefault();
 
-
         navigator.clipboard.readText()
           .then(text => {
             try {
-              const { nodes, configs, connect } = v.Parse(copyDTO, JSON.parse(text));
+              const { nodes = [], configs = [], connect = [] } = text === storeString ? (
+                store ?? {}
+              ) : v.Parse(copyDTO, JSON.parse(text));
 
               Promise.all(nodes.map((e) => {
                 return ctx.append(ctx.nodes[e]);

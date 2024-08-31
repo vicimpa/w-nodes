@@ -1,0 +1,93 @@
+.node
+  background-color: #333
+  border-radius: 10px
+  display: flex
+  flex-direction: column
+  overflow: hidden
+  border: 2px solid transparent
+
+  &[data-select]
+    border-color: #fff
+    box-shadow: 0 0 10px #fff
+
+  button
+    cursor: pointer
+
+  header
+    min-height: 30px
+    background-color: rgba(255,255,255,0.2)
+    display: flex
+    align-items: center
+    gap: 5px
+    padding: 0px 5px
+    font-size: 12px
+
+    [data-delete]
+      width: 12px
+      height: 12px
+      border-radius: 100%
+      background-color: red
+      border: none
+
+    span
+      flex-grow: 1
+
+    div
+      display: flex
+      align-items: center
+      gap: 5px
+
+  main
+    display: flex
+    padding: 5px 0px
+
+    canvas
+      border: 3px solid #fff
+      padding: 5px
+      border-radius: 5px
+      background-color: rgba(0,0,0,0.4)
+
+    article
+      flex-grow: 1
+      display: flex
+      flex-direction: column
+      gap: 5px
+      padding: 0px 5px
+
+.port
+  display: flex
+  align-items: center
+  font-size: 10px
+  background-color: rgba(0,0,0,0.4)
+  border-radius: 10px
+  gap: 2.5px
+
+  &:not([data-output])
+    padding-right: 5px
+
+  &[data-output]
+    padding-left: 5px
+    flex-direction: row-reverse
+
+.input
+  display: flex
+  flex-direction: column
+  min-width: 150px
+
+  [data-grow]
+    flex-grow: 1
+
+  p
+    display: flex
+    gap: 1px
+    align-items: center
+    font-size: 12px
+
+    [contenteditable]:not([contenteditable=false])
+      outline: solid
+
+    small
+      font-size: 8px
+
+  input, select
+    flex-grow: 1

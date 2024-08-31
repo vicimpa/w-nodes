@@ -43,6 +43,7 @@ export const NodeLine: FC<TNodeLineProps> = ({
   };
 
   const path = drawBezierCurve(from, to);
+  color = from instanceof NodePort ? from.color : to instanceof NodePort ? to.color : '#999';
 
   return (
     <g>

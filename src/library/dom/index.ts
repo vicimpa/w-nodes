@@ -36,3 +36,11 @@ export const svg = <K extends keyof SVGS>(tag: K, { ref, style, ...props }: Prop
   children.forEach(_e => elem.appendChild(_e));
   return (ref?.(elem), elem);
 };
+
+export function selectText(element: HTMLElement) {
+  const selection = window.getSelection()!;
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}

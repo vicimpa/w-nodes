@@ -45,8 +45,9 @@ export class NodePort extends Component<INodePortProps> {
   @prop x = 0;
   @prop y = 0;
   @prop color = '#999';
-
   @prop hover = false;
+
+  value: any = this.props.value;
 
   connects = computed(() => {
     if (!this.lines) return [];
