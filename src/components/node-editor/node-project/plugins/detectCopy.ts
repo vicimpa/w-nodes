@@ -28,7 +28,7 @@ var storeString: string = '';
 export default (ctx: NodeProject) => (
   dispose(
     windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key == 'd') {
+      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyD') {
         e.preventDefault();
         const nodes = [...ctx.selection.select];
         const connect = ctx.saveConnections(...nodes);
@@ -43,7 +43,7 @@ export default (ctx: NodeProject) => (
       }
     }),
     windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key == 'c') {
+      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyC') {
         e.preventDefault();
         const copy = [...ctx.selection.select];
         const nodes = copy.map(e => ctx.nodes.indexOf(ctx.find(e)!));
@@ -68,7 +68,7 @@ export default (ctx: NodeProject) => (
       }
     }),
     windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key == 'v') {
+      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyV') {
         e.preventDefault();
 
         navigator.clipboard.readText()
