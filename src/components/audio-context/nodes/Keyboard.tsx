@@ -1,19 +1,18 @@
 import { CSSProperties, FC, useEffect } from "react";
 import { computed, useComputed, useSignal } from "@preact/signals-react";
 import { prop, reactive } from "$library/signals";
-import { provide, useInject } from "$library/provider";
 
 import { BaseNode } from "../lib/BaseNode";
 import { SignalPort } from "../ports/SignalPort";
 import { connect } from "$library/connect";
 import { dispose } from "$library/dispose";
 import { name } from "$library/function";
+import { provide } from "$library/provider";
 import rsp from "@vicimpa/rsp";
 import { store } from "$library/store";
 import { windowEvents } from "$library/events";
 
-const KeyboardItem: FC<{ index: number; }> = ({ index }) => {
-  const ctx = useInject(Keyboard);
+const KeyboardItem: FC<{ index: number; ctx: Keyboard; }> = ({ index, ctx }) => {
   const port = useSignal(0);
 
   useEffect(() => (
@@ -82,7 +81,7 @@ export default class Keyboard extends BaseNode {
         <tbody>
           {
             computed(() => this.keys.map((_, i) => (
-              <KeyboardItem key={i} index={i} />
+              <KeyboardItem key={i} index={i} ctx={this} />
             )))
           }
         </tbody>
