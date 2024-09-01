@@ -32,7 +32,7 @@ export class AudioProject extends NodeProject {
                 {node.name}
               </button>
             ))}
-            <button onClick={() => window.open('https://github.com/vicimpa/w-nodes')}>Open GitGub</button>
+            <button onClick={() => window.open('https://github.com/vicimpa/w-nodes')}>Open GitHub</button>
           </div>
         </HudPortal>
       </>
