@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 
 import { NodeItem } from "$components/node-editor";
+import c from "../node.module.sass";
 import { computed } from "@preact/signals-react";
 import { connect } from "$library/connect";
 import { reactive } from "$library/signals";
@@ -10,8 +11,9 @@ import s from "../styles.module.sass";
 @connect(ctx => ctx._connect())
 @reactive()
 export class BaseNode extends NodeItem {
-  title = 'BaseNode';
-  color = '#444';
+  #this = Object.getPrototypeOf(this).constructor;
+  title = this.#this._name ?? this.#this.name ?? 'BaseNode';
+
   padding = 10;
 
   head: ReactNode = null;
@@ -27,8 +29,7 @@ export class BaseNode extends NodeItem {
 
   view = () => (
     <rsp.div
-      className={s.node}
-      style={{ backgroundColor: this.color }}
+      className={`${s.node} ${c[this.title]}`}
       data-select={this.isSelect}
       data-controll
     >

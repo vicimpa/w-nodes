@@ -1,6 +1,7 @@
 import { NodeProject, TConnect } from "../NodeProject";
 
 import { Vec2 } from "$library/vec2";
+import { delay } from "$library/function";
 import { dispose } from "$library/dispose";
 import { Type as t } from '@sinclair/typebox';
 import { Value as v } from "@sinclair/typebox/value";
@@ -32,10 +33,11 @@ export default (ctx: NodeProject) => (
         const nodes = [...ctx.selection.select];
         const connect = ctx.saveConnections(...nodes);
         ctx.copy(...nodes)
-          .then(select => {
+          .then(async select => {
             ctx.selection.select = select;
             select.forEach(e => e.x += 10);
             select.forEach(e => e.y += 10);
+            await delay();
             ctx.restoreConnections(connect, ...select);
           });
       }
@@ -56,7 +58,12 @@ export default (ctx: NodeProject) => (
         });
 
         store = { nodes, connect, configs };
-        storeString = JSON.stringify({ ...store, connect: connect.filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) });
+        storeString = btoa(JSON.stringify({
+          nodes,
+          configs,
+          connect: connect
+            .filter(e => Array.isArray(e[0]) && Array.isArray(e[1]))
+        }));
         navigator.clipboard.writeText(storeString);
       }
     }),
@@ -69,17 +76,18 @@ export default (ctx: NodeProject) => (
             try {
               const { nodes = [], configs = [], connect = [] } = text === storeString ? (
                 store ?? {}
-              ) : v.Parse(copyDTO, JSON.parse(text));
+              ) : v.Parse(copyDTO, JSON.parse(atob(text)));
 
               Promise.all(nodes.map((e) => {
                 return ctx.append(ctx.nodes[e]);
-              })).then(select => {
+              })).then(async select => {
                 select.forEach((e, i) => {
                   ctx.restore(e, typeof configs[i] === 'object' ? configs[i] : {});
                   new Vec2(e).plus(ctx.map).toObject(e);
                 });
-                ctx.restoreConnections(connect, ...select);
                 ctx.selection.select = select;
+                await delay();
+                ctx.restoreConnections(connect, ...select);
               });
             } catch (e) { }
           });

@@ -4,14 +4,15 @@ import { effect, signal } from "@preact/signals-react";
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
+import { Vec2 } from "$library/vec2";
 import { dispose } from "$library/dispose";
+import { line } from "../lib/line";
+import { name } from "$library/function";
 import { signalRef } from "$library/signals";
 import { store } from "$library/store";
 
-export class DynamicsCompressor extends BaseNode {
-  title = 'DynamicsCompressor';
-  color = '#3498DB';
-
+@name('DynamicsCompressor')
+export default class extends BaseNode {
   #effect = ctx.createDynamicsCompressor();
 
   canvas = signalRef<HTMLCanvasElement>();
@@ -23,44 +24,50 @@ export class DynamicsCompressor extends BaseNode {
   @store _knee = signal(this.#effect.knee.value);
   @store _reduction = signal(this.#effect.reduction);
 
-  drawCompressorSettings(threshold: number, ratio: number, _attack: number, _release: number) {
+  outputLevel?: number;
+
+  drawCompressorSettings(threshold: number, knee: number, ratio: number, _attack: number, _release: number) {
     const { value: canvas } = this.canvas;
     const ctx = canvas?.getContext('2d');
 
     if (!canvas || !ctx) return;
-    const width = canvas.width;
-    const height = canvas.height;
+    const empty = new Vec2();
+    const size = Vec2.fromSize(canvas);
 
-    ctx.clearRect(0, 0, width, height);
+    ctx.resetTransform();
+    ctx.clearRect(empty, size);
+    ctx.setTransform(1, 0, 0, -1, 0, size.y);
 
-    const xScale = width / 100;
-    const yScale = height * .2;
+    // Определяем точки для графика
+    const tPoint = new Vec2(1 + threshold / 100).times(size);
+    const rPoint = new Vec2(1, 1 / ratio);
 
-    ctx.beginPath();
-    ctx.moveTo(0, height * .2);
-    ctx.lineTo(width, height * .2);
-    ctx.moveTo(width / 2, 0);
-    ctx.lineTo(width / 2, height);
-    ctx.strokeStyle = '#CCCCCC';
-    ctx.stroke();
+    const kPoint = new Vec2(knee / 100)
+      .times(size)
+      .times(rPoint)
+      .plus(tPoint);
 
-    ctx.beginPath();
-    for (let x = 0; x <= width; x++) {
-      const inputLevel = (x / xScale) - 50;
-      let outputLevel;
+    const lPoint = size.ctimes(rPoint)
+      .plus(kPoint);
 
-      if (inputLevel < threshold) {
-        outputLevel = inputLevel;
-      } else {
-        outputLevel = threshold + (inputLevel - threshold) / ratio;
-      }
+    // Рисуем линии
+    line(ctx, (move) => {
+      move(tPoint.x, 0);
+      move(tPoint.x, size.y);
+    }, { dash: [5], size: 0.5 });
 
-      ctx.lineTo(x, yScale - outputLevel);
-    }
+    line(ctx, (move) => {
+      move(kPoint.x, 0);
+      move(kPoint.x, size.y);
+    }, { dash: [5], size: 0.5 });
 
-    ctx.strokeStyle = '#FF5733';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    line(ctx, () => {
+      const path = new Path2D();
+      path.moveTo(empty);
+      path.quadraticCurveTo(tPoint, kPoint);
+      path.lineTo(lPoint);
+      return path;
+    }, { size: 4 });
   }
 
   _connect = () => {
@@ -73,6 +80,7 @@ export class DynamicsCompressor extends BaseNode {
       effect(() => {
         this.drawCompressorSettings(
           this._threshold.value,
+          this._knee.value,
           this._ratio.value,
           this._attack.value,
           this._release.value
@@ -94,7 +102,7 @@ export class DynamicsCompressor extends BaseNode {
       <canvas
         ref={this.canvas}
         width={150}
-        height={100} />
+        height={150} />
 
       <Range
         label="Threshold"

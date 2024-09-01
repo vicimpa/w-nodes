@@ -2,13 +2,12 @@ import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
 import { ctx } from "../ctx";
+import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
 import { store } from "$library/store";
 
-export class Gain extends BaseNode {
-  title = 'Gain';
-  color = '#FF5733';
-
+@name('Gain')
+export default class extends BaseNode {
   #gain = ctx.createGain();
 
   @store _gain = signal(this.#gain.gain.value * 100);

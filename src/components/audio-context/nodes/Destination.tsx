@@ -1,11 +1,10 @@
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { ctx } from "../ctx";
+import { name } from "$library/function";
 
-export class Destination extends BaseNode {
-  title = 'Destination';
-  color = '#2ECC71';
-
+@name('Destination')
+export default class extends BaseNode {
   #in = ctx.createGain();
 
   _connect = () => {

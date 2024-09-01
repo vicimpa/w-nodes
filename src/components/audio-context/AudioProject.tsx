@@ -1,14 +1,10 @@
-import { Destination } from "./nodes/Destination";
-import { DynamicsCompressor } from "./nodes/DynamicsCompressor";
-import { Gain } from "./nodes/Gain";
 import { HudPortal } from "$components/node-editor/node-hud/HudPortal";
 import { NodeProject } from "$components/node-editor";
-import { Oscillator } from "./nodes/Oscillator";
 import { ReactNode } from "react";
 import { Vec2 } from "$library/vec2";
-
+import _nodes from "./_nodes";
 export class AudioProject extends NodeProject {
-  nodes = [Destination, Oscillator, Gain, DynamicsCompressor];
+  nodes = _nodes;
 
   render(): ReactNode {
     return (

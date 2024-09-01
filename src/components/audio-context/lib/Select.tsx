@@ -40,12 +40,12 @@ export const Select = <T,>({
 
   return (
     <div className={s.input}>
-      <p>
+      <div className={s.type}>
         <span>
           {label}:
         </span>
-      </p>
-      <rsp.select bind-value={_value}>
+      </div>
+      <rsp.select bind-value={_value} onKeyDown={e => e.preventDefault()} onChange={e => e.currentTarget.blur()}>
         {_variants.map(e => (
           <option value={e.id} key={e.id}>{e.label}</option>
         ))}

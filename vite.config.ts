@@ -6,9 +6,9 @@ export default defineConfig({
   root: './src',
   publicDir: '../public',
   build: {
-    target: 'esnext',
     emptyOutDir: true,
-    outDir: '../dist'
+    outDir: '../dist',
+    target: 'esnext',
   },
   server: {
     host: '0.0.0.0'

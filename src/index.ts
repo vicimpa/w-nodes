@@ -1,3 +1,5 @@
+import "$plugins";
+
 import { App } from "$App";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
@@ -17,3 +19,7 @@ createRoot(
 ).render(
   createElement(App)
 );
+
+document.addEventListener("dragover", function (event) {
+  event.preventDefault();
+}, false);

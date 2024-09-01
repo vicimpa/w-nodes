@@ -1,26 +1,149 @@
 import { PI, asin, sign, sin } from "$library/math";
+import { computed, effect, signal } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
-import { effect, signal } from "@preact/signals-react";
+import { prop, reactive, signalRef } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
+import { SignalPort } from "../ports/SignalPort";
 import { dispose } from "$library/dispose";
-import { signalRef } from "$library/signals";
+import { name } from "$library/function";
+import rsp from "@vicimpa/rsp";
+import { signalNode } from "../lib/signalNode";
 import { store } from "$library/store";
 
-export class Oscillator extends BaseNode {
-  title = 'Oscillator';
-  color = '#3498DB';
+const _noteCount = new Set<string>();
+const notes = `
+E	Ми пятой октавы	5274.00
+D#	Ре-диез пятой октавы	4978.00
+D	Ре пятой октавы	4698.40
+C#	До-диез пятой октавы	4434.80
+C	До пятой октавы	4186.00
+B	Си четвёртой октавы	3951.00
+A#	Ля-диез четвёртой октавы	3729.20
+A	Ля четвёртой октавы	3440.00
+G#	Соль-диез четвёртой октавы	3332.40
+G	Соль четвёртой октавы	3136.00
+F#	Фа-диез четвёртой октавы	2960.00
+F	Фа четвёртой октавы	2793.80
+E	Ми четвёртой октавы	2637.00
+D#	Ре-диез четвёртой октавы	2489.00
+D	Ре четвёртой октавы	2349.20
+C#	До-диез четвёртой октавы	2217.40
+C	До четвёртой октавы	2093.00
+B	Си третьей октавы	1975.50
+A#	Ля-диез третьей октавы	1864.60
+A	Ля третьей октавы	1720.00
+G#	Соль-диез третьей октавы	1661.20
+G	Соль третьей октавы	1568.00
+F#	Фа-диез третьей октавы	1480.00
+F	Фа третьей октавы	1396.90
+E	Ми третьей октавы	1318.50
+D#	Ре-диез третьей октавы	1244.50
+D	Ре третьей октавы	1174.60
+C#	До-диез третьей октавы	1108.70
+C	До третьей октавы	1046.50
+B	Си второй октавы	987.75
+A#	Ля-диез второй октавы	932.32
+A	Ля второй октавы	880.00
+G#	Соль-диез второй октавы	830.60
+G	Соль второй октавы	784.00
+F#	Фа-диез второй октавы	739.98
+F	Фа второй октавы	698.46
+E	Ми второй октавы	659.26
+D#	Ре-диез второй октавы	622.26
+D	Ре второй октавы	587.32
+C#	До-диез второй октавы	554.36
+C	До второй октавы	523.25
+B	Си первой октавы	493.88
+A#	Ля-диез первой октавы	466.16
+A	Ля первой октавы	440.00
+G#	Соль-диез первой октавы	415.30
+G	Соль первой октавы	392.00
+F#	Фа-диез первой октавы	369.99
+F	Фа первой октавы	349.23
+E	Ми первой октавы	329.63
+D#	Ре-диез первой октавы	311.13
+D	Ре первой октавы	293.66
+C#	До-диез первой октавы	277.18
+C	До первой октавы	261.63
+B	Си малой октавы	246.96
+A#	Ля-диез малой октавы	233.08
+A	Ля малой октавы	220.00
+G#	Соль-диез малой октавы	207.00
+G	Соль малой октавы	196.00
+F#	Фа-диез малой октавы	185.00
+F	Фа малой октавы	174.62
+E	Ми малой октавы	164.81
+D#	Ре-диез малой октавы	155.56
+D	Ре малой октавы	147.83
+C#	До-диез малой октавы	138.59
+C	До малой октавы	130.82
+B	Си большой октавы	123.48
+A#	Ля-диез большой октавы	116.54
+A	Ля большой октавы	110.00
+G#	Соль-диез большой октавы	103.80
+G	Соль большой октавы	98.00
+F#	Фа-диез большой октавы	92.50
+F	Фа большой октавы	87.31
+E	Ми большой октавы	82.41
+D#	Ре-диез большой октавы	77.78
+D	Ре большой октавы	73.91
+C#	До-диез большой октавы	69.30
+C	До большой октавы	65.41
+B	Си контроктавы	61.74
+A#	Ля-диез контроктавы	58.26
+A	Ля контроктавы	55.00
+G#	Соль-диез контроктавы	51.90
+G	Соль контроктавы	49.00
+F#	Фа-диез контроктавы	46.25
+F	Фа контроктавы	43.65
+E	Ми контроктавы	41.21
+D#	Ре-диез контроктавы	38.88
+D	Ре контроктавы	36.95
+C#	До-диез контроктавы	34.65
+C	До контроктавы	32.70
+B	Си субконтроктавы	30.87
+A#	Ля-диез субконтроктавы	29.13
+A	Ля субконтроктавы	27.50
+G#	Соль-диез субконтроктавы	25.95
+G	Соль субконтроктавы	24.50
+F#	Фа-диез субконтроктавы	23.12
+F	Фа субконтроктавы	21.82
+E	Ми субконтроктавы	20.61
+`.trim().split(/\n+/).reverse().map(row => {
+  const rows = row.split(/\s+/).map(e => e.trim());
+  const name = rows.at(0)!;
+  const description = rows.at(1)!;
+  const group = rows.slice(2, -1).join(' ');
+  const note = +rows.at(-1)!;
+  return ({
+    name,
+    description,
+    group,
+    groupId: _noteCount.add(group).size - 1,
+    note
+  });
+});
 
+
+@name('Oscillator')
+@reactive()
+export default class extends BaseNode {
   #src = ctx.createOscillator();
   #out = ctx.createGain();
 
-  @store _gain = signal(this.#out.gain.value * 100);
+
   @store _type = signal(this.#src.type as keyof typeof this._waves);
   @store _freq = signal(this.#src.frequency.value);
   @store _detune = signal(this.#src.detune.value);
+  @store @prop _active = false;
+
+  active = signalNode(computed(() => +this._active));
+
+  note = signal(notes.find(e => e.note === this._freq.value)?.note.toString() ?? '');
 
   canvas = signalRef<HTMLCanvasElement>();
 
@@ -34,6 +157,25 @@ export class Oscillator extends BaseNode {
   _variants = Object.keys(this._waves).map(value => ({
     value: value as keyof typeof this._waves
   }));
+
+  head = (
+    <rsp.select
+      bind-value={this.note}
+      onKeyDown={e => e.preventDefault()}
+    >
+      <option >Select note</option>
+      {
+        [...Map.groupBy(notes, (note) => note.group)].map(([group, items], index) => (
+          <optgroup label={group} key={index}>
+            {items.map((item, key) => (
+              <option value={item.note} key={key}>{item.name} ({item.description})</option>
+            ))}
+          </optgroup>
+        ))
+
+      }
+    </rsp.select>
+  );
 
   drawWaveform(type: keyof typeof this._waves) {
     const { value: canvas } = this.canvas;
@@ -78,11 +220,24 @@ export class Oscillator extends BaseNode {
         this.#src.stop();
         this.#src.disconnect(empty);
       },
+      this.note.subscribe(val => {
+        if (!isNaN(+val))
+          this._freq.value = +val;
+        else
+          this.note.value = this._freq.peek().toString();
+      }),
+      this._freq.subscribe(val => {
+        this.note.value = val.toString();
+      }),
       effect(() => {
         this.drawWaveform(this._type.value);
+      }),
+      this.active.subscribe((v) => {
+        this.#out.gain.value = v;
       })
     );
   };
+
 
   output = (
     <AudioPort value={this.#out} output />
@@ -90,6 +245,24 @@ export class Oscillator extends BaseNode {
 
   _view = () => (
     <>
+      {
+        computed(() => {
+          var connected = this.active.connected();
+
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <SignalPort value={this.active} />
+              <button
+                disabled={connected}
+                onClick={() => this._active = !this._active}
+                style={{ background: connected && this.active.value ? '#050' : '', flexGrow: 1 }}
+              >
+                {connected ? 'Signal' : this._active ? 'Stop' : 'Start'}
+              </button>
+            </div>
+          );
+        })
+      }
       <canvas
         ref={this.canvas}
         width={150}

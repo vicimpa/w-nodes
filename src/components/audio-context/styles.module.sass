@@ -10,12 +10,12 @@
     border-color: #fff
     box-shadow: 0 0 10px #fff
 
-  button
+  button:not(:disabled)
     cursor: pointer
 
   header
     min-height: 30px
-    background-color: rgba(255,255,255,0.2)
+    background-color: rgba(0,0,0,0.4)
     display: flex
     align-items: stretch
     gap: 5px
@@ -45,6 +45,11 @@
     display: flex
     padding: 5px 0px
 
+    & > div
+      display: flex
+      flex-direction: column
+      gap: 2.5px
+
     canvas
       border: 3px solid #fff
       padding: 5px
@@ -66,6 +71,9 @@
   border-radius: 10px
   gap: 2.5px
 
+  span
+    align-items: center
+
   &:not([data-output])
     padding-right: 5px
 
@@ -81,7 +89,7 @@
   [data-grow]
     flex-grow: 1
 
-  p
+  .type
     display: flex
     gap: 1px
     align-items: center
@@ -89,6 +97,11 @@
 
     [contenteditable]:not([contenteditable=false])
       outline: solid
+
+    span
+      display: flex
+      align-items: center
+      gap: 5px
 
     small
       font-size: 8px

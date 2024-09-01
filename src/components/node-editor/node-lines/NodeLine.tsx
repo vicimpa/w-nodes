@@ -49,24 +49,14 @@ export const NodeLine: FC<TNodeLineProps> = ({
     <g>
       <path
         style={style}
-        stroke={'#000'}
-        strokeWidth={size + 2}
-
-        fill="none"
-        onMouseDown={onMouseDown}
-        d={path}
-      />
-      <path
-        style={style}
         stroke={color}
         strokeWidth={size}
-
         fill="none"
         onMouseDown={onMouseDown}
+        strokeLinecap="round"
+        strokeDasharray="5 10"
         d={path}
       />
-      <circle style={style} cx={from.x} cy={from.y} r={4} fill={color} stroke="#000" />
-      <circle style={{ ...style, pointerEvents: 'none' }} cx={to.x} cy={to.y} r={4} fill={color} stroke="#000" />
     </g>
   );
 };
