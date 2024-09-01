@@ -15,7 +15,7 @@ export class AudioProject extends NodeProject {
 
             {this.nodes.map((node, key) => (
               <button
-                style={{ textAlign: 'left' }}
+                style={{ textAlign: 'left', padding: 5 }}
                 draggable
                 onDragEnd={(event) => {
                   this.append(node as any)
@@ -32,6 +32,7 @@ export class AudioProject extends NodeProject {
                 {node.name}
               </button>
             ))}
+            <button onClick={() => window.open('https://github.com/vicimpa/w-nodes')}>Open GitGub</button>
           </div>
         </HudPortal>
       </>
