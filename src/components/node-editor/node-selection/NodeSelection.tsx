@@ -10,9 +10,10 @@ import { Vec2 } from "$library/vec2";
 import { connect } from "$library/connect";
 import detectDrag from "./plugins/detectDrag";
 import detectSelect from "./plugins/detectSelect";
+import detectShift from "./plugins/detectShift";
 
 @provide()
-@connect(detectDrag, detectSelect)
+@connect(detectShift, detectDrag, detectSelect)
 @reactive()
 export class NodeSelection extends Component<PropsWithChildren> {
   @inject(() => NodeMap) map!: NodeMap;
@@ -20,6 +21,7 @@ export class NodeSelection extends Component<PropsWithChildren> {
 
   @prop _shiftCount = 0;
   shiftKey = false;
+
   _select: NodeItem[] | null = null;
 
   @prop view: [from: Vec2, to: Vec2] | null = null;

@@ -6,7 +6,7 @@ export type SignalNode = ReadonlySignal<number> & {
   connected(): boolean;
 };
 
-export const signalNode = (defaultValue: number | Signal<number>) => {
+export const signalNode = (defaultValue: number | Signal<number>): SignalNode => {
   const _read = signal<Signal<number> | null>(null);
 
   return Object.assign(

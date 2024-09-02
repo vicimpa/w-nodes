@@ -49,7 +49,7 @@ const KeyboardItem: FC<{ index: number; ctx: Keyboard; }> = ({ index, ctx }) => 
         {index + 1}
       </td>
       <rsp.td style={style}>
-        Key: "{computed(() => ctx.keys[index] ?? 'press to set')}""
+        Key: "{computed(() => ctx.keys[index] ?? 'press to set')}"
       </rsp.td>
       <td>
         <rsp.button onClick={() => ctx.keys = ctx.keys.toSpliced(index, 1, null)} disabled={computed(() => !ctx.keys[index])}>Change</rsp.button>

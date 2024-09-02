@@ -15,7 +15,13 @@ export default (ctx: NodePort) => (
 
     const getPoint = () => {
       const rect = port.getBoundingClientRect();
-      map.offset(Vec2.fromSize(rect).times(.5).plus(rect)).toObject(ctx);
+      const point = new Vec2(ctx);
+      const newPoint = map
+        .offset(Vec2.fromSize(rect).times(.5).plus(rect))
+        .ceil();
+
+      if (!point.equal(newPoint))
+        newPoint.toObject(ctx);
     };
 
 
