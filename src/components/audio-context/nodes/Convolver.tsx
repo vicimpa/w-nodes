@@ -23,7 +23,8 @@ export default class extends BaseNode {
 
   @prop buffer: AudioBuffer | null = null;
 
-  canvas = signalRef<HTMLCanvasElement>();
+  canRef = signalRef<HTMLCanvasElement>();
+  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
 
   _typeData = computed(() => convolver[this._type.value](ctx));
 
@@ -42,14 +43,14 @@ export default class extends BaseNode {
   );
 
   drawWaveform(audioBuffer: AudioBuffer) {
-    const { value: canvas } = this.canvas;
-    const ctx = canvas?.getContext('2d');
+    const { value: can } = this.canRef;
+    const { value: ctx } = this.ctxRef;
 
-    if (!canvas || !ctx) return;
+    if (!can || !ctx) return;
 
     const channelData = audioBuffer.getChannelData(0);
-    const width = canvas.width;
-    const height = canvas.height;
+    const width = can.width;
+    const height = can.height;
 
     ctx.clearRect(0, 0, width, height);
 
@@ -78,7 +79,7 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
-      <canvas ref={this.canvas} width={400} height={50} />
+      <canvas ref={this.canRef} width={400} height={50} />
       <Select
         label="Type"
         value={this._type}

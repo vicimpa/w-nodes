@@ -1,3 +1,4 @@
+import Analyzer from "./nodes/Analyzer";
 import BiquadFilter from "./nodes/BiquadFilter";
 import Convolver from "./nodes/Convolver";
 import Destination from "./nodes/Destination";
@@ -18,4 +19,5 @@ export default [
   Oscillator,
   Keyboard,
   Math,
+  Analyzer
 ];

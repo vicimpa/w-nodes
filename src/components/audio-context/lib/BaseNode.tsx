@@ -11,8 +11,7 @@ import s from "../styles.module.sass";
 @connect(ctx => ctx._connect())
 @reactive()
 export class BaseNode extends NodeItem {
-  #this = Object.getPrototypeOf(this).constructor;
-  title = this.#this._name ?? this.#this.name ?? 'BaseNode';
+  title = Object.getPrototypeOf(this)?.constructor?.name ?? 'BaseNode';
 
   padding = 10;
 

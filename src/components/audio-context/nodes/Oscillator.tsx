@@ -145,7 +145,8 @@ export default class extends BaseNode {
 
   note = signal(notes.find(e => e.note === this._freq.value)?.note.toString() ?? '');
 
-  canvas = signalRef<HTMLCanvasElement>();
+  canRef = signalRef<HTMLCanvasElement>();
+  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
 
   _waves = {
     sine: (t: number) => sin(t),
@@ -178,13 +179,13 @@ export default class extends BaseNode {
   );
 
   drawWaveform(type: keyof typeof this._waves) {
-    const { value: canvas } = this.canvas;
-    const ctx = canvas?.getContext('2d') ?? undefined;
+    const { value: can } = this.canRef;
+    const { value: ctx } = this.ctxRef;
 
-    if (!canvas || !ctx) return;
+    if (!can || !ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const width = can.width;
+    const height = can.height;
 
     ctx.clearRect(0, 0, width, height);
 
@@ -264,7 +265,7 @@ export default class extends BaseNode {
         })
       }
       <canvas
-        ref={this.canvas}
+        ref={this.canRef}
         width={150}
         height={70} />
 

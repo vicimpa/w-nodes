@@ -1,5 +1,5 @@
+import { computed, effect, signal } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
-import { effect, signal } from "@preact/signals-react";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -15,7 +15,8 @@ import { store } from "$library/store";
 export default class extends BaseNode {
   #effect = ctx.createDynamicsCompressor();
 
-  canvas = signalRef<HTMLCanvasElement>();
+  canRef = signalRef<HTMLCanvasElement>();
+  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
 
   @store _threshold = signal(this.#effect.threshold.value);
   @store _ratio = signal(this.#effect.ratio.value);
@@ -27,12 +28,12 @@ export default class extends BaseNode {
   outputLevel?: number;
 
   drawCompressorSettings(threshold: number, knee: number, ratio: number, _attack: number, _release: number) {
-    const { value: canvas } = this.canvas;
-    const ctx = canvas?.getContext('2d');
+    const { value: can } = this.canRef;
+    const { value: ctx } = this.ctxRef;
 
-    if (!canvas || !ctx) return;
+    if (!can || !ctx) return;
     const empty = new Vec2();
-    const size = Vec2.fromSize(canvas);
+    const size = Vec2.fromSize(can);
 
     ctx.resetTransform();
     ctx.clearRect(empty, size);
@@ -100,7 +101,7 @@ export default class extends BaseNode {
   _view = () => (
     <>
       <canvas
-        ref={this.canvas}
+        ref={this.canRef}
         width={150}
         height={150} />
 

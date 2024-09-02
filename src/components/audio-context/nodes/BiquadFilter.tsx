@@ -1,5 +1,5 @@
+import { computed, effect, signal } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
-import { effect, signal } from "@preact/signals-react";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -24,7 +24,8 @@ const variants = type.map((value) => ({ value }));
 export default class extends BaseNode {
   #effect = ctx.createBiquadFilter();
 
-  canvas = signalRef<HTMLCanvasElement>();
+  canRef = signalRef<HTMLCanvasElement>();
+  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
 
   @store _type = signal(this.#effect.type);
   @store _frequency = signal(this.#effect.frequency.value);
@@ -37,11 +38,11 @@ export default class extends BaseNode {
   _outPhase = new Float32Array(this._freq.length);
 
   drawFilter() {
-    const { value: can } = this.canvas;
-    const ctx = can?.getContext('2d');
+    const { value: can } = this.canRef;
+    const { value: ctx } = this.ctxRef;
 
-
-    if (!can || !ctx) return;
+    if (!can || !ctx)
+      return;
 
     const getX = (x: number, length: number) => (
       (x + 0.5) * (can.width / length)
@@ -112,7 +113,7 @@ export default class extends BaseNode {
   _view = () => (
     <>
       <canvas
-        ref={this.canvas}
+        ref={this.canRef}
         width={300}
         height={100} />
 
