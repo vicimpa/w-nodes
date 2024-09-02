@@ -42,6 +42,7 @@ export default (ctx: NodeSelection) => (
       if (!e.shiftKey && e.target instanceof HTMLElement)
         return;
       select(e, ctx);
+      ctx.shiftKey = e.shiftKey;
     }
   }))
 );
