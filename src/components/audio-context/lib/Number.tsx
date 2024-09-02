@@ -11,18 +11,22 @@ export type TNumberProps = {
   label: string;
   value: Signal<number>;
   change?: ((v: number) => any);
+  noPort?: boolean;
+  readonly?: boolean;
 };
 
 export const Number = ({
   label,
   value,
   change,
+  noPort,
+  readonly,
 }: TNumberProps) => {
   const valueString = useSignal(value.value.toString());
 
   const ref = useRef<HTMLSpanElement>(null);
   const port = useMemo(() => signalNode(0), []);
-  const isConnected = useComputed(() => port.connected());
+  const isConnected = useComputed(() => readonly || port.connected());
 
   const on = (target: HTMLSpanElement) => {
     target.contentEditable = 'plaintext-only';
@@ -66,21 +70,22 @@ export const Number = ({
   const style = useComputed<CSSProperties>(() => ({
     cursor: 'pointer',
     display: 'inline-block',
+    fontFamily: 'monospace',
     width: '100%',
     height: '100%',
-    opacity: isConnected.value ? .5 : 1
+    opacity: isConnected.value ? .5 : 1, overflow: 'hidden'
   }));
 
   return (
     <div className={s.input}>
       <div className={s.type}>
-        <SignalPort value={port} />
+        {!noPort && <SignalPort value={port} />}
         <span>
           {label}:
         </span>
       </div>
 
-      <table style={{ border: '1px solid #999', backgroundColor: '#111' }}>
+      <table style={{ border: '1px solid #999', minWidth: 250, backgroundColor: '#111' }}>
         <tbody>
           <tr>
             <td style={{ background: '#444', padding: .25 }}>

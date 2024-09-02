@@ -2,6 +2,7 @@ import { FC, useMemo, useRef } from "react";
 import { Signal, useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
 
 import { SignalPort } from "../ports/SignalPort";
+import { minMax } from "$library/math";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
 import { selectText } from "$library/dom";
@@ -15,6 +16,9 @@ export type TRangeProps = {
   max?: number;
   default?: number;
   accuracy?: number;
+  noPort?: boolean;
+  readonly?: boolean;
+  strict?: boolean;
   change?: AudioParam | ((v: number) => any);
   onChange?: (v: number) => any;
 };
@@ -29,6 +33,9 @@ export const Range: FC<TRangeProps> = ({
   postfix,
   change,
   onChange,
+  noPort,
+  readonly,
+  strict,
   default: defaultValue = or(change, v => v.defaultValue) ?? undefined,
   min = or(change, v => v.minValue) ?? 0,
   max = or(change, v => v.maxValue) ?? 100,
@@ -38,7 +45,10 @@ export const Range: FC<TRangeProps> = ({
   const ref = useRef<HTMLSpanElement>(null);
   const step = 1 / (10 ** accuracy);
   const port = useMemo(() => signalNode(0), []);
-  const isConnected = useComputed(() => port.connected());
+  const isConnected = useComputed(() => readonly || port.connected());
+  const getValue = (val: number) => {
+    return strict ? minMax(val, min ?? -Infinity, max ?? Infinity) : val;
+  };
 
   useSignalEffect(() => {
     const val = +valueString.value;
@@ -46,7 +56,7 @@ export const Range: FC<TRangeProps> = ({
     if (isNaN(val)) {
       valueString.value = value.peek().toString();
     } else {
-      value.value = val;
+      value.value = getValue(val);
     }
   });
 
@@ -57,9 +67,9 @@ export const Range: FC<TRangeProps> = ({
 
     if (change) {
       if (change instanceof Function)
-        change(value.value);
+        change(getValue(value.value));
       else
-        change.value = value.value;
+        change.value = getValue(value.value);
     }
 
     onChange?.(value.value);
@@ -83,20 +93,20 @@ export const Range: FC<TRangeProps> = ({
 
   useSignalEffect(() => {
     if (port.connected())
-      value.value = port.value;
+      value.value = getValue(port.value);
   });
 
   return (
     <div className={s.input}>
       <div className={s.type}>
         <span>
-          <SignalPort value={port} />
+          {!noPort && <SignalPort value={port} />}
           {label}:
         </span>
         <span data-grow />
         <rsp.span
           ref={ref}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', fontFamily: 'monospace' }}
           onDoubleClick={(e) => {
             if (isConnected.value)
               return;

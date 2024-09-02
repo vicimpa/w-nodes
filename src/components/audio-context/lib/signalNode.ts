@@ -7,28 +7,37 @@ export type SignalNode = ReadonlySignal<number> & {
 };
 
 export const signalNode = (defaultValue: number | Signal<number>): SignalNode => {
-  const _read = signal<Signal<number> | null>(null);
+  const _read = signal<Signal<number>[]>([]);
 
   return Object.assign(
-    computed(() => _read.value?.value ?? (defaultValue instanceof Signal ? defaultValue.value : defaultValue)),
+    computed(() => (
+      _read.value.length ? (
+        _read.value.reduce((a, b) => a + b.value, 0)
+      ) : (defaultValue instanceof Signal ? (
+        defaultValue.value
+      ) : defaultValue)
+    )),
     {
       connect(signal: Signal<number>) {
         if (!signal)
           throw new Error('No port to connect');
+        const array = _read.peek();
+        const index = array.indexOf(signal);
 
-        if (_read.peek())
-          throw new Error('Alerdy connected');
+        if (index !== -1)
+          throw new Error('Already connect');
 
-        _read.value = signal;
+        _read.value = [...array, signal];
       },
       disconnect(signal: Signal<number>) {
-        if (_read.peek() !== signal)
-          throw new Error('No connected');
+        const array = _read.peek();
+        const index = array.indexOf(signal);
 
-        _read.value = null;
+        if (index !== -1)
+          _read.value = array.toSpliced(index, 1);
       },
       connected() {
-        return !!_read.value;
+        return !!_read.value.length;
       },
     }
   );

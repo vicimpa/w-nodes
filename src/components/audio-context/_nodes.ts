@@ -6,8 +6,10 @@ import DryWet from "./nodes/DryWet";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
 import Keyboard from "./nodes/Keyboard";
-import Math from "./nodes/Math";
+import Math from "./nodes/Operation";
 import Oscillator from "./nodes/Oscillator";
+import Turner from "./nodes/Turner";
+import Value from "./nodes/Value";
 
 export default [
   BiquadFilter,
@@ -19,5 +21,7 @@ export default [
   Oscillator,
   Keyboard,
   Math,
-  Analyzer
+  Analyzer,
+  Value,
+  Turner,
 ];
