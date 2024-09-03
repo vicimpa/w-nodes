@@ -14,6 +14,8 @@ export const math = {
   'a << b': (a: number, b: number) => a << b,
   'a > b': (a: number, b: number) => +(a > b),
   'a < b': (a: number, b: number) => +(a < b),
+  'a === b': (a: number, b: number) => +(a === b),
+  'a !== b': (a: number, b: number) => +(a !== b),
   'a && b': (a: number, b: number) => a && b,
   'a || b': (a: number, b: number) => a || b,
   'min(a, b)': (a: number, b: number) => Math.min(a, b),
