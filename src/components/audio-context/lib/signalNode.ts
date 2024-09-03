@@ -15,6 +15,7 @@ export type SignalNodeParams = {
   min?: number;
   max?: number;
   default?: number;
+  signalOnly?: boolean;
 };
 
 @reactive()
@@ -28,6 +29,8 @@ export class SignalNode extends Signal<number> {
   min: number;
   max: number;
   default: number;
+
+  signalOnly = false;
 
   @prop
   private _input: (SignalNode | AudioNode)[] = [];
@@ -89,7 +92,15 @@ export class SignalNode extends Signal<number> {
   start() {
     return dispose(
       start(this.node),
-      this.param ? pipe(this.node, this.param) : undefined,
+      this.param && !this.signalOnly ? dispose(
+        pipe(this.node, this.param),
+        (
+          this.param.value = 0,
+          () => {
+            this.param!.value = this.default;
+          }
+        )
+      ) : undefined,
       effect(() => {
         if (this.connected) {
           this.node.offset.value = 0;
@@ -101,6 +112,11 @@ export class SignalNode extends Signal<number> {
       effect(() => {
         if (this.connected)
           return;
+
+        if (this.signalOnly && this.param) {
+          this.param.value = this.value;
+          console.log(this.param.value);
+        }
 
         this.node.offset.value = this.value;
       }),
@@ -123,13 +139,13 @@ export class SignalNode extends Signal<number> {
 
   constructor(param: number | AudioParam, params?: SignalNodeParams) {
     super(value(param));
+    this.signalOnly = params?.signalOnly ?? false;
 
     if (param instanceof AudioParam) {
       this.param = param;
       this.min = params?.min ?? param.minValue;
       this.max = params?.max ?? param.maxValue;
       this.default = params?.default ?? param.defaultValue;
-      param.value = 0;
     } else {
       this.min = params?.min ?? this.node.offset.minValue;
       this.max = params?.max ?? this.node.offset.maxValue;

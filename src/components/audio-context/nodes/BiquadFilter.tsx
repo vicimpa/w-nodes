@@ -1,4 +1,5 @@
 import { ctx, empty } from "../ctx";
+import { prop, reactive } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -10,7 +11,6 @@ import { avgArray } from "../lib/avgArray";
 import { dispose } from "$library/dispose";
 import { frequencies } from "../lib/frequencies";
 import { name } from "$library/function";
-import { prop } from "$library/signals";
 import { signal } from "@preact/signals-react";
 import { store } from "$library/store";
 
@@ -23,8 +23,10 @@ const type: BiquadFilterType[] = ["allpass", "bandpass", "highpass", "highshelf"
 const variants = type.map((value) => ({ value }));
 
 @name('BiquadFilter')
+@reactive()
 export default class extends BaseNode {
   #effect = ctx.createBiquadFilter();
+  #view = ctx.createBiquadFilter();
 
   @store _type = signal(this.#effect.type);
   @store _frequency = new SignalNode(this.#effect.frequency);
@@ -61,14 +63,17 @@ export default class extends BaseNode {
       <Canvas
         width={300}
         height={100} draw={(ctx, can) => {
-          this._draw;
-
           const getX = (x: number, length: number) => (
             (x + 0.5) * (can.width / length)
           );
 
           ctx.clearRect(0, 0, can.width, can.height);
-          this.#effect.getFrequencyResponse(this._freq, this._out, this._outPhase);
+          this.#view.type = this._type.value;
+          this.#view.frequency.value = this._frequency.value;
+          this.#view.Q.value = this._q.value;
+          this.#view.detune.value = this._detune.value;
+          this.#view.gain.value = this._gain.value;
+          this.#view.getFrequencyResponse(this._freq, this._out, this._outPhase);
 
           ctx.textAlign = 'center';
           ctx.textBaseline = 'top';
@@ -84,7 +89,6 @@ export default class extends BaseNode {
           ctx.lineWidth = .5;
           ctx.strokeStyle = '#999';
           ctx.beginPath();
-
 
           for (let i = 0; i < frequencies.length; i++) {
             const x = getX(i, frequencies.length);
@@ -112,35 +116,31 @@ export default class extends BaseNode {
         label="Type"
         value={this._type}
         variants={variants}
-        change={v => (this.#effect.type = v, this._draw++)}
+        change={v => this.#effect.type = v}
       />
 
       <Range
         label="Frequency"
         value={this._frequency}
         postfix="HZ"
-        onChange={() => this._draw++}
       />
 
       <Range
         label="Q"
         value={this._q}
         accuracy={1}
-        onChange={() => this._draw++}
       />
 
       <Range
         label="Detune"
         value={this._detune}
         postfix="cents"
-        onChange={() => this._draw++}
       />
 
       <Range
         label="Gain"
         value={this._gain}
         accuracy={2}
-        onChange={() => this._draw++}
       />
     </>
   );

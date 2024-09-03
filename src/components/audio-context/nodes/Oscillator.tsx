@@ -142,8 +142,6 @@ export default class extends BaseNode {
   @store _detune = new SignalNode(this.#src.detune, { min: -1200, max: 1200 });
   @store _active = new SignalNode(this.#out.gain, { default: 0 });
 
-  note = signal(notes.find(e => e.note === this._freq.value)?.note.toString() ?? '');
-
   blockNoteSelect = computed(() => this._freq.connected);
 
   _waves = {
@@ -159,8 +157,16 @@ export default class extends BaseNode {
 
   head = (
     <rsp.select
-      bind-value={this.note}
+      value={this._freq}
       onKeyDown={e => e.preventDefault()}
+      onChange={e => {
+        const find = notes.find(j => j.note === +e.currentTarget.value);
+
+        if (find) {
+          this._freq.value = find.note;
+          this._detune.value = 0;
+        }
+      }}
       disabled={this.blockNoteSelect}
     >
       <option >Select note</option>
@@ -181,13 +187,6 @@ export default class extends BaseNode {
     pipe(this.#src, empty),
     pipe(this.#src, this.#out),
     start(this.#src),
-    this.note.subscribe(v => {
-      this._freq.value = +v;
-    }),
-    this._freq.subscribe(v => {
-      if (v.toString() !== this.note.peek())
-        this.note.value = '';
-    })
   );
 
   output = (
