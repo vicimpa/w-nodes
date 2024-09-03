@@ -1,16 +1,16 @@
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
+import { SignalNode } from "../lib/signalNode";
 import { ctx } from "../ctx";
 import { name } from "$library/function";
-import { signal } from "@preact/signals-react";
 import { store } from "$library/store";
 
 @name('Gain')
 export default class extends BaseNode {
-  #gain = ctx.createGain();
+  #gain = new GainNode(ctx);
 
-  @store _gain = signal(this.#gain.gain.value * 100);
+  @store _gain = new SignalNode(this.#gain.gain, { min: 0, max: 1.5 });
 
   input = (
     <AudioPort value={this.#gain} />
@@ -24,11 +24,8 @@ export default class extends BaseNode {
     <>
       <Range
         label="Gain"
-        min={0}
-        max={150}
-        postfix="%"
+        accuracy={2}
         value={this._gain}
-        change={e => this.#gain.gain.value = e / 100}
       />
     </>
   );

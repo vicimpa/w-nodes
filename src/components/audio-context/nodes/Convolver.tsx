@@ -1,8 +1,9 @@
 import { computed, effect, signal } from "@preact/signals-react";
-import { prop, reactive, signalRef } from "$library/signals";
+import { prop, reactive } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
+import { Canvas } from "../lib/Canvas";
 import { Select } from "../lib/Select";
 import convolver from "../assets/convolver";
 import { ctx } from "../ctx";
@@ -23,9 +24,6 @@ export default class extends BaseNode {
 
   @prop buffer: AudioBuffer | null = null;
 
-  canRef = signalRef<HTMLCanvasElement>();
-  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
-
   _typeData = computed(() => convolver[this._type.value](ctx));
 
   _connect = () => dispose(
@@ -37,37 +35,8 @@ export default class extends BaseNode {
     }),
     effect(() => {
       this.#convolver.buffer = this.buffer;
-      if (!this.buffer) return;
-      this.drawWaveform(this.buffer);
     })
   );
-
-  drawWaveform(audioBuffer: AudioBuffer) {
-    const { value: can } = this.canRef;
-    const { value: ctx } = this.ctxRef;
-
-    if (!can || !ctx) return;
-
-    const channelData = audioBuffer.getChannelData(0);
-    const width = can.width;
-    const height = can.height;
-
-    ctx.clearRect(0, 0, width, height);
-
-    ctx.beginPath();
-    ctx.moveTo(0, height / 2);
-
-    const step = Math.ceil(channelData.length / width);
-    for (let i = 0; i < width; i++) {
-      const min = Math.min(...channelData.slice(i * step, (i + 1) * step));
-      const max = Math.max(...channelData.slice(i * step, (i + 1) * step));
-      ctx.lineTo(i, (1 + min) * height / 2);
-      ctx.lineTo(i, (1 + max) * height / 2);
-    }
-
-    ctx.strokeStyle = '#fff';
-    ctx.stroke();
-  }
 
   input = (
     <AudioPort value={this.#convolver} />
@@ -79,7 +48,28 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
-      <canvas ref={this.canRef} width={400} height={50} />
+      <Canvas width={400} height={50} draw={(ctx, can) => {
+        if (!this.buffer) return;
+        const channelData = this.buffer.getChannelData(0);
+        const width = can.width;
+        const height = can.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+
+        const step = Math.ceil(channelData.length / width);
+        for (let i = 0; i < width; i++) {
+          const min = Math.min(...channelData.slice(i * step, (i + 1) * step));
+          const max = Math.max(...channelData.slice(i * step, (i + 1) * step));
+          ctx.lineTo(i, (1 + min) * height / 2);
+          ctx.lineTo(i, (1 + max) * height / 2);
+        }
+
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      }} />
       <Select
         label="Type"
         value={this._type}

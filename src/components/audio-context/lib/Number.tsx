@@ -1,15 +1,15 @@
-import { CSSProperties, useMemo, useRef } from "react";
-import { Signal, computed, useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
+import { CSSProperties, useRef } from "react";
+import { computed, useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
 
+import { SignalNode } from "./signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
 import { selectText } from "$library/dom";
-import { signalNode } from "./signalNode";
 
 export type TNumberProps = {
   label: string;
-  value: Signal<number>;
+  value: SignalNode;
   change?: ((v: number) => any);
   noPort?: boolean;
   readonly?: boolean;
@@ -25,8 +25,7 @@ export const Number = ({
   const valueString = useSignal(value.value.toString());
 
   const ref = useRef<HTMLSpanElement>(null);
-  const port = useMemo(() => signalNode(0), []);
-  const isConnected = useComputed(() => readonly || port.connected());
+  const isConnected = useComputed(() => readonly || value.connected);
 
   const on = (target: HTMLSpanElement) => {
     target.contentEditable = 'plaintext-only';
@@ -62,11 +61,6 @@ export const Number = ({
     if (change) change(value.value);
   });
 
-  useSignalEffect(() => {
-    if (port.connected())
-      value.value = port.value;
-  });
-
   const style = useComputed<CSSProperties>(() => ({
     cursor: 'pointer',
     display: 'inline-block',
@@ -79,7 +73,7 @@ export const Number = ({
   return (
     <div className={s.input}>
       <div className={s.type}>
-        {!noPort && <SignalPort value={port} />}
+        {!noPort && <SignalPort value={value} />}
         <span>
           {label}:
         </span>

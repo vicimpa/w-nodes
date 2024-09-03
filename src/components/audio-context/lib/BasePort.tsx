@@ -4,6 +4,7 @@ import s from "../styles.module.sass";
 export class BasePort extends NodePort {
   title = this.props.output ? 'out' : 'in';
   color = '#555';
+  output = !!this.props.output;
 
   render() {
     return (

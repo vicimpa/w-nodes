@@ -76,6 +76,7 @@ export class NodePort extends Component<INodePortProps> {
 
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
   }
@@ -103,6 +104,7 @@ export class NodePort extends Component<INodePortProps> {
 
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

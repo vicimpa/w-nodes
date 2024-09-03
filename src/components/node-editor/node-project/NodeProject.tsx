@@ -1,6 +1,5 @@
 import { Component, PropsWithChildren, ReactNode, RefObject } from "react";
 import { NodeConnect, NodeLines } from "../node-lines";
-import { Signal, computed } from "@preact/signals-react";
 import { inject, provide } from "$library/provider";
 import { prop, reactive, signalRef } from "$library/signals";
 
@@ -9,6 +8,7 @@ import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
 import { NodeSelection } from "../node-selection";
 import { collectStore } from "$library/store";
+import { computed } from "@preact/signals-react";
 import { connect } from "$library/connect";
 import detectCopy from "./plugins/detectCopy";
 import detectDelete from "./plugins/detectDelete";
@@ -95,7 +95,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
       const val = (node as any)[key];
 
-      if (val instanceof Signal) {
+      if (typeof val === 'object' && 'value' in val) {
         data[key] = val.value;
       } else {
         data[key] = val;
@@ -146,7 +146,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
       const val = (node as any)[key];
 
-      if (val instanceof Signal) {
+      if (typeof val === 'object' && 'value' in val) {
         val.value = data[key];
       } else {
         (node as any)[key] = data[key];

@@ -1,17 +1,20 @@
 import { PI, asin, sign, sin } from "$library/math";
-import { computed, effect, signal } from "@preact/signals-react";
+import { computed, signal } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
-import { prop, reactive, signalRef } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
+import { Canvas } from "../lib/Canvas";
 import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
+import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { dispose } from "$library/dispose";
 import { name } from "$library/function";
+import { pipe } from "../lib/pipe";
+import { reactive } from "$library/signals";
 import rsp from "@vicimpa/rsp";
-import { signalNode } from "../lib/signalNode";
+import { start } from "../lib/start";
 import { store } from "$library/store";
 
 const _noteCount = new Set<string>();
@@ -128,25 +131,20 @@ E	Ми субконтроктавы	20.61
   });
 });
 
-
 @name('Oscillator')
 @reactive()
 export default class extends BaseNode {
   #src = ctx.createOscillator();
-  #out = ctx.createGain();
-
+  #out = new GainNode(ctx, { gain: 0 });
 
   @store _type = signal(this.#src.type as keyof typeof this._waves);
-  @store _freq = signal(this.#src.frequency.value);
-  @store _detune = signal(this.#src.detune.value);
-  @store @prop _active = false;
-
-  active = signalNode(computed(() => +this._active));
+  @store _freq = new SignalNode(this.#src.frequency, { min: 0 });
+  @store _detune = new SignalNode(this.#src.detune, { min: -1200, max: 1200 });
+  @store _active = new SignalNode(this.#out.gain, { default: 0 });
 
   note = signal(notes.find(e => e.note === this._freq.value)?.note.toString() ?? '');
 
-  canRef = signalRef<HTMLCanvasElement>();
-  ctxRef = computed(() => this.canRef.value?.getContext('2d'));
+  blockNoteSelect = computed(() => this._freq.connected);
 
   _waves = {
     sine: (t: number) => sin(t),
@@ -163,6 +161,7 @@ export default class extends BaseNode {
     <rsp.select
       bind-value={this.note}
       onKeyDown={e => e.preventDefault()}
+      disabled={this.blockNoteSelect}
     >
       <option >Select note</option>
       {
@@ -178,67 +177,18 @@ export default class extends BaseNode {
     </rsp.select>
   );
 
-  drawWaveform(type: keyof typeof this._waves) {
-    const { value: can } = this.canRef;
-    const { value: ctx } = this.ctxRef;
-
-    if (!can || !ctx) return;
-
-    const width = can.width;
-    const height = can.height;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const waveData = new Float32Array(width * 10);
-
-    for (let i = 0; i < waveData.length; i++) {
-      const t = (i / waveData.length * 2) * (2 * Math.PI);
-      waveData[i] = this._waves[type]?.(t);
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(0, height / 2);
-
-    for (let i = 0; i < waveData.length; i++) {
-      const x = (i / waveData.length) * width;
-      const y = (height * .5) - (waveData[i] * (height * .4));
-      ctx.lineTo(x, y);
-    }
-
-    ctx.strokeStyle = '#FFF';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-  }
-
-  _connect = () => {
-    this.#src.connect(this.#out);
-    this.#src.start();
-    this.#src.connect(empty);
-
-    return dispose(
-      () => {
-        this.#src.disconnect(this.#out);
-        this.#src.stop();
-        this.#src.disconnect(empty);
-      },
-      this.note.subscribe(val => {
-        if (!isNaN(+val))
-          this._freq.value = +val;
-        else
-          this.note.value = this._freq.peek().toString();
-      }),
-      this._freq.subscribe(val => {
-        this.note.value = val.toString();
-      }),
-      effect(() => {
-        this.drawWaveform(this._type.value);
-      }),
-      this.active.subscribe((v) => {
-        this.#out.gain.value = v;
-      })
-    );
-  };
-
+  _connect = () => dispose(
+    pipe(this.#src, empty),
+    pipe(this.#src, this.#out),
+    start(this.#src),
+    this.note.subscribe(v => {
+      this._freq.value = +v;
+    }),
+    this._freq.subscribe(v => {
+      if (v.toString() !== this.note.peek())
+        this.note.value = '';
+    })
+  );
 
   output = (
     <AudioPort value={this.#out} output />
@@ -248,26 +198,52 @@ export default class extends BaseNode {
     <>
       {
         computed(() => {
-          var connected = this.active.connected();
+          var connected = this._active.connected;
 
           return (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <SignalPort value={this.active} />
+              <SignalPort value={this._active} />
               <button
                 disabled={connected}
-                onClick={() => this._active = !this._active}
-                style={{ background: connected && this.active.value ? '#050' : '', flexGrow: 1 }}
+                onClick={() => this._active.value = this._active.value ? 0 : 1}
+                style={{ background: connected && this._active.value ? '#050' : '', flexGrow: 1 }}
               >
-                {connected ? 'Signal' : this._active ? 'Stop' : 'Start'}
+                {connected ? 'Signal' : this._active.value ? 'Stop' : 'Start'}
               </button>
             </div>
           );
         })
       }
-      <canvas
-        ref={this.canRef}
+
+      <Canvas
         width={150}
-        height={70} />
+        height={70}
+        draw={(ctx, can) => {
+          const width = can.width;
+          const height = can.height;
+
+          ctx.clearRect(0, 0, width, height);
+
+          const waveData = new Float32Array(width * 10);
+
+          for (let i = 0; i < waveData.length; i++) {
+            const t = (i / waveData.length * 2) * (2 * Math.PI);
+            waveData[i] = this._waves[this._type.value]?.(t);
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(0, height / 2);
+
+          for (let i = 0; i < waveData.length; i++) {
+            const x = (i / waveData.length) * width;
+            const y = (height * .5) - (waveData[i] * (height * .4));
+            ctx.lineTo(x, y);
+          }
+
+          ctx.strokeStyle = '#FFF';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }} />
 
       <Select
         label="Type"
@@ -280,18 +256,12 @@ export default class extends BaseNode {
         label="Freq"
         value={this._freq}
         accuracy={2}
-        min={0}
-        max={this.#src.frequency.maxValue}
-        change={this.#src.frequency}
         postfix="HZ" />
 
       <Range
         label="Detune"
         value={this._detune}
         accuracy={0}
-        min={-1200}
-        max={1200}
-        change={this.#src.detune}
         postfix="cents" />
     </>
   );

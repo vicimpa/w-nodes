@@ -1,10 +1,10 @@
-import { CSSProperties, FC, useEffect } from "react";
-import { computed, useComputed, useSignal } from "@preact/signals-react";
+import { CSSProperties, FC, useEffect, useMemo } from "react";
+import { computed, useComputed } from "@preact/signals-react";
 import { prop, reactive } from "$library/signals";
 
 import { BaseNode } from "../lib/BaseNode";
+import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { connect } from "$library/connect";
 import { dispose } from "$library/dispose";
 import { name } from "$library/function";
 import { provide } from "$library/provider";
@@ -13,7 +13,7 @@ import { store } from "$library/store";
 import { windowEvents } from "$library/events";
 
 const KeyboardItem: FC<{ index: number; ctx: Keyboard; }> = ({ index, ctx }) => {
-  const port = useSignal(0);
+  const port = useMemo(() => new SignalNode(0, { min: 0, max: 1, default: 0 }), []);
 
   useEffect(() => (
     dispose(
@@ -63,18 +63,20 @@ const KeyboardItem: FC<{ index: number; ctx: Keyboard; }> = ({ index, ctx }) => 
 
 @name('Keyboard')
 @provide()
-@connect(ctx => (
-  dispose(
-    windowEvents('keydown', ({ code }) => {
-      const index = ctx.keys.indexOf(null);
-      if (index === -1) return;
-      ctx.keys = ctx.keys.toSpliced(index, 1, code);
-    })
-  )
-))
 @reactive()
 export default class Keyboard extends BaseNode {
   @prop @store keys: Array<string | null> = [];
+
+  _connect = () => (
+    dispose(
+      windowEvents('keydown', ({ code }) => {
+        const index = this.keys.indexOf(null);
+        if (index === -1) return;
+        this.keys = this.keys.toSpliced(index, 1, code);
+      })
+    )
+  );
+
   _view = () => (
     <>
       <table style={{ width: 300 }}>

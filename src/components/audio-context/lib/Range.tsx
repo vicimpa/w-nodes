@@ -1,53 +1,41 @@
-import { FC, useMemo, useRef } from "react";
-import { Signal, useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
+import { FC, useRef } from "react";
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
 
+import { SignalNode } from "./signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { minMax } from "$library/math";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
 import { selectText } from "$library/dom";
-import { signalNode } from "./signalNode";
 
 export type TRangeProps = {
   label: string;
-  value: Signal<number>;
+  value: SignalNode;
   postfix?: string;
-  min?: number;
-  max?: number;
-  default?: number;
   accuracy?: number;
-  noPort?: boolean;
   readonly?: boolean;
   strict?: boolean;
-  change?: AudioParam | ((v: number) => any);
+  noPort?: boolean;
   onChange?: (v: number) => any;
 };
 
-const or = <T,>(val: AudioParam | ((v: number) => any) | undefined, fn: (p: AudioParam) => T) => {
-  if (val && (val instanceof AudioParam)) return fn(val);
-};
 
 export const Range: FC<TRangeProps> = ({
   label,
   value,
   postfix,
-  change,
   onChange,
-  noPort,
   readonly,
   strict,
-  default: defaultValue = or(change, v => v.defaultValue) ?? undefined,
-  min = or(change, v => v.minValue) ?? 0,
-  max = or(change, v => v.maxValue) ?? 100,
+  noPort = false,
   accuracy = 0,
 }) => {
   const valueString = useSignal(value.value.toString());
   const ref = useRef<HTMLSpanElement>(null);
   const step = 1 / (10 ** accuracy);
-  const port = useMemo(() => signalNode(0), []);
-  const isConnected = useComputed(() => readonly || port.connected());
+  const isConnected = useComputed(() => readonly || value.connected);
   const getValue = (val: number) => {
-    return strict ? minMax(val, min ?? -Infinity, max ?? Infinity) : val;
+    return strict ? minMax(val, value.min ?? -Infinity, value.max ?? Infinity) : val;
   };
 
   useSignalEffect(() => {
@@ -64,15 +52,7 @@ export const Range: FC<TRangeProps> = ({
     valueString.value = value.value.toString();
     if (ref.current)
       ref.current.innerText = value.value.toFixed(accuracy);
-
-    if (change) {
-      if (change instanceof Function)
-        change(getValue(value.value));
-      else
-        change.value = getValue(value.value);
-    }
-
-    onChange?.(value.value);
+    onChange?.(getValue(value.value));
   });
 
   const on = (target: HTMLSpanElement) => {
@@ -91,16 +71,11 @@ export const Range: FC<TRangeProps> = ({
     target.contentEditable = 'false';
   };
 
-  useSignalEffect(() => {
-    if (port.connected())
-      value.value = getValue(port.value);
-  });
-
   return (
     <div className={s.input}>
       <div className={s.type}>
         <span>
-          {!noPort && <SignalPort value={port} />}
+          {!noPort && <SignalPort value={value} />}
           {label}:
         </span>
         <span data-grow />
@@ -134,11 +109,11 @@ export const Range: FC<TRangeProps> = ({
         bind-value={valueString}
         disabled={isConnected}
         onKeyDown={e => e.preventDefault()}
-        min={min}
-        max={max}
+        min={value.min}
+        max={value.max}
         onContextMenu={e => {
           e.preventDefault();
-          value.value = defaultValue ?? value.value;
+          value.value = value.default ?? value.value;
         }}
         step={step} />
     </div>

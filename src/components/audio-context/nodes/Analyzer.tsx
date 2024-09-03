@@ -12,7 +12,6 @@ import { signalRef } from "$library/signals";
 import { store } from "$library/store";
 
 @name('Analyzer')
-
 export default class extends BaseNode {
   #node = ctx.createAnalyser();
 
