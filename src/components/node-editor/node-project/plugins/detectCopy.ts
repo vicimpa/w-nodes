@@ -24,6 +24,8 @@ const copyPack = makePack(
 var store: { nodes: number[], connect: TConnect[], configs: any[]; } | null = null;
 var storeString: string = '';
 
+// TODO: ОТРЕФАКТОРИ СРОЧНО, ЗВЕЗДЮК!!!
+
 export default (ctx: NodeProject) => (
   dispose(
     windowEvents('keydown', e => {
@@ -37,8 +39,44 @@ export default (ctx: NodeProject) => (
             select.forEach(e => e.x += 10);
             select.forEach(e => e.y += 10);
             await delay();
-            ctx.restoreConnections(connect, ...select);
+
+            const connectsStore = connect
+              .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
+
+            ctx.restoreConnections(e.shiftKey ? connectsStore : connect, ...select);
           });
+      }
+    }),
+    windowEvents('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyX') {
+        e.preventDefault();
+        const copy = [...ctx.selection.select];
+        ctx.destroy(...copy);
+        const nodes = copy.map(e => ctx.nodes.indexOf(ctx.find(e)!));
+        const connect = ctx.saveConnections(...copy);
+        const configs = copy.map(e => {
+          const data = ctx.save(e);
+          if ('x' in data && 'y' in data) {
+            const _data = data as { x: number, y: number; };
+            new Vec2(_data).minus(ctx.map).plus(10).toObject(_data);
+          }
+          return data;
+        });
+
+        const connectsStore = connect
+          .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
+
+        store = { nodes, connect: e.shiftKey ? connectsStore : connect, configs };
+
+        Promise.resolve()
+          .then(() => copyPack.write({
+            nodes,
+            configs,
+            connect: connectsStore
+          }))
+          .then(buff => gzip.encode(buff))
+          .then(buff => base64.encode(buff))
+          .then(base64 => navigator.clipboard.writeText(storeString = base64));
       }
     }),
     windowEvents('keydown', e => {
@@ -55,10 +93,11 @@ export default (ctx: NodeProject) => (
           }
           return data;
         });
+
         const connectsStore = connect
           .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
 
-        store = { nodes, connect, configs };
+        store = { nodes, connect: e.shiftKey ? connectsStore : connect, configs };
 
         Promise.resolve()
           .then(() => copyPack.write({
@@ -86,6 +125,13 @@ export default (ctx: NodeProject) => (
                 .then(buff => copyPack.read(buff))
             )
           ))
+          .then(({ connect, ...other }) => {
+            if (e.shiftKey)
+              connect = connect
+                .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
+
+            return { ...other, connect };
+          })
           .then(({ nodes, configs, connect }) => (
             Promise.all(nodes.map((e) => {
               return ctx.append(ctx.nodes[e]);
