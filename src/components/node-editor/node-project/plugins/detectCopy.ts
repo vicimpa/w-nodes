@@ -1,26 +1,25 @@
 import { NodeProject, TConnect } from "../NodeProject";
+import { makePack, t } from "$library/datapack";
 
 import { Vec2 } from "$library/vec2";
+import base64 from "$library/base64";
 import { delay } from "$library/function";
 import { dispose } from "$library/dispose";
-import { Type as t } from '@sinclair/typebox';
-import { Value as v } from "@sinclair/typebox/value";
+import gzip from "$library/gzip";
 import { windowEvents } from "$library/events";
 
-const copyDTO = t.Object({
-  nodes: t.Array(
-    t.Integer()
-  ),
-  connect: t.Array(
-    t.Tuple([
-      t.Tuple([t.Integer(), t.Integer()]),
-      t.Tuple([t.Integer(), t.Integer()]),
-    ])
-  ),
-  configs: t.Array(
-    t.Any()
-  )
-});
+const copyPack = makePack(
+  t.obj({
+    nodes: t.array(t.uint()),
+    connect: t.array(
+      t.tuple(
+        t.tuple(t.int(), t.int()),
+        t.tuple(t.int(), t.int()),
+      )
+    ),
+    configs: t.array(t.map())
+  })
+);
 
 var store: { nodes: number[], connect: TConnect[], configs: any[]; } | null = null;
 var storeString: string = '';
@@ -56,15 +55,20 @@ export default (ctx: NodeProject) => (
           }
           return data;
         });
+        const connectsStore = connect
+          .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
 
         store = { nodes, connect, configs };
-        storeString = btoa(JSON.stringify({
-          nodes,
-          configs,
-          connect: connect
-            .filter(e => Array.isArray(e[0]) && Array.isArray(e[1]))
-        }));
-        navigator.clipboard.writeText(storeString);
+
+        Promise.resolve()
+          .then(() => copyPack.write({
+            nodes,
+            configs,
+            connect: connectsStore
+          }))
+          .then(buff => gzip.encode(buff))
+          .then(buff => base64.encode(buff))
+          .then(base64 => navigator.clipboard.writeText(storeString = base64));
       }
     }),
     windowEvents('keydown', e => {
@@ -72,25 +76,29 @@ export default (ctx: NodeProject) => (
         e.preventDefault();
 
         navigator.clipboard.readText()
-          .then(text => {
-            try {
-              const { nodes = [], configs = [], connect = [] } = text === storeString ? (
-                store ?? {}
-              ) : v.Parse(copyDTO, JSON.parse(atob(text)));
-
-              Promise.all(nodes.map((e) => {
-                return ctx.append(ctx.nodes[e]);
-              })).then(async select => {
-                select.forEach((e, i) => {
-                  ctx.restore(e, typeof configs[i] === 'object' ? configs[i] : {});
-                  new Vec2(e).plus(ctx.map).toObject(e);
-                });
-                ctx.selection.select = select;
-                await delay();
-                ctx.restoreConnections(connect, ...select);
+          .then(text => (
+            store && text === storeString ? (
+              store
+            ) : (
+              Promise.resolve(text)
+                .then((text) => base64.decode(text))
+                .then(buff => gzip.decode(buff))
+                .then(buff => copyPack.read(buff))
+            )
+          ))
+          .then(({ nodes, configs, connect }) => (
+            Promise.all(nodes.map((e) => {
+              return ctx.append(ctx.nodes[e]);
+            })).then(async select => {
+              select.forEach((e, i) => {
+                ctx.restore(e, typeof configs[i] === 'object' ? configs[i] : {});
+                new Vec2(e).plus(ctx.map).toObject(e);
               });
-            } catch (e) { }
-          });
+              ctx.selection.select = select;
+              await delay();
+              ctx.restoreConnections(connect, ...select);
+            })
+          ));
       }
     }),
   )

@@ -115,7 +115,6 @@ export class SignalNode extends Signal<number> {
 
         if (this.signalOnly && this.param) {
           this.param.value = this.value;
-          console.log(this.param.value);
         }
 
         this.node.offset.value = this.value;
