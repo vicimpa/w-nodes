@@ -1,9 +1,7 @@
 import { TypeContext, TypeStruct, TypeValue } from "./lib/defineType";
 
 import { DataBuffer } from "$library/proto";
-import lit from "./types/lit";
 import { types as t } from "./types";
-import uint from "./types/uint";
 
 export { types } from "./types";
 export { t };
@@ -12,10 +10,6 @@ const getAllSchema = <T extends TypeStruct>(schema: T): TypeStruct[] => {
   return ([schema] as TypeStruct[])
     .concat(...schema.depends?.map(getAllSchema) ?? []);
 };
-
-const sizes = [lit(0), uint(8), uint(16), uint(32)];
-const getSize = (n: number) => sizes.findIndex(e => e.equal(n));
-const greds = [null, 8, 16, 32] as const;
 
 export const makePack = <T extends TypeStruct>(schema: T) => {
   const schemas = [...new Set(getAllSchema(schema))];
@@ -55,14 +49,9 @@ export const makePack = <T extends TypeStruct>(schema: T) => {
         if (!schema.store) continue;
         const { store: currentStore } = contextWith(schema, store);
         var buffer = schema.store.write(currentStore);
-        var size = getSize(buffer.byteLength);
-        var gred = greds[size];
-
-        databuffer.writeuint8(size);
-
-        if (!gred) continue;
-
-        databuffer[`writeint${gred}`](buffer.byteLength);
+        var size = buffer.byteLength;
+        databuffer.writeVarint(size);
+        if (!size) continue;
         databuffer.write(buffer);
       }
 
@@ -79,14 +68,14 @@ export const makePack = <T extends TypeStruct>(schema: T) => {
         if (!schema.store) continue;
         store.set(schema, initial(schema));
 
-        var gred = greds[getSize(databuffer.readuint8())];
+        var size = databuffer.readVarint();
 
-        if (!gred) continue;
+        if (!size) continue;
 
         store.set(schema, Object.assign(
           initial(schema),
           schema.store.read(
-            databuffer.read(undefined, databuffer[`readuint${gred}`]())
+            databuffer.read(undefined, size)
           )
         ));
       }

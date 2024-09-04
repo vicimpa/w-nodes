@@ -1,9 +1,9 @@
 import { cached } from "../lib/cached";
 import { defineType, TypeStruct, TypeValue } from "../lib/defineType";
-import size from "./size";
+import varint from "./varint";
 
 export default cached(<const T extends TypeStruct<any, any>>(type: T) => {
-  const sizes = size();
+  const sizes = varint();
 
   return defineType({
     name: 'Array<' + type.name + '>',

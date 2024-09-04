@@ -2,13 +2,14 @@ import array from "./array";
 import bool from "./bool";
 import float from "./float";
 import int from "./int";
+import leb128 from "./leb128";
 import lit from "./lit";
 import map from "./map";
 import obj from "./obj";
-import size from "./size";
 import str from "./str";
 import tuple from "./tuple";
 import uint from "./uint";
+import varint from "./varint";
 
 export const types = {
   float,
@@ -21,5 +22,6 @@ export const types = {
   bool,
   lit,
   map,
-  size,
+  varint,
+  leb128,
 };

@@ -1,9 +1,9 @@
 import { cached } from "../lib/cached";
 import { defineType } from "../lib/defineType";
-import size from "./size";
+import varint from "./varint";
 
 export default cached(() => {
-  const cursors = size();
+  const cursors = varint();
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 

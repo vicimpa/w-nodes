@@ -63,6 +63,63 @@ export class DataBuffer {
     return this.buffer.slice(start, this.cursor);
   }
 
+  // Read Varint
+  readVarint() {
+    let result = 0;
+    let shift = 0;
+
+    while (true) {
+      const byte = this.ua[this.cursor++];
+      result |= (byte & 0x7F) << shift;
+      shift += 7;
+
+      if ((byte & 0x80) === 0) {
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  // Read LEB128
+  readLEB128() {
+    let result = 0n;
+    let shift = 0;
+
+    while (true) {
+      const byte = this.ua[this.cursor++];
+      result |= BigInt(byte & 0x7F) << BigInt(shift);
+      shift += 7;
+
+      if ((byte & 0x80) === 0) {
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  // Write LEB128
+  writeLEB128(value: bigint) {
+    let bigValue = BigInt(value);
+
+    while (bigValue > 0x7Fn) {
+      this.ua[this.cursor++] = Number((bigValue & 0x7Fn) | 0x80n);
+      bigValue >>= 7n;
+    }
+
+    this.ua[this.cursor++] = Number(bigValue & 0x7Fn);
+  }
+
+  // Read Varint
+  writeVarint(value: number) {
+    while (value > 0x7F) {
+      this.ua[this.cursor++] = (value & 0x7F) | 0x80;
+      value >>>= 7;
+    }
+    this.ua[this.cursor++] = value & 0x7F;
+  }
+
   // Read boolean
   readboolean(c?: number, m = 1) {
     return !!this.readint8(c, m);
