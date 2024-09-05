@@ -6,6 +6,7 @@ import Delay from "./nodes/Delay";
 import Destination from "./nodes/Destination";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
+import Inpulse from "./nodes/Inpulse";
 import Keyboard from "./nodes/Keyboard";
 import Math from "./nodes/Math";
 import Oscillator from "./nodes/Oscillator";
@@ -29,4 +30,5 @@ export default [
   ShowValue,
   Delay,
   Timer,
+  Inpulse,
 ] as typeof BaseNode[];
