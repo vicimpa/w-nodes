@@ -24,8 +24,8 @@ const modes = {
 
     out._output = (
       <>
-        <AudioPort value={outLeft} output />
-        <AudioPort value={outRight} output />
+        <AudioPort value={outLeft} output title="left" />
+        <AudioPort value={outRight} output title="right" />
       </>
     );
 
@@ -41,8 +41,8 @@ const modes = {
 
     out._input = (
       <>
-        <AudioPort value={inputLeft} />
-        <AudioPort value={inputRight} />
+        <AudioPort value={inputLeft} title="left" />
+        <AudioPort value={inputRight} title="right" />
       </>
     );
 

@@ -18,6 +18,7 @@ import s from "./NodePort.module.sass";
 export interface INodePortProps {
   value?: any;
   output?: boolean;
+  title?: string;
   onConnect?: (port: NodePort) => any;
   onDisconnect?: (port: NodePort) => any;
 }
@@ -115,7 +116,7 @@ export class NodePort extends Component<INodePortProps> {
 
   render(): ReactNode {
     return (
-      <span ref={this.port} style={{ ['--color']: this.color } as any} className={s.port} />
+      <span title={this.props.title} ref={this.port} style={{ ['--color']: this.color } as any} className={s.port} />
     );
   }
 }
