@@ -64,7 +64,6 @@ export const makePack = <T extends TypeStruct>(schema: T) => {
       databuffer.cursor = 0;
 
       for (const schema of schemas) {
-        if (store.has(schema)) continue;
         if (!schema.store) continue;
         store.set(schema, initial(schema));
 
