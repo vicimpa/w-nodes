@@ -25,7 +25,7 @@ export const Select = <T, const V extends TSelectVariant<T>>({
   change,
 }: TSelectProps<T, V>) => {
   const _variants = useMemo(() => (
-    variants.map((variant, id) => ({ variant, id: `value-${id}` }))
+    variants.map((variant, id) => ({ variant, id: `value-${id}`, label: `${variant.label ?? variant.value}` }))
   ), [variants]);
 
   const _value = useSignal(_variants.find(({ variant: e }) => e.value === value.value)!.id);
@@ -54,15 +54,15 @@ export const Select = <T, const V extends TSelectVariant<T>>({
             ].map(([group, variants], index) => (
               <optgroup key={index} label={group}>
                 {
-                  variants.map(({ variant, id }) => (
-                    <option value={id} key={id}>{variant.label}</option>
+                  variants.map(({ label, id }) => (
+                    <option value={id} key={id}>{label}</option>
                   ))
                 }
               </optgroup>
             ))
           ) : (
-            _variants.map(({ variant, id }) => (
-              <option value={id} key={id}>{variant.label}</option>
+            _variants.map(({ id, label }) => (
+              <option value={id} key={id}>{label}</option>
             ))
           )
         }
