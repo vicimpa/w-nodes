@@ -1,6 +1,7 @@
 import Analyzer from "./nodes/Analyzer";
 import { BaseNode } from "./lib/BaseNode";
 import BiquadFilter from "./nodes/BiquadFilter";
+import ChannelSplitter from "./nodes/ChannelSplitter";
 import Convolver from "./nodes/Convolver";
 import Delay from "./nodes/Delay";
 import Destination from "./nodes/Destination";
@@ -33,4 +34,5 @@ export default [
   Timer,
   Inpulse,
   Memory,
+  ChannelSplitter,
 ] as typeof BaseNode[];
