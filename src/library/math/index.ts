@@ -54,19 +54,13 @@ export const rem = (v: number, a: number): number => {
 
 export const rems = (v: number, a: number): number => {
   if (v < 0)
-    v += ceil(v / -a) * a;
+    v += Math.ceil(v / -a) * a;
 
-  return rem(v, a);
+  return v %= a;
 };
 
 export const minMax = (v: number, minV: number, maxV: number) => (
-  min(maxV, max(minV, v))
-);
-
-export const cropSize = (v: number, size: number, anchor?: number) => (
-  anchor = minMax(anchor ?? .5, 0, 1),
-  size = abs(size),
-  minMax(v, -size * (1 - anchor), size * anchor)
+  Math.min(maxV, Math.max(minV, v))
 );
 
 export const iters = (a: number, b: number, i: number) => (
@@ -78,7 +72,7 @@ export const rec = (v: number) => (
 );
 
 export const precision = (v: number, n = 1) => {
-  n = max(n | 0, 0);
+  n = Math.max(n | 0, 0);
   if (!n)
     return v;
 

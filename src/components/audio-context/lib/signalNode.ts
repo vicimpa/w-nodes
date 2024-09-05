@@ -5,7 +5,6 @@ import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
 import { pipe } from "./pipe";
-import { start } from "./start";
 
 const value = (v: number | AudioParam) => (
   typeof v === 'number' ? v : v.value
@@ -25,6 +24,8 @@ export class SignalNode extends Signal<number> {
 
   #analyze = new AnalyserNode(ctx, { fftSize: 32 });
   #analyzeData = new Float32Array(this.#analyze.frequencyBinCount);
+
+
 
   min: number;
   max: number;
@@ -91,7 +92,6 @@ export class SignalNode extends Signal<number> {
 
   start() {
     return dispose(
-      start(this.node),
       this.param && !this.signalOnly ? dispose(
         pipe(this.node, this.param),
         (
@@ -138,6 +138,7 @@ export class SignalNode extends Signal<number> {
 
   constructor(param: number | AudioParam, params?: SignalNodeParams) {
     super(value(param));
+    this.node.start();
     this.signalOnly = params?.signalOnly ?? false;
 
     if (param instanceof AudioParam) {

@@ -7,9 +7,10 @@ import Destination from "./nodes/Destination";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
 import Keyboard from "./nodes/Keyboard";
-import Operation from "./nodes/Operation";
+import Math from "./nodes/Math";
 import Oscillator from "./nodes/Oscillator";
 import ShowValue from "./nodes/ShowValue";
+import Timer from "./nodes/Timer";
 import Turner from "./nodes/Turner";
 import Value from "./nodes/Value";
 
@@ -21,10 +22,11 @@ export default [
   Gain,
   Oscillator,
   Keyboard,
-  Operation,
+  Math,
   Analyzer,
   Value,
   Turner,
   ShowValue,
   Delay,
+  Timer,
 ] as typeof BaseNode[];

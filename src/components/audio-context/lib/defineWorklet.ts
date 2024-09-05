@@ -8,7 +8,7 @@ var processorCount = globalThis.processorCount ?? (
   globalThis.processorCount = 0
 );
 
-type ParamDescriptor = {
+export type ParamDescriptor = {
   defaultValue: number;
   automationRate?: "a-rate" | "k-rate";
   minValue?: number,
@@ -67,11 +67,11 @@ type WorkletOptions<
 
 export async function defineWorklet<
   const P extends string,
-  const M extends Primitive,
+  C extends Primitive,
   const F extends Functions,
   D extends Props
 >(
-  options: WorkletOptions<P, M, F, D>
+  options: WorkletOptions<P, C, F, D>
 ) {
   const loop = options.loop.toString();
 
@@ -177,7 +177,7 @@ export async function defineWorklet<
       Object.defineProperties(
         this,
         Object.keys(options.params ?? {})
-          .reduce((acc, [name]) => {
+          .reduce((acc, name) => {
             acc[name] = {
               get: () => {
                 return this.parameters.get(name)!;
