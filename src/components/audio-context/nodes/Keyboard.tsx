@@ -27,12 +27,13 @@ import { windowEvents } from "$library/events";
       if (ctrlKey || metaKey || shiftKey)
         return;
 
-      if (ctx.keyboard.keys[ctx.index] !== code)
+      if (ctx.keyboard.keys[ctx.id] !== code)
         return;
+
       ctx.port.value = 1;
     }),
     windowEvents('keyup', ({ code }) => {
-      if (ctx.keyboard.keys[ctx.index] !== code)
+      if (ctx.keyboard.keys[ctx.id] !== code)
         return;
 
       ctx.port.value = 0;
@@ -42,9 +43,9 @@ import { windowEvents } from "$library/events";
     }),
   );
 })
-class KeyboardItem extends Component<{ index: number; ctx: Keyboard; }> {
+class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
   keyboard = this.props.ctx;
-  index = this.props.index;
+  id = this.props.id;
   port = new SignalNode(0, { min: 0, max: 1, default: 0 });
 
   style = computed<CSSProperties>(() => ({
@@ -53,23 +54,33 @@ class KeyboardItem extends Component<{ index: number; ctx: Keyboard; }> {
     background: this.port.value ? '#060' : '#333'
   }));
 
+  delete() {
+    this.keyboard.keys = this.keyboard.keys.toSpliced(this.id, 1);
+  }
+
   render(): ReactNode {
-    const { index, style, keyboard, port } = this;
+    const { style, keyboard, port } = this;
+    const { id } = this.props;
+
+    this.id = id;
 
     return (
       <tr>
         <td>
-          {index + 1}
+          {id + 1}
         </td>
         <rsp.td style={style}>
-          Key: "{computed(() => keyboard.keys[index] ?? 'press to set')}"
+          Key: "{computed(() => keyboard.keys[id] ?? 'press to set')}"
         </rsp.td>
         <td>
           <rsp.button
-            onClick={() => keyboard.keys = keyboard.keys.toSpliced(index, 1, null)}
-            disabled={computed(() => !keyboard.keys[index])}>
+            onClick={() => keyboard.keys = keyboard.keys.toSpliced(id, 1, null)}
+            disabled={computed(() => !keyboard.keys[id])}>
             Change
           </rsp.button>
+        </td>
+        <td>
+          <button onClick={() => this.delete()}>Delete</button>
         </td>
         <td>
           <SignalPort value={port} output />
@@ -83,10 +94,6 @@ class KeyboardItem extends Component<{ index: number; ctx: Keyboard; }> {
 @name('Keyboard')
 @connect((ctx) => (
   effect(() => {
-    const items = ctx.items;
-    ctx._anyPress.value = +(items.findIndex(e => e.port.value) !== -1);
-  }),
-  effect(() => {
     const { activeItems } = ctx;
 
     for (var item of ctx.items) {
@@ -96,21 +103,19 @@ class KeyboardItem extends Component<{ index: number; ctx: Keyboard; }> {
         activeItems.delete(item);
     }
 
-    const active = [...activeItems].at(-1);
-
-    if (active)
-      ctx._lastIndex.value = active.index;
+    ctx._activeKey.value = ([...activeItems].at(-1)?.id ?? -1) + 1;
   })
 ))
 @reactive()
 export default class Keyboard extends BaseNode {
   @prop @store keys: Array<string | null> = [null];
 
+  id = 0;
+
   @prop items: KeyboardItem[] = [];
   activeItems = new Set<KeyboardItem>();
 
-  _anyPress = new SignalNode(0, { min: 0, max: 1, default: 0 });
-  _lastIndex = new SignalNode(0, { min: 0, default: 0 });
+  _activeKey = new SignalNode(0, { min: 0, default: 0 });
 
   _connect = () => (
     dispose(
@@ -124,27 +129,19 @@ export default class Keyboard extends BaseNode {
 
   _view = () => (
     <>
-      <table style={{ width: 300 }}>
+      <table style={{ width: 350 }}>
         <tbody>
           <tr>
-            <td colSpan={3} style={{ textAlign: 'right', fontSize: '10px', fontFamily: 'monospace' }}>
-              <p>anyPress <b style={{ color: 'green' }}>{this._anyPress}</b></p>
+            <td colSpan={4} style={{ textAlign: 'right', fontSize: '10px', fontFamily: 'monospace' }}>
+              <p>lastIndex <b style={{ color: 'green' }}>{this._activeKey}</b></p>
             </td>
             <td>
-              <SignalPort value={this._anyPress} output />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={3} style={{ textAlign: 'right', fontSize: '10px', fontFamily: 'monospace' }}>
-              <p>lastIndex <b style={{ color: 'green' }}>{this._lastIndex}</b></p>
-            </td>
-            <td>
-              <SignalPort value={this._lastIndex} output />
+              <SignalPort value={this._activeKey} output />
             </td>
           </tr>
           {
             computed(() => this.keys.map((_, i) => (
-              <KeyboardItem key={i} index={i} ctx={this} />
+              <KeyboardItem key={i} id={i} ctx={this} />
             )))
           }
         </tbody>
