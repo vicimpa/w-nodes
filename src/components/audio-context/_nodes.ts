@@ -9,6 +9,7 @@ import Gain from "./nodes/Gain";
 import Inpulse from "./nodes/Inpulse";
 import Keyboard from "./nodes/Keyboard";
 import Math from "./nodes/Math";
+import Memory from "./nodes/Memory";
 import Oscillator from "./nodes/Oscillator";
 import ShowValue from "./nodes/ShowValue";
 import Timer from "./nodes/Timer";
@@ -31,4 +32,5 @@ export default [
   Delay,
   Timer,
   Inpulse,
+  Memory,
 ] as typeof BaseNode[];
