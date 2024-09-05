@@ -12,6 +12,7 @@ export default await defineWorklet({
   },
   context: {
     times: 0,
+    preview: 0,
   },
   options: {
     numberOfInputs: 0,
@@ -24,12 +25,14 @@ export default await defineWorklet({
       var length = this.param('length', i);
       var result = 0;
 
-      if (value > 0) {
-        if (length - this.context.times > 0)
-          result = value;
-        this.context.times++;
-      } else {
-        this.context.times = 0;
+      if (value !== this.context.preview) {
+        this.context.preview = value;
+        this.context.times = length;
+      }
+
+      if (this.context.times > 0) {
+        this.context.times--;
+        result = this.context.preview;
       }
 
       outL[i] = result;
