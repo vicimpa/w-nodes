@@ -28,7 +28,7 @@ var storeString: string = '';
 
 export default (ctx: NodeProject) => (
   dispose(
-    windowEvents('keydown', e => {
+    windowEvents('keydown', async e => {
       if ((e.metaKey || e.ctrlKey) && e.code == 'KeyD') {
         e.preventDefault();
         const nodes = [...ctx.selection.select];
@@ -42,7 +42,7 @@ export default (ctx: NodeProject) => (
 
             const connectsStore = connect
               .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
-
+            await delay(100);
             ctx.restoreConnections(e.shiftKey ? connectsStore : connect, ...select);
           });
       }
@@ -141,7 +141,7 @@ export default (ctx: NodeProject) => (
                 new Vec2(e).plus(ctx.map).toObject(e);
               });
               ctx.selection.select = select;
-              await delay();
+              await delay(100);
               ctx.restoreConnections(connect, ...select);
             })
           ));
