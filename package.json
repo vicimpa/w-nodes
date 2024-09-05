@@ -10,13 +10,11 @@
   },
   "dependencies": {
     "@preact/signals-react": "^2.2.0",
-    "@sinclair/typebox": "^0.33.7",
     "@vicimpa/rsp": "^0.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/audioworklet": "^0.0.60",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-legacy": "^5.4.2",

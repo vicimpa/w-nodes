@@ -1,5 +1,3 @@
-import { Parameters } from "@sinclair/typebox";
-
 const equal = <T extends any[]>(a: T, b: unknown[]): b is T => {
   if (a.length !== b.length)
     return false;

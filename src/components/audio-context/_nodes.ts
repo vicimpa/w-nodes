@@ -2,6 +2,7 @@ import Analyzer from "./nodes/Analyzer";
 import { BaseNode } from "./lib/BaseNode";
 import BiquadFilter from "./nodes/BiquadFilter";
 import Convolver from "./nodes/Convolver";
+import Delay from "./nodes/Delay";
 import Destination from "./nodes/Destination";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
@@ -25,4 +26,5 @@ export default [
   Value,
   Turner,
   ShowValue,
+  Delay,
 ] as typeof BaseNode[];

@@ -1,8 +1,8 @@
-import { Type as t } from "@sinclair/typebox";
-import { Value as v } from "@sinclair/typebox/value";
+import { TypeValue } from "$library/datapack/lib/defineType";
+import { t } from "$library/datapack";
 
-const moduleDTO = t.Object({
-  default: t.String()
+const moduleDTO = t.obj({
+  default: t.str()
 });
 
 export default (
@@ -12,7 +12,10 @@ export default (
 
       async function load(ctx: AudioContext) {
         const _module = await value();
-        const module = v.Parse(moduleDTO, _module);
+        if (!moduleDTO.equal(_module)) {
+          throw new Error('Error');
+        }
+        const module = _module as TypeValue<typeof moduleDTO>;
         const response = await fetch(module.default);
         return ctx.decodeAudioData(await response.arrayBuffer());
       }
