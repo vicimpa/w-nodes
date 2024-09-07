@@ -14,6 +14,7 @@ import Math from "./nodes/Math";
 import Memory from "./nodes/Memory";
 import Oscillator from "./nodes/Oscillator";
 import Oscilloscope from "./nodes/Oscilloscope";
+import Player from "./nodes/Player";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
 import Timer from "./nodes/Timer";
@@ -39,4 +40,5 @@ export default [
   ChannelSplitter,
   BiSlideer,
   Oscilloscope,
+  Player,
 ] as typeof BaseNode[];

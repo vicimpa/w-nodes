@@ -8,7 +8,7 @@ import { Canvas } from "$components/canvas";
 import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
-import { SignalPort } from "../ports/SignalPort";
+import { Toggle } from "../lib/Toggle";
 import { dispose } from "$library/dispose";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
@@ -195,24 +195,7 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
-      {
-        computed(() => {
-          var connected = this._active.connected;
-
-          return (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <SignalPort value={this._active} />
-              <button
-                disabled={connected}
-                onClick={() => this._active.value = this._active.value ? 0 : 1}
-                style={{ background: connected && this._active.value ? '#050' : '', flexGrow: 1 }}
-              >
-                {connected ? 'Signal' : this._active.value ? 'Stop' : 'Start'}
-              </button>
-            </div>
-          );
-        })
-      }
+      <Toggle value={this._active} label="Start" />
 
       <Canvas
         width={150}

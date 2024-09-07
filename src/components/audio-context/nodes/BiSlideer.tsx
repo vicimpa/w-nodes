@@ -21,7 +21,6 @@ const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can
       .cropMax(1)
       .times(2)
       .minus(1)
-      .times(1, -1)
       .toSignals(ctx._x, ctx._y);
   });
 
@@ -56,7 +55,7 @@ export default class BiSlider extends BaseNode {
 
     ctx.resetTransform();
     ctx.clearRect(0, 0, size);
-    ctx.setTransform(1, 0, 0, -1, center);
+    ctx.setTransform(1, 0, 0, 1, center);
     ctx.strokeStyle = '#fff';
     ctx.fillStyle = '#999';
     ctx.lineWidth = radius;

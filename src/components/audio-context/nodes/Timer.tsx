@@ -2,9 +2,8 @@ import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Number } from "../lib/Number";
 import { SignalNode } from "../lib/signalNode";
-import { SignalPort } from "../ports/SignalPort";
 import TimerProcessor from "../worklet/TimerProcessor";
-import { computed } from "@preact/signals-react";
+import { Toggle } from "../lib/Toggle";
 import { name } from "$library/function";
 import { reactive } from "$library/signals";
 import { store } from "$library/store";
@@ -25,25 +24,8 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
-      {
-        computed(() => {
-          var connected = this._start.connected;
 
-          return (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <SignalPort value={this._start} />
-              <button
-                disabled={connected}
-                onClick={() => this._start.value = this._start.value ? 0 : 1}
-                style={{ background: connected && this._start.value ? '#050' : '', flexGrow: 1 }}
-              >
-                {connected ? 'Signal' : this._start.value ? 'Stop' : 'Start'}
-              </button>
-            </div>
-          );
-        })
-      }
-
+      <Toggle value={this._start} label="Start" />
       <Number
         label="Loop"
         value={this._loop} />
@@ -52,9 +34,7 @@ export default class extends BaseNode {
         label="Speed"
         value={this._speed} />
 
-      <Number
-        label="Revert"
-        value={this._revert} />
+      <Toggle value={this._revert} label="Revert" />
     </>
   );
 }

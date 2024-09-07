@@ -3,6 +3,8 @@ import { computed, signal } from "@preact/signals-react";
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { PI2 } from "$library/math";
+import { SignalNode } from "../lib/signalNode";
+import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { dom } from "$library/dom";
@@ -25,6 +27,8 @@ export default class extends BaseNode {
   _dataY = new Float32Array(this.#nodeRight.frequencyBinCount);
 
   @store _type = signal(0);
+  @store _swap = new SignalNode(0, { default: 0 });
+  @store _invert = new SignalNode(0, { default: 0 });
 
   canRef = signalRef<HTMLCanvasElement>();
   ctxRef = computed(() => this.canRef.value?.getContext('2d'));
@@ -56,21 +60,29 @@ export default class extends BaseNode {
         this._buffCtx.drawImage(can, 0, 0);
         ctx.putImageData(this._buffCtx.getImageData(0, 0, width, height), 0, 0);
 
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.fillStyle = '#fff';
         ctx.strokeStyle = '#fff';
 
         ctx.beginPath();
         var sX = 0;
         var sY = 0;
+        var inv = this._invert.value ? -1 : 1;
+        var swap = this._swap.value && 1;
 
         for (let i = 0; i < bufferLength; i++) {
-          const vX = leftChannelData[i];
-          const vY = rightChannelData[i];
-          const yX = (vX + 1) * height / 2;
-          const yY = (vY + 1) * height / 2;
+          var vX = leftChannelData[i];
+          var vY = rightChannelData[i];
 
-          // Рисуем линию между двумя точками
+          if (swap) {
+            [vX, vY] = [vY, vX];
+            vY *= inv;
+          }
+
+          var yX = (vX + 1) * height / 2;
+          var yY = (vY + 1) * height / 2;
+
+
           if (i === 0) {
             ctx.moveTo(yX, yY);
           } else {
@@ -84,21 +96,19 @@ export default class extends BaseNode {
         ctx.closePath();
 
         for (let i = 0; i < bufferLength; i++) {
-          const vX = leftChannelData[i];
-          const vY = rightChannelData[i];
-          const yX = (vX + 1) * height / 2;
-          const yY = (vY + 1) * height / 2;
+          var vX = leftChannelData[i];
+          var vY = rightChannelData[i];
 
-          // Рисуем линию между двумя точками
-          if (i === 0) {
-            ctx.moveTo(yX, yY);
-          } else {
-            ctx.lineTo(yX, yY);
+          if (swap) {
+            [vX, vY] = [vY, vX];
+            vY *= inv;
           }
 
+          var yX = (vX + 1) * height / 2;
+          var yY = (vY + 1) * height / 2;
 
           ctx.beginPath();
-          ctx.arc(yX, yY, 1.5, 0, PI2);
+          ctx.arc(yX, yY, 1, 0, PI2);
           ctx.fill();
           ctx.closePath();
         }
@@ -111,6 +121,10 @@ export default class extends BaseNode {
   );
 
   _view = () => (
-    <canvas ref={this.canRef} width={200} height={200} />
+    <>
+      <canvas ref={this.canRef} width={200} height={200} />
+      <Toggle value={this._swap} label="Swap" />
+      <Toggle value={this._invert} label="Invert" />
+    </>
   );
 }
