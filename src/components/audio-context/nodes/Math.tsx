@@ -15,10 +15,11 @@ const variants = operations.map((value) => {
   const func = math[value];
   const str = func.toString();
   const _args = Array.from({ length: func.length }, (_, i) => _params[i]);
+  var i = 0;
   const label = value in constants ? (
     value
   ) : value in operators ? (
-    str.substring(str.indexOf('=>') + 2)
+    str.substring(str.indexOf('=>') + 2).replace(/\w/g, () => _params[i++])
   ) : `${value}(${_args.join(', ')})`;
 
   return ({
