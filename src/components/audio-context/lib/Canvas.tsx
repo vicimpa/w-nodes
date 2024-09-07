@@ -13,11 +13,9 @@ export type TCanvasCtx = {
 };
 
 export type TCanvasProps = {
-  width?: number;
-  height?: number;
   draw?: (ctx: CanvasRenderingContext2D, can: HTMLCanvasElement) => any;
   loop?: (ctx: TCanvasCtx) => any;
-};
+} & Omit<JSX.IntrinsicElements['canvas'], 'ref'>;
 
 @connect((can) => (
   effect(() => {
@@ -50,13 +48,17 @@ export class Canvas extends Component<TCanvasProps> {
   ref = signalRef<HTMLCanvasElement>();
   ctx = computed(() => this.ref.value?.getContext('2d'));
 
+  @prop draw?: (ctx: CanvasRenderingContext2D, can: HTMLCanvasElement) => any;
   @prop loop?: (_ctx: TCanvasCtx) => any;
 
   render(): ReactNode {
-    const { width, height } = this.props;
-    this.loop = this.props.loop;
+    const { draw, loop, ...props } = this.props;
+    if (draw !== this.draw)
+      this.draw = draw;
+    if (loop !== this.loop)
+      this.loop = loop;
     return (
-      <canvas ref={this.ref} width={width} height={height} />
+      <canvas ref={this.ref} {...props} />
     );
   }
 }

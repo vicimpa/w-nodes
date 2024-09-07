@@ -1,5 +1,6 @@
 import Analyzer from "./nodes/Analyzer";
 import { BaseNode } from "./lib/BaseNode";
+import BiSlideer from "./nodes/BiSlideer";
 import BiquadFilter from "./nodes/BiquadFilter";
 import ChannelSplitter from "./nodes/ChannelSplitter";
 import Convolver from "./nodes/Convolver";
@@ -13,9 +14,9 @@ import Math from "./nodes/Math";
 import Memory from "./nodes/Memory";
 import Oscillator from "./nodes/Oscillator";
 import ShowValue from "./nodes/ShowValue";
+import Slider from "./nodes/Slider";
 import Timer from "./nodes/Timer";
 import Turner from "./nodes/Turner";
-import Value from "./nodes/Value";
 
 export default [
   BiquadFilter,
@@ -27,7 +28,7 @@ export default [
   Keyboard,
   Math,
   Analyzer,
-  Value,
+  Slider,
   Turner,
   ShowValue,
   Delay,
@@ -35,4 +36,5 @@ export default [
   Inpulse,
   Memory,
   ChannelSplitter,
+  BiSlideer,
 ] as typeof BaseNode[];
