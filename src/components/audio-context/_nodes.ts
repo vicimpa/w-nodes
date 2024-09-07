@@ -42,5 +42,4 @@ export default [
   BiSlideer,
   Oscilloscope,
   Player,
-  Interpolation,
 ] as typeof BaseNode[];
