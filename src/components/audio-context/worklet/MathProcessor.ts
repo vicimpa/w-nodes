@@ -7,6 +7,12 @@ export const operators = {
   'div': (a: number, b: number) => a / b,
   'rem': (a: number, b: number) => a % b,
   'pow': (a: number, b: number) => a ** b,
+  'greater': (a: number, b: number) => +(a > b),
+  'less': (a: number, b: number) => +(a < b),
+  'equal': (a: number, b: number) => +(a === b),
+  'inequal': (a: number, b: number) => +(a !== b),
+  'land': (a: number, b: number) => a && b,
+  'lor': (a: number, b: number) => a || b,
   'and': (a: number, b: number) => a & b,
   'or': (a: number, b: number) => a | b,
   'xor': (a: number, b: number) => a ^ b,
@@ -14,12 +20,6 @@ export const operators = {
   'right': (a: number, b: number) => a >> b,
   'left': (a: number, b: number) => a << b,
   'uright': (a: number, b: number) => a >>> b,
-  'greater': (a: number, b: number) => +(a > b),
-  'less': (a: number, b: number) => +(a < b),
-  'equal': (a: number, b: number) => +(a === b),
-  'inequal': (a: number, b: number) => +(a !== b),
-  'land': (a: number, b: number) => a && b,
-  'lor': (a: number, b: number) => a || b,
 } as const;
 
 

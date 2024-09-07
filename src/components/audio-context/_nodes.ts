@@ -13,6 +13,7 @@ import Keyboard from "./nodes/Keyboard";
 import Math from "./nodes/Math";
 import Memory from "./nodes/Memory";
 import Oscillator from "./nodes/Oscillator";
+import Oscilloscope from "./nodes/Oscilloscope";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
 import Timer from "./nodes/Timer";
@@ -37,4 +38,5 @@ export default [
   Memory,
   ChannelSplitter,
   BiSlideer,
+  Oscilloscope,
 ] as typeof BaseNode[];

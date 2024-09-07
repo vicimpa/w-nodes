@@ -1,4 +1,4 @@
-import MathProcessor, { MathOperation, constants, functions, math, params } from "../worklet/MathProcessor";
+import MathProcessor, { MathOperation, constants, functions, math, operators, params } from "../worklet/MathProcessor";
 import { computed, signal } from "@preact/signals-react";
 
 import { AudioPort } from "../ports/AudioPort";
@@ -9,13 +9,16 @@ import { SignalNode } from "../lib/signalNode";
 import { name } from "$library/function";
 import { store } from "$library/store";
 
-const operators = Object.keys(math) as MathOperation[];
+const operations = Object.keys(math) as MathOperation[];
 const _params = Object.keys(params) as (keyof typeof params)[];
-const variants = operators.map((value) => {
+const variants = operations.map((value) => {
   const func = math[value];
+  const str = func.toString();
   const _args = Array.from({ length: func.length }, (_, i) => _params[i]);
   const label = value in constants ? (
     value
+  ) : value in operators ? (
+    str.substring(str.indexOf('=>') + 2)
   ) : `${value}(${_args.join(', ')})`;
 
   return ({

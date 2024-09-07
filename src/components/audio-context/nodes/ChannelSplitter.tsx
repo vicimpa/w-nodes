@@ -9,6 +9,7 @@ import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
+import { store } from "$library/store";
 
 const modes = {
   split: (out: ChannelSplitter) => {
@@ -88,7 +89,7 @@ type Mode = keyof typeof modes;
 @name('ChannelSplitter')
 @reactive()
 export default class ChannelSplitter extends BaseNode {
-  @prop _mode = signal(Object.keys(modes)[0] as Mode);
+  @store _mode = signal(Object.keys(modes)[0] as Mode);
 
   @prop _input: ReactNode = null;
   @prop _output: ReactNode = null;
