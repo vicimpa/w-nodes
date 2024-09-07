@@ -18,8 +18,8 @@ import { store } from "$library/store";
 export default class extends BaseNode {
   #node = ctx.createChannelSplitter(2); // Создаем мерджер для стерео
 
-  #nodeLeft = new AnalyserNode(ctx, { fftSize: 1024 });
-  #nodeRight = new AnalyserNode(ctx, { fftSize: 1024 });
+  #nodeLeft = new AnalyserNode(ctx, { fftSize: 2048 });
+  #nodeRight = new AnalyserNode(ctx, { fftSize: 2048 });
 
   _buff = dom('canvas', {});
   _buffCtx = this._buff.getContext('2d')!;
