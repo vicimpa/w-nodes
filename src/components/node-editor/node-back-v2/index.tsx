@@ -24,7 +24,7 @@ export const NodeBack2 = () => {
 
         var grid = 10;
 
-        while (grid * s < 200)
+        while (grid * s < 150)
           grid *= 2;
 
         can.width = size.x;
@@ -42,7 +42,7 @@ export const NodeBack2 = () => {
         const count = delta.max();
 
         ctx.beginPath();
-        for (let i = 0; i < count; i += 1 / 4 / 4) {
+        for (let i = 0; i < count; i += 1 / 16) {
           const point = start.cplus(i).times(grid);
           ctx.moveTo(point.x, start.y * grid);
           ctx.lineTo(point.x, end.y * grid);
@@ -79,7 +79,7 @@ export const NodeBack2 = () => {
         }
 
         ctx.strokeStyle = '#777';
-        ctx.lineWidth = grid / 100;
+        ctx.lineWidth = grid / 75;
         ctx.stroke();
         ctx.closePath();
 
