@@ -4,8 +4,10 @@ import { inject, provide } from "$library/provider";
 import { NodeList } from "./NodeList";
 import { connect } from "$library/connect";
 import { createPortal } from "react-dom";
+import { dom } from "$library/dom";
 import { effect } from "@preact/signals-react";
-import { svg } from "$library/dom";
+
+var index = 0;
 
 @provide()
 @connect((ctx: NodeListItem) => (
@@ -23,16 +25,19 @@ import { svg } from "$library/dom";
 ))
 export class NodeListItem extends Component<PropsWithChildren> {
   @inject(() => NodeList) list!: NodeList;
+  index: number = 0;
 
-  elem = svg('g', {});
+  elem = dom('div', { style: { position: 'absolute', zIndex: `${this.index = index++}` } });
 
   up() {
-    const { value: group } = this.list.group;
+    if (this.index !== index)
+      this.elem.style.zIndex = `${this.index = index++}`;
+    // const { value: group } = this.list.group;
 
-    if (!group) return;
-    if (!group?.contains(this.elem)) return;
-    if (group.lastChild === this.elem) return;
-    group.appendChild(this.elem);
+    // if (!group) return;
+    // if (!group?.contains(this.elem)) return;
+    // if (group.lastChild === this.elem) return;
+    // group.appendChild(this.elem);
   }
 
   render(): ReactNode {

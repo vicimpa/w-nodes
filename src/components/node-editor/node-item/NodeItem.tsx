@@ -13,6 +13,7 @@ import detectMount from "./plugins/detectMount";
 import detectResize from "./plugins/detectResize";
 import detectSelect from "./plugins/detectSelect";
 import detectView from "./plugins/detectView";
+import detectViewDiv from "./plugins/detectViewDiv";
 import s from "./NodeItem.module.sass";
 import { store } from "$library/store";
 
@@ -30,6 +31,7 @@ export interface INodeItemProps {
   detectDrag,
   detectMount,
   detectSelect,
+  detectViewDiv,
 )
 @reactive()
 export class NodeItem extends Component<INodeItemProps> {
@@ -41,6 +43,7 @@ export class NodeItem extends Component<INodeItemProps> {
   viewRef = signalRef<SVGForeignObjectElement>();
   fillRef = signalRef<HTMLDivElement>();
   itemRef = signalRef<NodeListItem>();
+  viewDivRef = signalRef<HTMLDivElement>();
 
   ports = new Set<NodePort>();
 
@@ -59,46 +62,41 @@ export class NodeItem extends Component<INodeItemProps> {
   render(): ReactNode {
     return (
       <NodeListItem ref={this.itemRef}>
-        <foreignObject
-          ref={this.viewRef}
-          className={s.item}
-        >
-          <div className={s.contain}>
-            <div
-              ref={this.fillRef}
-              style={{ padding: this.padding }}
-              className={s.fill}
-              onKeyDown={e => {
-                if (!(e.target instanceof HTMLElement))
+        <div className={s.itemDiv} ref={this.viewDivRef}>
+          <div
+            ref={this.fillRef}
+            style={{ padding: this.padding }}
+            className={s.fill}
+            onKeyDown={e => {
+              if (!(e.target instanceof HTMLElement))
+                return;
+
+              if (e.target.contentEditable === 'false')
+                return;
+
+              if (e.target.contentEditable === 'inherit')
+                return;
+
+              if (e.target.tagName === 'textarea')
+                return e.stopPropagation();
+
+              if (e.target instanceof HTMLInputElement) {
+                if (e.target.type === 'range')
                   return;
-
-                if (e.target.contentEditable === 'false')
+                if (e.target.type === 'buntton')
                   return;
-
-                if (e.target.contentEditable === 'inherit')
+                if (e.target.type === 'checkbox')
                   return;
+                if (e.target.type === 'radio')
+                  return;
+              }
 
-                if (e.target.tagName === 'textarea')
-                  return e.stopPropagation();
-
-                if (e.target instanceof HTMLInputElement) {
-                  if (e.target.type === 'range')
-                    return;
-                  if (e.target.type === 'buntton')
-                    return;
-                  if (e.target.type === 'checkbox')
-                    return;
-                  if (e.target.type === 'radio')
-                    return;
-                }
-
-                e.stopPropagation();
-              }}
-            >
-              {<this.view />}
-            </div>
+              e.stopPropagation();
+            }}
+          >
+            {<this.view />}
           </div>
-        </foreignObject>
+        </div>
       </NodeListItem>
     );
   }

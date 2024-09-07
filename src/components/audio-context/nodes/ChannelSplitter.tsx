@@ -18,14 +18,14 @@ const modes = {
 
     out._input = (
       <>
-        <AudioPort value={input} />
+        <AudioPort value={input} key="split-in" />
       </>
     );
 
     out._output = (
       <>
-        <AudioPort value={outLeft} output title="left" />
-        <AudioPort value={outRight} output title="right" />
+        <AudioPort value={outLeft} key="split-left" output title="left" />
+        <AudioPort value={outRight} key="split-right" output title="right" />
       </>
     );
 
@@ -41,14 +41,14 @@ const modes = {
 
     out._input = (
       <>
-        <AudioPort value={inputLeft} title="left" />
-        <AudioPort value={inputRight} title="right" />
+        <AudioPort value={inputLeft} key="merge-left" title="left" />
+        <AudioPort value={inputRight} key="merge-right" title="right" />
       </>
     );
 
     out._output = (
       <>
-        <AudioPort value={output} output />
+        <AudioPort key="merge-out" value={output} output />
       </>
     );
 
@@ -63,13 +63,13 @@ const modes = {
 
     out._input = (
       <>
-        <AudioPort value={input} />
+        <AudioPort key="swap-in" value={input} />
       </>
     );
 
     out._output = (
       <>
-        <AudioPort value={output} output />
+        <AudioPort key="swap-out" value={output} output />
       </>
     );
 

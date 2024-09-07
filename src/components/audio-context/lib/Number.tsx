@@ -79,7 +79,7 @@ export const Number = ({
         </span>
       </div>
 
-      <table style={{ border: '1px solid #999', minWidth: 250, backgroundColor: '#111' }}>
+      <table style={{ border: '1px solid #999', minWidth: 280, backgroundColor: '#111' }}>
         <tbody>
           <tr>
             <td style={{ background: '#444', padding: .25 }}>

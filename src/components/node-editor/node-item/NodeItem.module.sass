@@ -1,3 +1,6 @@
+.itemDiv
+  position: absolute
+
 .item
   pointer-events: none
 
@@ -5,13 +8,13 @@
   width: 1000px
   height: 1000px
 
-  .fill
-    display: inline-block
-    width: auto
-    height: auto
+.fill
+  display: inline-block
+  width: auto
+  height: auto
 
-    [data-drag]
-      cursor: grab
+  [data-drag]
+    cursor: grab
 
-    [data-drag], [data-controll]
-      pointer-events: all
+  [data-drag], [data-controll]
+    pointer-events: all

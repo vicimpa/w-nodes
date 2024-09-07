@@ -54,7 +54,6 @@ export const NodeLine: FC<TNodeLineProps> = ({
         fill="none"
         onMouseDown={onMouseDown}
         strokeLinecap="round"
-        strokeDasharray="5 10"
         d={path}
       />
     </g>

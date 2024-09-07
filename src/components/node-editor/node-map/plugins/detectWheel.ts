@@ -24,7 +24,7 @@ export default (ctx: NodeMap) => (
       }
 
       ctx.toScale(v => (
-        minMax(v - e.deltaY * v * .001, .2, 10)
+        minMax(v - e.deltaY * v * .001, .05, 2)
       ), Vec2.fromPageXY(e));
     })
   ))

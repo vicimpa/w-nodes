@@ -39,7 +39,7 @@ const select = makeDrag<[ctx: NodeSelection]>(({ current }, ctx) => {
 export default (ctx: NodeSelection) => (
   effect(() => elementEvents(ctx.map.div.value, 'mousedown', e => {
     if (!e.button) {
-      if (!e.shiftKey && e.target instanceof HTMLElement)
+      if (!e.shiftKey && e.target !== ctx.map.div.value)
         return;
       select(e, ctx);
     }

@@ -48,7 +48,7 @@ export class NodePort extends Component<INodePortProps> {
   @prop color = '#999';
   @prop hover = false;
 
-  value: any = this.props.value;
+  @prop value: any = this.props.value;
 
   connects = computed(() => {
     if (!this.lines) return [];
@@ -115,6 +115,8 @@ export class NodePort extends Component<INodePortProps> {
   }
 
   render(): ReactNode {
+    this.value = this.props.value;
+
     return (
       <span title={this.props.title} ref={this.port} style={{ ['--color']: this.color } as any} className={s.port} />
     );

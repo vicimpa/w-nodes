@@ -1,5 +1,6 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
 
+import { NodeView } from "../node-view";
 import { provide } from "$library/provider";
 import { signalRef } from "$library/signals";
 
@@ -11,9 +12,15 @@ export class NodeLayers extends Component<PropsWithChildren> {
   render(): ReactNode {
     return (
       <>
-        <g ref={this.pre} data-nodelayers-pre=""></g>
+        <NodeView type="svg">
+          <g ref={this.pre} data-nodelayers-pre=""></g>
+        </NodeView>
+
         {this.props.children}
-        <g ref={this.post} data-nodelayers-post=""></g>
+
+        <NodeView type="svg">
+          <g ref={this.post} data-nodelayers-post=""></g>
+        </NodeView>
       </>
     );
   }

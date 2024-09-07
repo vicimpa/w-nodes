@@ -16,6 +16,8 @@ export default class extends BaseNode {
 
   @store _start = new SignalNode(this.#src.start, { default: 0, min: 0, max: 1 });
   @store _loop = new SignalNode(this.#src.loop, { default: 0, min: 0 });
+  @store _speed = new SignalNode(this.#src.speed, { default: 1, min: 0 });
+  @store _revert = new SignalNode(this.#src.revert, { default: 1, min: 0 });
 
   output = (
     <AudioPort value={this.#src} output />
@@ -45,6 +47,14 @@ export default class extends BaseNode {
       <Number
         label="Loop"
         value={this._loop} />
+
+      <Number
+        label="Speed"
+        value={this._speed} />
+
+      <Number
+        label="Revert"
+        value={this._revert} />
     </>
   );
 }

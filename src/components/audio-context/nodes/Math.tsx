@@ -45,7 +45,7 @@ export default class extends BaseNode {
     return Array.from({ length: func.length }, (_, i) => {
       const key = _params[i];
       const param = this[`_${key}`];
-      return <Number key={i} label={`${key}`} value={param} />;
+      return <Number key={`${key}`} label={`${key}`} value={param} />;
     });
   });
 

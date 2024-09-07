@@ -2,7 +2,7 @@ import { ctx, empty } from "../ctx";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
-import { Canvas } from "../lib/Canvas";
+import { Canvas } from "$components/canvas";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { Vec2 } from "$library/vec2";

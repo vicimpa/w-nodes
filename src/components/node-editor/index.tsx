@@ -1,4 +1,4 @@
-import { NodeBack } from "./node-back";
+import { NodeBack2 } from "./node-back-v2";
 import { NodeHud } from "./node-hud";
 import { NodeLayers } from "./node-layers";
 import { NodeLines } from "./node-lines";
@@ -21,9 +21,7 @@ export * from "./node-selection";
 export const Editor = ({ children }: PropsWithChildren) => (
   <NodeHud>
     <NodeMap>
-      <NodeBack type="fill" />
-      <NodeBack type="gridpoints" p={25 * 5} s={1} s2={6} />
-
+      <NodeBack2 />
       <NodeLayers>
         <NodeList>
           <NodeLines>

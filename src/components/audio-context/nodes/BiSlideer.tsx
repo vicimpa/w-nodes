@@ -1,5 +1,5 @@
 import { BaseNode } from "../lib/BaseNode";
-import { Canvas } from "../lib/Canvas";
+import { Canvas } from "$components/canvas";
 import { PI2 } from "$library/math";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";

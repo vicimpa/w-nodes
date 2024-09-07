@@ -3,7 +3,7 @@ import { prop, reactive } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
-import { Canvas } from "../lib/Canvas";
+import { Canvas } from "$components/canvas";
 import { Select } from "../lib/Select";
 import convolver from "../assets/convolver";
 import { ctx } from "../ctx";
