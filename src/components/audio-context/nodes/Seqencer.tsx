@@ -81,8 +81,7 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
 export default class Seqencer extends BaseNode {
   _time = new SignalNode(0, { default: 0 });
 
-  id = 0;
-
+  @store id = 0;
   @store @prop lines: number[] = [
     this.id++ << 16
   ];
