@@ -155,8 +155,7 @@ export default await defineWorklet({
       defaultValue: 0
     },
     frames: {
-      defaultValue: 500,
-      minValue: 1,
+      defaultValue: 1000,
     }
   },
   functions,
@@ -180,8 +179,9 @@ export default await defineWorklet({
     for (var i = 0; i < this.numFrames; i++) {
       var value = this.param('value', i);
       var count = this.param('frames', i);
+      var func = functions[props.type];
 
-      if (count <= 1 || !functions[props.type]) {
+      if (count <= 1 || !func) {
         ctx.fromValue = value;
         ctx.toValue = value;
         ctx.previewValue = value;
@@ -204,7 +204,7 @@ export default await defineWorklet({
       }
 
       var time = ctx.times / count;
-      var delta = functions[props.type](time);
+      var delta = func(time);
 
       ctx.previewValue = ctx.fromValue + (ctx.toValue - ctx.fromValue) * delta;
 

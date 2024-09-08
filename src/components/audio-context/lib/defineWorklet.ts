@@ -110,6 +110,10 @@ export async function defineWorklet<
       props: ${JSON.stringify(options.props ?? {})},
       ${loop}
     }
+    
+    for(let key in data.functions) {
+      data.functions[key] = data.functions[key].bind(data.functions);
+    }
 
     const sampleRate = ${JSON.stringify(ctx.sampleRate)};
 
