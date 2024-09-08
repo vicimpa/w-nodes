@@ -22,6 +22,7 @@ import Smoothing from "./nodes/Smoothing";
 import StereoPanner from "./nodes/StereoPanner";
 import Timer from "./nodes/Timer";
 import Turner from "./nodes/Turner";
+// import Worklet from "./nodes/Worklet";
 
 export default [
   BiquadFilter,
@@ -47,4 +48,5 @@ export default [
   StereoPanner,
   Panner,
   Smoothing,
+  // Worklet,
 ] as typeof BaseNode[];

@@ -11,7 +11,7 @@ export class AudioProject extends NodeProject {
       <>
         {super.render()}
         <HudPortal>
-          <div style={{ display: "flex", flexDirection: 'column' }}>
+          <div style={{ display: "flex", flexDirection: 'column', width: 150 }}>
 
             {this.nodes.map((node, key) => (
               <button
