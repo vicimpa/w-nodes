@@ -19,7 +19,6 @@ const from = Array.from({ length: 16 }, (_, i) => i);
   dispose(
     pipe(ctx.main._time, ctx.processor.time),
     effect(() => {
-      console.log(ctx.value, ctx.value.toString(2));
       ctx.processor.props.seqence = ctx.value;
       var lines = untracked(() => ctx.main.lines);
       var key = lines[ctx.index] >> 16;
