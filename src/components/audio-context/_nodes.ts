@@ -9,7 +9,6 @@ import Destination from "./nodes/Destination";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
 import Inpulse from "./nodes/Inpulse";
-import Interpolation from "./nodes/Interpolation";
 import Keyboard from "./nodes/Keyboard";
 import Math from "./nodes/Math";
 import Memory from "./nodes/Memory";
@@ -19,6 +18,7 @@ import Panner from "./nodes/Panner";
 import Player from "./nodes/Player";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
+import Smoothing from "./nodes/Smoothing";
 import StereoPanner from "./nodes/StereoPanner";
 import Timer from "./nodes/Timer";
 import Turner from "./nodes/Turner";
@@ -46,5 +46,5 @@ export default [
   Player,
   StereoPanner,
   Panner,
-  Interpolation,
+  Smoothing,
 ] as typeof BaseNode[];

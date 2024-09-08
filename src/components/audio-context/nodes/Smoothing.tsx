@@ -1,4 +1,4 @@
-import InterpolationProcessor, { FunctionType, functions } from "../worklet/InterpolationProcessor";
+import InterpolationProcessor, { FunctionType, functions } from "../worklet/SmoothingProcessor";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -13,7 +13,7 @@ import { store } from "$library/store";
 const types = Object.keys(functions) as FunctionType[];
 const variants = types.map(value => ({ value }));
 
-@name('Interpolation')
+@name('Smoothing')
 export default class extends BaseNode {
   #processor = new InterpolationProcessor();
 
