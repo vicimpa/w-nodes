@@ -48,7 +48,7 @@ export default cached(() => {
       return store.data[store.cursor++];
     },
     equal(value) {
-      return typeof value === "number" && (value | 0) === value;
+      return typeof value === "number" && value >= 0 && (value | 0) === value;
     }
   });
 });
