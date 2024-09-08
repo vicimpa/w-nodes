@@ -8,8 +8,13 @@ export default await defineWorklet({
     frames: {
       defaultValue: 500,
       minValue: 1,
-      maxValue: 10000,
     }
+  },
+  context: {
+    fromValue: 0,
+    toValue: 0,
+    previewValue: 0,
+    times: 0,
   },
   options: {
     numberOfInputs: 0,
@@ -17,22 +22,38 @@ export default await defineWorklet({
     outputChannelCount: [2]
   },
   loop(outL, outR) {
-    const store = (this.context as { frames?: number[]; });
-    const frames = store.frames ?? (store.frames = []);
+    var { context: ctx } = this;
 
     for (var i = 0; i < this.numFrames; i++) {
       var value = this.param('value', i);
       var count = this.param('frames', i);
 
-      frames.push(value);
+      if (count <= 1) {
+        ctx.fromValue = value;
+        ctx.toValue = value;
+        ctx.previewValue = value;
+        ctx.times = 0;
+        outL[i] = value;
+        outR[i] = value;
+        continue;
+      }
 
-      while (frames.length > count)
-        frames.shift();
+      if (ctx.toValue !== value) {
+        ctx.fromValue = ctx.previewValue;
+        ctx.toValue = value;
+        ctx.times = 0;
+      }
 
-      var result = frames.reduce((a, b) => a + b) / frames.length;
+      if (ctx.times < count) {
+        ctx.times++;
+      } else {
+        ctx.times = count;
+      }
 
-      outL[i] = result;
-      outR[i] = result;
+      ctx.previewValue = ctx.fromValue + (ctx.toValue - ctx.fromValue) * (ctx.times / count);
+
+      outL[i] = ctx.previewValue;
+      outR[i] = ctx.previewValue;
     }
   }
 });

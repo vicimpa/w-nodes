@@ -12,7 +12,7 @@ export default class extends BaseNode {
   #processor = new InterpolationProcessor();
 
   _input = new SignalNode(this.#processor.value);
-  @store _frames = new SignalNode(this.#processor.frames);
+  @store _frames = new SignalNode(this.#processor.frames, { min: 1, max: 10000 });
 
   input = (
     <SignalPort value={this._input} />

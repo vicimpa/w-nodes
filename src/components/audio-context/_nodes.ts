@@ -9,6 +9,7 @@ import Destination from "./nodes/Destination";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
 import Inpulse from "./nodes/Inpulse";
+import Interpolation from "./nodes/Interpolation";
 import Keyboard from "./nodes/Keyboard";
 import Math from "./nodes/Math";
 import Memory from "./nodes/Memory";
@@ -45,4 +46,5 @@ export default [
   Player,
   StereoPanner,
   Panner,
+  Interpolation,
 ] as typeof BaseNode[];
