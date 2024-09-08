@@ -16,13 +16,13 @@ import Oscillator from "./nodes/Oscillator";
 import Oscilloscope from "./nodes/Oscilloscope";
 import Panner from "./nodes/Panner";
 import Player from "./nodes/Player";
+import Seqencer from "./nodes/Seqencer";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
 import Smoothing from "./nodes/Smoothing";
 import StereoPanner from "./nodes/StereoPanner";
 import Timer from "./nodes/Timer";
 import Turner from "./nodes/Turner";
-// import Worklet from "./nodes/Worklet";
 
 export default [
   BiquadFilter,
@@ -48,5 +48,5 @@ export default [
   StereoPanner,
   Panner,
   Smoothing,
-  // Worklet,
+  Seqencer,
 ] as typeof BaseNode[];

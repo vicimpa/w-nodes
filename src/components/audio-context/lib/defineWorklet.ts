@@ -25,7 +25,9 @@ type Primitive =
 type Prop =
   | number
   | string
-  | boolean;
+  | boolean
+  | Prop[]
+  | { [key: string]: Prop; };
 
 type Functions = {
   [key: string]: (...args: any[]) => Primitive;
