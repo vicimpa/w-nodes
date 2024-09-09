@@ -28,12 +28,16 @@ export default await defineWorklet({
 
       var seqence = +this.props.seqence;
       var value = isNaN(seqence) ? 0 : seqence & 0xFFFF;
-      var frameValue = (value >> frame) & 1;
 
       if (this.context.frame !== frame) {
         this.context.frame = frame;
         continue;
       }
+
+      if (frame > 16)
+        continue;
+
+      var frameValue = (value >>> frame) & 1;
 
       outL[i] = frameValue;
       outR[i] = frameValue;
