@@ -9,6 +9,9 @@ export default await defineWorklet({
   props: {
     seqence: 0
   },
+  context: {
+    frame: 0
+  },
   options: {
     numberOfInputs: 0,
     numberOfOutputs: 1,
@@ -16,13 +19,24 @@ export default await defineWorklet({
   },
   loop(outL, outR) {
     for (let i = 0; i < this.numFrames; i++) {
-      var frame = this.param('time', i) % 16 | 0;
+      var frame = this.param('time', i);
+
+      if (!frame)
+        continue;
+
+      frame |= 0;
+
       var seqence = +this.props.seqence;
       var value = isNaN(seqence) ? 0 : seqence & 0xFFFF;
-      var frame = (value >> frame) & 1;
+      var frameValue = (value >> frame) & 1;
 
-      outL[i] = frame;
-      outR[i] = frame;
+      if (this.context.frame !== frame) {
+        this.context.frame = frame;
+        continue;
+      }
+
+      outL[i] = frameValue;
+      outR[i] = frameValue;
     }
   },
 });

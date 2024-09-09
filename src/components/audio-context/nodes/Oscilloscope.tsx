@@ -7,7 +7,6 @@ import { SignalNode } from "../lib/signalNode";
 import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
-import { dom } from "$library/dom";
 import { frames } from "$library/frames";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
@@ -21,8 +20,6 @@ export default class extends BaseNode {
   #nodeLeft = new AnalyserNode(ctx, { fftSize: 2048 });
   #nodeRight = new AnalyserNode(ctx, { fftSize: 2048 });
 
-  _buff = dom('canvas', {});
-  _buffCtx = this._buff.getContext('2d')!;
   _dataX = new Float32Array(this.#nodeLeft.frequencyBinCount);
   _dataY = new Float32Array(this.#nodeRight.frequencyBinCount);
 
@@ -52,13 +49,7 @@ export default class extends BaseNode {
         this.#nodeLeft.getFloatTimeDomainData(leftChannelData);
         this.#nodeRight.getFloatTimeDomainData(rightChannelData);
 
-        this._buff.width = can.width = width;
-        this._buff.height = can.height = height;
         ctx.clearRect(0, 0, width, height);
-        this._buffCtx.clearRect(0, 0, width, height);
-        this._buffCtx.globalAlpha = .7;
-        this._buffCtx.drawImage(can, 0, 0);
-        ctx.putImageData(this._buffCtx.getImageData(0, 0, width, height), 0, 0);
 
         ctx.lineWidth = 1;
         ctx.fillStyle = '#fff';

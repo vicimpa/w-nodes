@@ -12,10 +12,9 @@ export const Toggle: FC<{ value: SignalNode, label?: string; }> = ({ value, labe
       <div style={{ display: 'flex', alignItems: 'center', gap: 5, backgroundColor: '#222', padding: 4 }}>
         <SignalPort value={value} />
         <label
-          onClick={() => value.value = value.value ? 0 : 1}
           style={{ flexGrow: 1, display: 'flex', gap: 5, cursor: connected ? '' : 'pointer' }}
         >
-          <input type="checkbox" onChange={() => value.value = +!value.value} checked={!!value.value} disabled={connected} />
+          <input style={{ cursor: connected ? '' : 'pointer' }} type="checkbox" onChange={() => value.value = +!value.value} checked={!!value.value} disabled={connected} />
           {connected ? 'Signal' : label}
         </label>
       </div>

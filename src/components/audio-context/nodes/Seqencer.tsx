@@ -22,11 +22,14 @@ const from = Array.from({ length: 16 }, (_, i) => i);
       ctx.processor.props.seqence = ctx.value;
       var lines = untracked(() => ctx.main.lines);
       var key = lines[ctx.index] >> 16;
-      ctx.main.lines = lines.toSpliced(
-        ctx.index,
-        1,
-        (key << 16) | (ctx.value & 0xFFFF)
-      );
+      var value = lines[ctx.index] & 0xFFFF;
+      if (value !== ctx.value) {
+        ctx.main.lines = lines.toSpliced(
+          ctx.index,
+          1,
+          (key << 16) | (ctx.value & 0xFFFF)
+        );
+      }
     })
   )
 ))
@@ -69,7 +72,12 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
           {this._from}
         </div>
 
-        <button disabled={!(this.main.lines.length - 1)} onClick={() => this.main.remove(this.index)}>Remove</button>
+        <button
+          disabled={!(this.main.lines.length - 1)}
+          onClick={() => this.main.remove(this.index)}
+        >
+          Remove
+        </button>
         <AudioPort value={this.processor} output />
       </div>
     );
