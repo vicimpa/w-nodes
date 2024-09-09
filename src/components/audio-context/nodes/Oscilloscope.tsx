@@ -61,12 +61,14 @@ export default class extends BaseNode {
         var inv = this._invert.value ? -1 : 1;
         var swap = this._swap.value && 1;
 
+
         for (let i = 0; i < bufferLength; i++) {
           var vX = leftChannelData[i];
           var vY = rightChannelData[i];
 
           if (swap) {
             [vX, vY] = [vY, vX];
+            vX *= inv;
             vY *= inv;
           }
 
@@ -92,6 +94,7 @@ export default class extends BaseNode {
 
           if (swap) {
             [vX, vY] = [vY, vX];
+            vX *= inv;
             vY *= inv;
           }
 
