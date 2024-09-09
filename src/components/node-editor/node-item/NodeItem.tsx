@@ -47,6 +47,26 @@ export class NodeItem extends Component<INodeItemProps> {
 
   ports = new Set<NodePort>();
 
+  get sortPorts() {
+    return [...this.ports]
+      .map((port, index) => {
+        const type = this.project.ports.findIndex(type => port instanceof type) + 1;
+        const output = port.props.output ?? false;
+
+        var num = (+output + 1);
+
+        num = (num << 8) | type;
+        num = (num << 8) | index;
+
+        return {
+          num,
+          port
+        };
+      })
+      .sort((a, b) => a.num - b.num)
+      .map(({ port }) => port);
+  }
+
   @store @prop x = this.props.x ?? 0;
   @store @prop y = this.props.y ?? 0;
 

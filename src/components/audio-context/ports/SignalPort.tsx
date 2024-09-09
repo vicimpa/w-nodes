@@ -6,7 +6,7 @@ import { SignalNode } from "../lib/signalNode";
 import { connect } from "$library/connect";
 import { start } from "../lib/start";
 
-@connect(ctx => (start(ctx.value)))
+@connect(ctx => start(ctx.value))
 @reactive()
 export class SignalPort extends BasePort {
   @prop color = '#4f4';

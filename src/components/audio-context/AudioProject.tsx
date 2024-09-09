@@ -3,8 +3,10 @@ import { NodeProject } from "$components/node-editor";
 import { ReactNode } from "react";
 import { Vec2 } from "$library/vec2";
 import _nodes from "./_nodes";
+import _ports from "./_ports";
 export class AudioProject extends NodeProject {
   nodes = _nodes;
+  ports = _ports;
 
   render(): ReactNode {
     return (

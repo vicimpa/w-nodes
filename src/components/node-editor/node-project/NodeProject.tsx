@@ -110,8 +110,9 @@ export class NodeProject extends Component<TNodeProjectProps> {
     const connectSet = new Set<NodeConnect>();
 
     nodes.forEach((node, i) => {
-      [...node.ports].forEach((port, j) => {
+      node.sortPorts.forEach((port, j) => {
         port.connects.peek().forEach(connect => {
+          const ports = connect.item.sortPorts;
           const k = nodes.indexOf(connect.item as T);
           const _c = this.lines.connects.find(e => (
             (e[0] === port && e[1] === connect) ||
@@ -126,7 +127,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
           if (k === -1) {
             connections.push([[i, j], connect]);
           } else {
-            const l = [...connect.item.ports].indexOf(connect);
+            const l = ports.indexOf(connect);
             if (l === -1)
               throw new Error('No search port');
 
@@ -158,8 +159,8 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
   restoreConnections<T extends NodeItem>(connect: Array<TConnect>, ...nodes: T[]) {
     connect.forEach(([[i, j], _to]) => {
-      const from = [...nodes[i].ports][j];
-      const to = Array.isArray(_to) ? [...nodes[_to[0]].ports][_to[1]] : _to;
+      const from = [...nodes[i].sortPorts][j];
+      const to = Array.isArray(_to) ? [...nodes[_to[0]].sortPorts][_to[1]] : _to;
       this.lines.from = [from];
       this.lines.connect(to);
     });
