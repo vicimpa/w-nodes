@@ -46,16 +46,15 @@ export const NodeLine: FC<TNodeLineProps> = ({
   color = from instanceof NodePort ? from.color : to instanceof NodePort ? to.color : '#999';
 
   return (
-    <g>
-      <path
-        style={style}
-        stroke={color}
-        strokeWidth={size}
-        fill="none"
-        onMouseDown={onMouseDown}
-        strokeLinecap="round"
-        d={path}
-      />
-    </g>
+    <path
+      style={style}
+      stroke={color}
+      strokeWidth={size}
+      fill="none"
+      onMouseDown={onMouseDown}
+      strokeLinecap="round"
+      shape-rendering="crispEdges"
+      d={path}
+    />
   );
 };

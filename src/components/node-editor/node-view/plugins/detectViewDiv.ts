@@ -13,8 +13,9 @@ export default (ctx: NodeView) => (
     const offset = Vec2.fromSize(rect)
       .div(-2)
       .div(1, s)
-      .plus(map.x, map.y);
+      .plus(map.x, map.y)
+      .times(s);
 
-    div.style.transform = `scale(${s}) translate(${-offset.x}px, ${- offset.y}px) `;
+    div.style.transform = `matrix(${s}, 0, 0, ${s}, ${-offset.x}, ${-offset.y})`;
   })
 );
