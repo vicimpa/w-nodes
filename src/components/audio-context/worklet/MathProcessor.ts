@@ -1,4 +1,5 @@
 import { ParamDescriptor, defineWorklet } from "../lib/defineWorklet";
+declare var sampleRate: number;
 
 export const operators = {
   'plus': (a: number, b: number) => a + b,
@@ -34,6 +35,7 @@ export const constants = {
   'LN2': () => Math.LN2,
   'LOG10E': () => Math.LOG10E,
   'LOG2E': () => Math.LOG2E,
+  'SAMPLE_RATE': () => sampleRate,
 } as const;
 
 export const functions = {
