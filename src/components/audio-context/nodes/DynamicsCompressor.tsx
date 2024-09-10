@@ -24,7 +24,7 @@ export default class extends BaseNode {
 
   _connect = () => (
     dispose(
-      pipe(this.#effect, empty)
+      pipe(this.#effect, empty),
     )
   );
 

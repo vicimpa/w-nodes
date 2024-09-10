@@ -15,7 +15,6 @@ export type TRangeProps = {
   accuracy?: number;
   readonly?: boolean;
   strict?: boolean;
-  noPort?: boolean;
   onChange?: (v: number) => any;
 };
 
@@ -27,7 +26,6 @@ export const Range: FC<TRangeProps> = ({
   onChange,
   readonly,
   strict,
-  noPort = false,
   accuracy = 0,
 }) => {
   const valueString = useSignal(value.value.toString());
@@ -75,7 +73,7 @@ export const Range: FC<TRangeProps> = ({
     <div className={s.input}>
       <div className={s.type}>
         <span>
-          {!noPort && <SignalPort value={value} />}
+          <SignalPort value={value} />
           {label}:
         </span>
         <span data-grow />

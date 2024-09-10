@@ -42,12 +42,14 @@ export default class extends BaseNode {
   @store _rolloffFactor = new SignalNode(this.#panner.rolloffFactor, { min: -100, max: 100 });
 
   _connect = () => (
-    dispose(this._distanceModel.subscribe(v => {
-      this.#panner.distanceModel = v;
-    })),
-    dispose(this._panningModel.subscribe(v => {
-      this.#panner.panningModel = v;
-    }))
+    dispose(
+      this._distanceModel.subscribe(v => {
+        this.#panner.distanceModel = v;
+      }),
+      this._panningModel.subscribe(v => {
+        this.#panner.panningModel = v;
+      })
+    )
   );
 
   input = (

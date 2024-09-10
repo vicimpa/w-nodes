@@ -12,6 +12,7 @@ export default class extends BaseNode {
 
   @store _gain = new SignalNode(this.#gain.gain, { min: 0, max: 1.5 });
 
+
   input = (
     <AudioPort value={this.#gain} />
   );

@@ -25,8 +25,6 @@ export class SignalNode extends Signal<number> {
   #analyze = new AnalyserNode(ctx, { fftSize: 32 });
   #analyzeData = new Float32Array(this.#analyze.frequencyBinCount);
 
-
-
   min: number;
   max: number;
   default: number;
@@ -127,7 +125,6 @@ export class SignalNode extends Signal<number> {
           pipe(this.node, this.#analyze),
           frames(() => {
             this.#analyze.getFloatTimeDomainData(this.#analyzeData);
-
             if (this.value !== this.#analyzeData[0])
               this.value = this.#analyzeData[0];
           })

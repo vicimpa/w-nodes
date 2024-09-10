@@ -32,7 +32,7 @@ const modes = {
 
     return dispose(
       pipe(input, outLeft, 0, 0),
-      pipe(input, outRight, 1, 0),
+      pipe(input, outRight, 1, 0)
     );
   },
   merge: (out: ChannelSplitter) => {
@@ -55,7 +55,7 @@ const modes = {
 
     return dispose(
       pipe(inputLeft, output, 0, 0),
-      pipe(inputRight, output, 0, 1),
+      pipe(inputRight, output, 0, 1)
     );
   },
   swap: (out: ChannelSplitter) => {

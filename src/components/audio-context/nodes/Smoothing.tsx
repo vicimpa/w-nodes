@@ -7,6 +7,7 @@ import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
+import { dispose } from "$library/dispose";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
@@ -26,6 +27,10 @@ export default class extends BaseNode {
 
   input = (
     <SignalPort value={this._input} />
+  );
+
+  _connect = () => dispose(
+    () => this.#processor.destroy()
   );
 
   output = (

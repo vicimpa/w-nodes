@@ -53,7 +53,7 @@ export const NodeLine: FC<TNodeLineProps> = ({
       fill="none"
       onMouseDown={onMouseDown}
       strokeLinecap="round"
-      shape-rendering="crispEdges"
+      shapeRendering="crispEdges"
       d={path}
     />
   );

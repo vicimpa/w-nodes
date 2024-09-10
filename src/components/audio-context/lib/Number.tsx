@@ -11,7 +11,6 @@ export type TNumberProps = {
   label: string;
   value: SignalNode;
   change?: ((v: number) => any);
-  noPort?: boolean;
   readonly?: boolean;
 };
 
@@ -19,7 +18,6 @@ export const Number = ({
   label,
   value,
   change,
-  noPort,
   readonly,
 }: TNumberProps) => {
   const valueString = useSignal(value.value.toString());
@@ -73,7 +71,7 @@ export const Number = ({
   return (
     <div className={s.input}>
       <div className={s.type}>
-        {!noPort && <SignalPort value={value} />}
+        <SignalPort value={value} />
         <span>
           {label}:
         </span>

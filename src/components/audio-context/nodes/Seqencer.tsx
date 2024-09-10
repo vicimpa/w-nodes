@@ -30,7 +30,8 @@ const from = Array.from({ length: 16 }, (_, i) => i);
           (key << 16) | (ctx.value & 0xFFFF)
         );
       }
-    })
+    }),
+    () => ctx.processor.destroy()
   )
 ))
 @reactive()

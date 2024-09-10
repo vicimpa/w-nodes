@@ -36,8 +36,10 @@ export class AudioPort extends BasePort {
       }
 
       if (port.value instanceof SignalNode) {
-        this.value.disconnect(port.value.node.offset);
         port.value.deleteInput(this.value);
+        try {
+          this.value.disconnect(port.value.node.offset);
+        } catch (e) { }
         return true;
       }
     }

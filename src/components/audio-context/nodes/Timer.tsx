@@ -4,6 +4,7 @@ import { Number } from "../lib/Number";
 import { SignalNode } from "../lib/signalNode";
 import TimerProcessor from "../worklet/TimerProcessor";
 import { Toggle } from "../lib/Toggle";
+import { dispose } from "$library/dispose";
 import { name } from "$library/function";
 import { reactive } from "$library/signals";
 import { store } from "$library/store";
@@ -17,6 +18,10 @@ export default class extends BaseNode {
   @store _loop = new SignalNode(this.#src.loop, { default: 0, min: 0 });
   @store _speed = new SignalNode(this.#src.speed, { default: 1, min: 0 });
   @store _revert = new SignalNode(this.#src.revert, { default: 1, min: 0 });
+
+  _connect = () => dispose(
+    () => this.#src.destroy()
+  );
 
   output = (
     <AudioPort value={this.#src} output />

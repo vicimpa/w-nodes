@@ -14,6 +14,6 @@ export default class extends BaseNode {
   );
 
   _view = () => (
-    <Range label="Value" value={this._value} accuracy={10} noPort />
+    <Range label="Value" value={this._value} accuracy={10} />
   );
 }

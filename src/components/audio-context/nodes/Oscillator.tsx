@@ -186,7 +186,7 @@ export default class extends BaseNode {
   _connect = () => dispose(
     pipe(this.#src, empty),
     pipe(this.#src, this.#out),
-    start(this.#src),
+    start(this.#src)
   );
 
   output = (

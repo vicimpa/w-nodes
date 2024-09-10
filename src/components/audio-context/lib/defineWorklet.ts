@@ -129,14 +129,25 @@ export async function defineWorklet<
           return [...data.params];
         }
 
+        running = true;
+
         constructor(...args) {
           super(...args);
-          this.port.onmessage = ({data: {key, value}}) => {
+          this.port.onmessage = (data) => {
+            if(data.data === '[STOP]') {
+              this.running = false;
+              return;
+            }
+
+            var {data: {key, value}} = data;
             this.props[key] = value;
           };
         }
 
         process(inputs, outputs, parameters) {
+          if(!this.running)
+            return false;
+
           const outL = outputs[0][0];
           const outR = outputs[0][1];
           const numFrames = outL.length;
@@ -175,6 +186,11 @@ export async function defineWorklet<
   await ctx.audioWorklet.addModule(url);
 
   return class extends AudioWorkletNode {
+    destroy() {
+      this.port.postMessage('[STOP]');
+      this.port.close();
+    }
+
     constructor(_params: { [key in P]: number }) {
       super(ctx, processorName, {
         ...options.options, ...(_params ? { parameterData: _params } : {})
@@ -208,5 +224,5 @@ export async function defineWorklet<
         })
       });
     }
-  } as new (params?: { [key in P]: number }) => AudioWorkletNode & { props: D; } & { [_ in P]: AudioParam };
+  } as new (params?: { [key in P]: number }) => AudioWorkletNode & { props: D; destroy(): void; } & { [_ in P]: AudioParam };
 }

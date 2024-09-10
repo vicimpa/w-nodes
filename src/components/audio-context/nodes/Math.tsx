@@ -6,6 +6,7 @@ import { BaseNode } from "../lib/BaseNode";
 import { Number } from "../lib/Number";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
+import { dispose } from "$library/dispose";
 import { name } from "$library/function";
 import { store } from "$library/store";
 
@@ -38,6 +39,10 @@ export default class extends BaseNode {
   @store _a = new SignalNode(this.#processor.a);
   @store _b = new SignalNode(this.#processor.b);
   @store _c = new SignalNode(this.#processor.c);
+
+  _connect = () => dispose(
+    () => this.#processor.destroy()
+  );
 
   output = (
     <AudioPort value={this.#processor} output />

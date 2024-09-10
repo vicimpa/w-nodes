@@ -39,8 +39,10 @@ export class SignalPort extends BasePort {
     }
 
     if (port.value instanceof SignalNode) {
-      this.value.node.disconnect(port.value.node.offset);
       port.value.deleteInput(this.value);
+      try {
+        this.value.node.disconnect(port.value.node.offset);
+      } catch (e) { }
     }
   }
 }
