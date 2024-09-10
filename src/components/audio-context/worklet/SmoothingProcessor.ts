@@ -170,10 +170,9 @@ export default await defineWorklet({
   },
   options: {
     numberOfInputs: 0,
-    numberOfOutputs: 1,
-    outputChannelCount: [2]
+    numberOfOutputs: 1
   },
-  loop(outL, outR) {
+  loop(outL) {
     var { context: ctx, props, functions } = this;
 
     for (var i = 0; i < this.numFrames; i++) {
@@ -187,7 +186,6 @@ export default await defineWorklet({
         ctx.previewValue = value;
         ctx.times = 0;
         outL[i] = value;
-        outR[i] = value;
         continue;
       }
 
@@ -209,7 +207,6 @@ export default await defineWorklet({
       ctx.previewValue = ctx.fromValue + (ctx.toValue - ctx.fromValue) * delta;
 
       outL[i] = ctx.previewValue;
-      outR[i] = ctx.previewValue;
     }
   }
 });

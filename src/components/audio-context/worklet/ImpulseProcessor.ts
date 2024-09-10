@@ -16,10 +16,9 @@ export default await defineWorklet({
   },
   options: {
     numberOfInputs: 0,
-    numberOfOutputs: 1,
-    outputChannelCount: [2]
+    numberOfOutputs: 1
   },
-  loop(outL, outR) {
+  loop(outL) {
     for (var i = 0; i < this.numFrames; i++) {
       var value = this.param('value', i);
       var length = this.param('length', i);
@@ -36,7 +35,6 @@ export default await defineWorklet({
       }
 
       outL[i] = result;
-      outR[i] = result;
     }
   }
 });

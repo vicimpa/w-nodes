@@ -100,13 +100,12 @@ export default await defineWorklet({
   functions: math,
   options: {
     numberOfInputs: 0,
-    numberOfOutputs: 1,
-    outputChannelCount: [2]
+    numberOfOutputs: 1
   },
   props: {
     type: 'plus',
   } as { type: MathOperation; },
-  loop(outL, outR) {
+  loop(outL) {
     var func = this.functions[this.props.type];
 
     for (var i = 0; i < this.numFrames; i++) {
@@ -117,7 +116,6 @@ export default await defineWorklet({
       var result = func(a, b, c);
 
       outL[i] = result;
-      outR[i] = result;
     }
   }
 });
