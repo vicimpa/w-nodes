@@ -8,6 +8,7 @@ import { NodePort } from "../node-port";
 import { NodeProject } from "../node-project";
 import { NodeSelection } from "../node-selection";
 import { connect } from "$library/connect";
+import detectCopy from "./plugins/detectCopy";
 import detectDrag from "./plugins/detectDrag";
 import detectMount from "./plugins/detectMount";
 import detectResize from "./plugins/detectResize";
@@ -32,6 +33,7 @@ export interface INodeItemProps {
   detectMount,
   detectSelect,
   detectViewDiv,
+  detectCopy,
 )
 @reactive()
 export class NodeItem extends Component<INodeItemProps> {

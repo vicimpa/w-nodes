@@ -1,6 +1,6 @@
 import { Component, ReactNode } from "react";
+import { batch, computed, effect, untracked } from "@preact/signals-react";
 import { ceil, floor } from "$library/math";
-import { computed, effect, untracked } from "@preact/signals-react";
 import { prop, reactive } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
@@ -9,10 +9,12 @@ import SequenceProcessor from "../worklet/SequenceProcessor";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { connect } from "$library/connect";
+import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
+import { start } from "../lib/start";
 import { store } from "$library/store";
 import styled from "styled-components";
 import { windowEvents } from "$library/events";
@@ -49,9 +51,7 @@ const CursorRow = styled.tr`
   }
 `;
 
-const Base = styled.div`
-  display: contents;
-
+const Base = styled.tr`
   ${Row} {
     margin-bottom: 5px;
   }
@@ -92,15 +92,21 @@ function groupFor(nodes: ReactNode[], groupSize = 4) {
         );
       }
     }),
+    effect(() => {
+      var values = untracked(() => ctx.main.values);
+      values[ctx.index] = ctx.signalValue;
+      ctx.processor.props.value = ctx.signalValue;
+    }),
     () => ctx.processor.destroy()
   )
 ))
 @reactive()
-class SequencerLine extends Component<{ main: Seqencer; value: number; index: number; }> {
+class SequencerLine extends Component<{ main: Seqencer; value: number; index: number; signalValue: number; }> {
   processor = new SequenceProcessor();
 
   main = this.props.main;
   @prop value = this.props.value;
+  @prop signalValue = this.props.signalValue;
   index = this.props.index;
 
   _from = computed(() => (
@@ -129,14 +135,40 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
     )
   ));
 
+  _inputValue = computed(() => (
+    <input
+      type="number"
+      style={{ width: 60, height: '100%' }}
+      value={this.signalValue}
+      onKeyDown={e => {
+        if (e.code === 'Enter') {
+          e.currentTarget.blur();
+        }
+      }}
+      onChange={e => {
+        var val = +e.currentTarget.value;
+
+        if (isNaN(val))
+          e.currentTarget.value = `${this.signalValue}`;
+        else
+          this.signalValue = val;
+      }} />
+  ));
+
   render(): ReactNode {
     this.main = this.props.main;
     this.value = this.props.value;
     this.index = this.props.index;
+    this.signalValue = this.props.signalValue;
 
     return (
-      <tr>
+      <>
         <td />
+
+        <td>
+          {this._inputValue}
+        </td>
+
         {this._from}
 
         <td>
@@ -150,7 +182,7 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
         <td>
           <AudioPort value={this.processor} output />
         </td>
-      </tr >
+      </>
     );
   }
 }
@@ -166,26 +198,46 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
 @reactive()
 export default class Seqencer extends BaseNode {
   _time = new SignalNode(0, { default: 0 });
+  _constant = new ConstantSourceNode(ctx, { offset: -16 });
+  _timeOut = new SignalNode(0, { default: 0 });
 
   @store id = 0;
   @store @prop lines: number[] = [
     this.id++ << 16
   ];
 
+  @store @prop values: number[] = [
+    1
+  ];
+
+  _connect = () => (
+    dispose(
+      start(this._constant),
+      pipe(this._time.node, this._timeOut.node.offset),
+      pipe(this._constant, this._timeOut.node.offset)
+    )
+  );
+
   mouseDown = false;
 
   append() {
-    this.lines = [...this.lines, this.id++ << 16];
+    batch(() => {
+      this.lines = [...this.lines, this.id++ << 16];
+      this.values = [...this.values, 1];
+    });
   }
 
   remove(index: number) {
-    this.lines = this.lines.toSpliced(index, 1);
+    batch(() => {
+      this.lines = this.lines.toSpliced(index, 1);
+      this.values = this.values.toSpliced(index, 1);
+    });
   }
 
   _cursor = computed(() => (
     groupFor(
       Array.from({ length: 16 }, (_, i) => (
-        <Cursor key={i} $disable={!this._time.value} $active={floor(this._time.value) === i} />
+        <Cursor key={i} $disable={this._time.value <= 0 || this._time.value > 16} $active={floor(this._time.value) === i} />
       ))
     )
   ));
@@ -200,26 +252,32 @@ export default class Seqencer extends BaseNode {
                 <td>
                   <SignalPort value={this._time} title="time" />
                 </td>
+                <td />
 
                 {this._cursor}
+
+                <td></td>
+                <td>
+                  <SignalPort value={this._timeOut} output title="time" />
+                </td>
               </CursorRow>
             }
-            <Base>
-              {
-                this.lines.map((line, index) => {
-                  var key = line >> 16;
-                  var value = line & 0xFFFF;
+            {
+              this.lines.map((line, index) => {
+                var key = line >> 16;
+                var value = line & 0xFFFF;
 
-                  return (
+                return (
+                  <Base key={key}>
                     <SequencerLine
                       main={this}
-                      key={key}
                       value={value}
+                      signalValue={this.values[index]}
                       index={index} />
-                  );
-                })
-              }
-            </Base>
+                  </Base>
+                );
+              })
+            }
           </tbody>
         </table>
         <button onClick={() => this.append()}>Append</button>

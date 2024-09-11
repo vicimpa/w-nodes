@@ -7,7 +7,8 @@ export default await defineWorklet({
     }
   },
   props: {
-    seqence: 0
+    seqence: 0,
+    value: 1,
   },
   context: {
     frame: 0
@@ -38,7 +39,7 @@ export default await defineWorklet({
 
       var frameValue = (value >>> frame) & 1;
 
-      outL[i] = frameValue;
+      outL[i] = frameValue * (this.props.value ?? 1);
     }
   },
 });
