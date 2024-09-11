@@ -1,3 +1,4 @@
+import { name } from "$library/function";
 import { ctx } from "../ctx";
 
 declare global {
@@ -43,6 +44,7 @@ type WorkletOptions<
   F extends Functions = {},
   D extends Props = {},
 > = {
+  name?: string;
   params?: {
     [key in P]: ParamDescriptor
   };
@@ -185,13 +187,52 @@ export async function defineWorklet<
 
   await ctx.audioWorklet.addModule(url);
 
-  return class extends AudioWorkletNode {
+  const pool: InstanceType<CustomWorkletConstructor>[] = [];
+
+  type CustomWorkletConstructor = new (params?: Record<P, number>) => (
+    & CustomAudioWorkletNode
+    & {
+      [K in P]: AudioParam
+    }
+  );
+
+  class CustomAudioWorkletNode extends AudioWorkletNode {
     destroy() {
-      this.port.postMessage('[STOP]');
-      this.port.close();
+      pool.push(this as InstanceType<CustomWorkletConstructor>);
+      for (let key in options.params ?? {}) {
+        var param = this.parameters.get(key);
+
+        if (!param)
+          continue;
+
+        param.value = param.defaultValue;
+      }
+
+      if (options.props) {
+        for (let key in options.props) {
+          this.props[key] = options.props[key];
+        }
+      }
     }
 
-    constructor(_params: { [key in P]: number }) {
+    props = new Proxy({ ...options.props ?? {} } as D, {
+      get: (target, key) => {
+        return target[key as keyof D];
+      },
+      set: (target, key, value) => {
+        target[key as keyof D] = value;
+        this.port.postMessage({ key, value });
+        return true;
+      }
+    });
+
+    constructor(_params?: Record<P, number>) {
+      const instance = pool.shift();
+
+      if (instance) {
+        return instance;
+      }
+
       super(ctx, processorName, {
         ...options.options, ...(_params ? { parameterData: _params } : {})
       });
@@ -201,28 +242,13 @@ export async function defineWorklet<
         Object.keys(options.params ?? {})
           .reduce((acc, name) => {
             acc[name] = {
-              get: () => {
-                return this.parameters.get(name)!;
-              }
+              value: this.parameters.get(name)
             };
             return acc;
           }, {} as { [key: string]: TypedPropertyDescriptor<AudioParam>; })
       );
-
-      const props = { ...options.props ?? {} } as D;
-
-      Object.defineProperty(this, 'props', {
-        value: new Proxy(props, {
-          get: (target, key) => {
-            return target[key as keyof D];
-          },
-          set: (target, key, value) => {
-            target[key as keyof D] = value;
-            this.port.postMessage({ key, value });
-            return true;
-          }
-        })
-      });
     }
-  } as new (params?: { [key in P]: number }) => AudioWorkletNode & { props: D; destroy(): void; } & { [_ in P]: AudioParam };
+  }
+
+  return name(options.name ?? 'unname')(CustomAudioWorkletNode) as CustomWorkletConstructor;
 }
