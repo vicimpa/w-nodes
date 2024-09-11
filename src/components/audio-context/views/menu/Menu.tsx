@@ -33,7 +33,6 @@ const show = keyframes`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 350px;
   position: absolute;
   gap: 10px;
   top: 0;
