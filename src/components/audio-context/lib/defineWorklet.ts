@@ -1,5 +1,6 @@
 import { name } from "$library/function";
 import { ctx } from "../ctx";
+import { signal } from "@preact/signals-react";
 
 declare global {
   var processorCount: number;
@@ -15,6 +16,9 @@ export type ParamDescriptor = {
   minValue?: number,
   maxValue?: number,
 };
+
+export const using = signal(0);
+export const created = signal(0);
 
 type Primitive =
   | number
@@ -198,7 +202,9 @@ export async function defineWorklet<
 
   class CustomAudioWorkletNode extends AudioWorkletNode {
     destroy() {
+      using.value--;
       pool.push(this as InstanceType<CustomWorkletConstructor>);
+
       for (let key in options.params ?? {}) {
         var param = this.parameters.get(key);
 
@@ -230,8 +236,12 @@ export async function defineWorklet<
       const instance = pool.shift();
 
       if (instance) {
+        using.value++;
         return instance;
       }
+
+      using.value++;
+      created.value++;
 
       super(ctx, processorName, {
         ...options.options, ...(_params ? { parameterData: _params } : {})
