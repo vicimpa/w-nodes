@@ -72,7 +72,9 @@ export const functions = {
   'sqrt': (a: number) => Math.sqrt(a),
   'tan': (a: number) => Math.tan(a),
   'tanh': (a: number) => Math.tanh(a),
-  'trunc': (a: number) => Math.trunc(a)
+  'trunc': (a: number) => Math.trunc(a),
+  'lerp': (a: number, b: number, c: number) => (c - b) * a + b,
+  'normalize': (a: number, b: number, c: number) => (a - b) / (c - b)
 };
 
 export const math = {
