@@ -63,7 +63,6 @@ export const functions = {
   'log2': (a: number) => Math.log2(a),
   'max': (a: number, b: number) => Math.max(a, b),
   'min': (a: number, b: number) => Math.min(a, b),
-  'clamp': (a: number, b: number, c: number) => Math.min(Math.max(a, Math.min(b, c)), Math.max(b, c)),
   'random': () => Math.random(),
   'round': (a: number) => Math.round(a),
   'sign': (a: number) => Math.sign(a),
@@ -72,15 +71,57 @@ export const functions = {
   'sqrt': (a: number) => Math.sqrt(a),
   'tan': (a: number) => Math.tan(a),
   'tanh': (a: number) => Math.tanh(a),
-  'trunc': (a: number) => Math.trunc(a),
-  'lerp': (a: number, b: number, c: number) => (c - b) * a + b,
-  'normalize': (a: number, b: number, c: number) => (a - b) / (c - b)
+  'trunc': (a: number) => Math.trunc(a)
 };
+
+export const custom = {
+  lerp: (a: number, b: number, c: number) => (c - b) * a + b,
+  normalize: (a: number, b: number, c: number) => (a - b) / (c - b),
+  remap(a: number, b: number, c: number, d: number, e: number) { return this.lerp(this.normalize(a, b, c), d, e); },
+  clamp: (a: number, b: number, c: number) => Math.min(Math.max(a, Math.min(b, c)), Math.max(b, c)),
+  note: (a: number) => (2 ** (1 / 12) ** a) * 440
+} as const;
+
+export const renamePorts: { op: MathOperation[], ports: { [key in keyof typeof params]?: string }; }[] = [
+  {
+    op: ['lerp', 'normalize', 'clamp'],
+    ports: {
+      a: 'value',
+      b: 'min',
+      c: 'max'
+    }
+  },
+  {
+    op: Object.keys(functions) as MathOperation[],
+    ports: {
+      a: 'x',
+      b: 'y',
+      c: 'z'
+    }
+  },
+  {
+    op: ['remap'],
+    ports: {
+      a: 'value',
+      b: 'minSrc',
+      c: 'maxSrc',
+      d: 'minDist',
+      e: 'maxDist'
+    }
+  },
+  {
+    op: ['note'],
+    ports: {
+      a: 'note',
+    }
+  }
+];
 
 export const math = {
   ...operators,
   ...constants,
-  ...functions
+  ...functions,
+  ...custom,
 } as const;
 
 export type MathOperation = keyof typeof math;
@@ -93,6 +134,12 @@ export const params = {
     defaultValue: 0,
   } as ParamDescriptor,
   c: {
+    defaultValue: 0,
+  } as ParamDescriptor,
+  d: {
+    defaultValue: 0,
+  } as ParamDescriptor,
+  e: {
     defaultValue: 0,
   } as ParamDescriptor,
 } as const;
@@ -114,10 +161,9 @@ export default await defineWorklet({
       var a = this.param('a', i);
       var b = this.param('b', i);
       var c = this.param('c', i);
-
-      var result = func(a, b, c);
-
-      outL[i] = result;
+      var d = this.param('d', i);
+      var e = this.param('e', i);
+      outL[i] = func(a, b, c, d, e);
     }
   }
 });
