@@ -141,6 +141,7 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
       style={{ width: 60, height: '100%' }}
       value={this.signalValue}
       onKeyDown={e => {
+        e.stopPropagation();
         if (e.code === 'Enter') {
           e.currentTarget.blur();
         }
