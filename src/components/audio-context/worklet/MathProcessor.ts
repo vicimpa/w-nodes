@@ -79,7 +79,7 @@ export const custom = {
   normalize: (a: number, b: number, c: number) => (a - b) / (c - b),
   remap(a: number, b: number, c: number, d: number, e: number) { return this.lerp(this.normalize(a, b, c), d, e); },
   clamp: (a: number, b: number, c: number) => Math.min(Math.max(a, Math.min(b, c)), Math.max(b, c)),
-  getNote: (a: number) => (2 ** (1 / 12)) ** a * 440
+  note: (a: number) => (2 ** (1 / 12)) ** a * 440
 } as const;
 
 export const renamePorts: { op: MathOperation[], ports: { [key in keyof typeof params]?: string }; }[] = [
