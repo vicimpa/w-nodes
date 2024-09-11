@@ -19,7 +19,7 @@ export const BackVariants = {
       <line x1={p} y1={0} x2={p} y2={p * 2} strokeWidth={s} stroke={c} />
     </g>
   ),
-  gridpoints: ({ p = 25, s = 1, s2 = s, c = '#666', c2 = c }) => (
+  gridpoints: ({ p = 25, s = 1, s2 = 1, c = '#666', c2 = '#666' }) => (
     <g>
       <rect width={p * 2} height={p * 2} fill="none" />
 
@@ -48,4 +48,4 @@ export const BackVariants = {
       <line y1={p * (1 - s2)} x1={p} y2={p * (1 + s2)} x2={p} strokeWidth={s} stroke={c} />
     </g>
   ),
-};
+} as const;
