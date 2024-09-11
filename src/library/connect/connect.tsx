@@ -14,13 +14,13 @@ const Connect = <T,>(props: { plugins: TMixin<T>[], target: T; }) => {
 };
 
 export const connect = <
-  I extends Component,
->(...plugins: TMixin<I>[]) => {
-  return (target: new (...args: any[]) => I) => {
+  I extends typeof Component,
+>(...plugins: TMixin<InstanceType<I>>[]) => {
+  return (target: I) => {
     return {
       [target.name]: (
         class extends (target as typeof Component) {
-          render(this: I): ReactNode {
+          render(this: InstanceType<I>): ReactNode {
             return (
               <>
                 <Connect plugins={plugins} target={this} />
@@ -28,7 +28,7 @@ export const connect = <
               </>
             );
           }
-        } as new (...args: any[]) => I
+        } as I
       )
     }[target.name];
   };

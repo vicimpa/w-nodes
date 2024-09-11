@@ -8,17 +8,19 @@ import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { signalRef } from "$library/signals";
 import { store } from "$library/store";
 
 @name('Oscilloscope')
+@group('analyze')
 export default class extends BaseNode {
   #node = ctx.createChannelSplitter(2); // Создаем мерджер для стерео
 
-  #nodeLeft = new AnalyserNode(ctx, { fftSize: 2048 });
-  #nodeRight = new AnalyserNode(ctx, { fftSize: 2048 });
+  #nodeLeft = new AnalyserNode(ctx);
+  #nodeRight = new AnalyserNode(ctx);
 
   _dataX = new Float32Array(this.#nodeLeft.frequencyBinCount);
   _dataY = new Float32Array(this.#nodeRight.frequencyBinCount);
@@ -31,6 +33,8 @@ export default class extends BaseNode {
   ctxRef = computed(() => this.canRef.value?.getContext('2d'));
 
   _connect = () => {
+    this.#nodeLeft.fftSize = 2048;
+    this.#nodeRight.fftSize = 2048;
     return dispose(
       pipe(this.#node, this.#nodeLeft, 0, 0),
       pipe(this.#node, this.#nodeRight, 1, 0),

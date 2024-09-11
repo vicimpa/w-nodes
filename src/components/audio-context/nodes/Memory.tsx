@@ -4,10 +4,12 @@ import MemoryProcessor from "../worklet/MemoryProcessor";
 import { Number } from "../lib/Number";
 import { SignalNode } from "../lib/signalNode";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { store } from "$library/store";
 
 @name('Memory')
+@group('custom')
 export default class extends BaseNode {
   #processor = new MemoryProcessor();
 

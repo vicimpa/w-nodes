@@ -1,9 +1,11 @@
 import { BaseNode } from "../lib/BaseNode";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
+import { group } from "../_groups";
 import { name } from "$library/function";
 
 @name('ShowValue')
+@group('analyze')
 export default class extends BaseNode {
   _in = new SignalNode(0, { default: 0 });
 

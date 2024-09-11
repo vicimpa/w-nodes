@@ -5,11 +5,13 @@ import { SignalNode } from "../lib/signalNode";
 import TimerProcessor from "../worklet/TimerProcessor";
 import { Toggle } from "../lib/Toggle";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { reactive } from "$library/signals";
 import { store } from "$library/store";
 
 @name('Timer')
+@group('custom')
 @reactive()
 export default class extends BaseNode {
   #src = new TimerProcessor();

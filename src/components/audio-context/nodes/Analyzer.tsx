@@ -6,14 +6,16 @@ import { Select } from "../lib/Select";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
+import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signalRef } from "$library/signals";
 import { store } from "$library/store";
 
 @name('Analyzer')
+@group('analyze')
 export default class extends BaseNode {
-  #node = ctx.createAnalyser();
+  #node = new AnalyserNode(ctx);
 
   _data = new Uint8Array();
 

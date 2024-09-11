@@ -8,6 +8,7 @@ import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
@@ -17,6 +18,7 @@ const types = Object.keys(functions) as FunctionType[];
 const variants = types.map(value => ({ value }));
 
 @name('Smoothing')
+@group('custom')
 export default class extends BaseNode {
   #processor = new InterpolationProcessor();
 

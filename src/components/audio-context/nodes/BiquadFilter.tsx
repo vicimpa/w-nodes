@@ -10,6 +10,7 @@ import { SignalNode } from "../lib/signalNode";
 import { avgArray } from "../lib/avgArray";
 import { dispose } from "$library/dispose";
 import { frequencies } from "../lib/frequencies";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
 import { store } from "$library/store";
@@ -23,6 +24,7 @@ const type: BiquadFilterType[] = ["allpass", "bandpass", "highpass", "highshelf"
 const variants = type.map((value) => ({ value }));
 
 @name('BiquadFilter')
+@group('base')
 @reactive()
 export default class extends BaseNode {
   #effect = ctx.createBiquadFilter();

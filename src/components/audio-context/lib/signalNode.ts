@@ -22,7 +22,7 @@ export class SignalNode extends Signal<number> {
   node = new ConstantSourceNode(ctx);
   param?: AudioParam;
 
-  #analyze = new AnalyserNode(ctx, { fftSize: 32 });
+  #analyze = new AnalyserNode(ctx);
   #analyzeData = new Float32Array(this.#analyze.frequencyBinCount);
 
   min: number;
@@ -136,6 +136,7 @@ export class SignalNode extends Signal<number> {
   constructor(param: number | AudioParam, params?: SignalNodeParams) {
     super(value(param));
     this.node.start();
+    this.#analyze.fftSize = 32;
     this.signalOnly = params?.signalOnly ?? false;
 
     if (param instanceof AudioParam) {

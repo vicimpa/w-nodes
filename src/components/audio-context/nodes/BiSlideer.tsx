@@ -5,6 +5,7 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { Vec2 } from "$library/vec2";
 import { frames } from "$library/frames";
+import { group } from "../_groups";
 import { makeDrag } from "$library/drag";
 import { name } from "$library/function";
 import { store } from "$library/store";
@@ -34,6 +35,7 @@ const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can
 }, 0);
 
 @name('BiSlider')
+@group('controll')
 export default class BiSlider extends BaseNode {
   radius = 10;
 

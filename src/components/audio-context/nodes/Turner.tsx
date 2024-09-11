@@ -3,11 +3,13 @@ import { Canvas } from "$components/canvas";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
+import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { store } from "$library/store";
 
 @name('Turner')
+@group('analyze')
 export default class extends BaseNode {
   _in = new SignalNode(0, { default: 0 });
 

@@ -7,6 +7,7 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { connect } from "$library/connect";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import rsp from "@vicimpa/rsp";
 import { store } from "$library/store";
@@ -92,6 +93,7 @@ class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
 
 
 @name('Keyboard')
+@group('controll')
 @connect((ctx) => (
   effect(() => {
     const { activeItems } = ctx;

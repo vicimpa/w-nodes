@@ -5,10 +5,12 @@ import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 
 @name('Player')
+@group('input')
 @reactive()
 export default class extends BaseNode {
   #gain = new GainNode(ctx);

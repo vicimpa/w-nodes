@@ -10,6 +10,7 @@ import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { Toggle } from "../lib/Toggle";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { reactive } from "$library/signals";
@@ -132,6 +133,7 @@ E	Ми субконтроктавы	20.61
 });
 
 @name('Oscillator')
+@group('input')
 @reactive()
 export default class extends BaseNode {
   #src = ctx.createOscillator();

@@ -7,6 +7,7 @@ import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
 import { store } from "$library/store";
@@ -18,6 +19,7 @@ const distanceModelVariants = distanceModels.map((value) => ({ value }));
 const panningModelVariants = panningModels.map((value) => ({ value }));
 
 @name('Panner')
+@group('base')
 export default class extends BaseNode {
   #panner = new PannerNode(ctx);
 

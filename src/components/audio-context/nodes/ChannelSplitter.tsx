@@ -7,6 +7,7 @@ import { ReactNode } from "react";
 import { Select } from "../lib/Select";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { store } from "$library/store";
@@ -87,6 +88,7 @@ const modes = {
 type Mode = keyof typeof modes;
 
 @name('ChannelSplitter')
+@group('base')
 @reactive()
 export default class ChannelSplitter extends BaseNode {
   @store _mode = signal(Object.keys(modes)[0] as Mode);

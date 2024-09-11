@@ -7,6 +7,7 @@ import { Number } from "../lib/Number";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { store } from "$library/store";
 
@@ -31,6 +32,7 @@ const variants = operations.map((value) => {
 });
 
 @name('Math')
+@group('custom')
 export default class extends BaseNode {
   #processor = new MathProcessor();
 

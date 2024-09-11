@@ -1,4 +1,5 @@
 import { Component, ReactNode } from "react";
+import { ceil, floor } from "$library/math";
 import { computed, effect, untracked } from "@preact/signals-react";
 import { prop, reactive } from "$library/signals";
 
@@ -9,11 +10,71 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { connect } from "$library/connect";
 import { dispose } from "$library/dispose";
+import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { store } from "$library/store";
+import styled from "styled-components";
+import { windowEvents } from "$library/events";
 
 const from = Array.from({ length: 16 }, (_, i) => i);
+
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: #111;
+  padding: 5px;
+  border-radius: 5px;
+`;
+
+const Point = styled.div<{ $active?: any; }>`
+  width: 10px;
+  height: 15px;
+  border-radius: 5px;
+  background-color: ${p => p.$active ? '#fff' : '#333'};
+  cursor: pointer;
+`;
+
+const Cursor = styled(Point) <{ $disable?: any; }>`
+  height: 5px;
+  cursor: default;
+  background-color: ${p => p.$disable ? '#f00' : p.$active ? '#0f0' : '#111'};
+`;
+
+const CursorRow = styled.tr`
+  ${Row} {
+    background: none;
+    padding: 0 inherit;
+  }
+`;
+
+const Base = styled.div`
+  display: contents;
+
+  ${Row} {
+    margin-bottom: 5px;
+  }
+`;
+
+function groupFor(nodes: ReactNode[], groupSize = 4) {
+  return (
+    <>
+      {
+        Array.from(
+          { length: ceil(nodes.length / groupSize) },
+          (_, i) => (
+            <td key={i} data-group={i} style={{ padding: '0 5px' }}>
+              <Row>
+                {nodes.slice(i++ * groupSize, i * groupSize)}
+              </Row>
+            </td>
+          )
+        )
+      }
+    </>
+  );
+}
 
 @connect((ctx) => (
   dispose(
@@ -43,23 +104,29 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
   index = this.props.index;
 
   _from = computed(() => (
-    from.map(i => (
-      <div
-        key={i}
-        onClick={() => {
-          var val = +!((this.value >> i) & 1);
-          var def = ~(1 << i) & this.value;
-          this.value = def | (val << i);
-        }}
-        style={{
-          width: 10,
-          height: 15,
-          borderRadius: 5,
-          marginRight: (i && !((i + 1) % 4)) ? 10 : 0,
-          backgroundColor: (this.value >> i) & 1 ? '#fff' : '#333',
-          cursor: 'pointer'
-        }} />
-    ))
+    groupFor(
+      from.map(i => (
+        <Point
+          key={i}
+          $active={(this.value >> i) & 1}
+          data-item={i}
+          onMouseDown={() => {
+            var val = +!((this.value >> i) & 1);
+            var def = ~(1 << i) & this.value;
+            this.value = def | (val << i);
+            this.main.mouseDown = true;
+          }}
+          onMouseEnter={() => {
+            if (!this.main.mouseDown)
+              return;
+
+            var val = +!((this.value >> i) & 1);
+            var def = ~(1 << i) & this.value;
+            this.value = def | (val << i);
+            this.main.mouseDown = true;
+          }} />
+      ))
+    )
   ));
 
   render(): ReactNode {
@@ -68,24 +135,34 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
     this.index = this.props.index;
 
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '5px 10px', background: '#111' }}>
-        <div style={{ display: 'flex', gap: 10, flexGrow: 1 }}>
-          {this._from}
-        </div>
+      <tr>
+        <td />
+        {this._from}
 
-        <button
-          disabled={!(this.main.lines.length - 1)}
-          onClick={() => this.main.remove(this.index)}
-        >
-          Remove
-        </button>
-        <AudioPort value={this.processor} output />
-      </div>
+        <td>
+          <button
+            disabled={!(this.main.lines.length - 1)}
+            onClick={() => this.main.remove(this.index)}
+          >
+            Remove
+          </button>
+        </td>
+        <td>
+          <AudioPort value={this.processor} output />
+        </td>
+      </tr >
     );
   }
 }
 
 @name('Seqencer')
+@group('custom')
+@connect((ctx) => (
+  dispose(
+    windowEvents('mouseup', () => ctx.mouseDown = false),
+    windowEvents('blur', () => ctx.mouseDown = false)
+  )
+))
 @reactive()
 export default class Seqencer extends BaseNode {
   _time = new SignalNode(0, { default: 0 });
@@ -95,6 +172,8 @@ export default class Seqencer extends BaseNode {
     this.id++ << 16
   ];
 
+  mouseDown = false;
+
   append() {
     this.lines = [...this.lines, this.id++ << 16];
   }
@@ -103,27 +182,46 @@ export default class Seqencer extends BaseNode {
     this.lines = this.lines.toSpliced(index, 1);
   }
 
-  input = (
-    <SignalPort value={this._time} title="time" />
-  );
+  _cursor = computed(() => (
+    groupFor(
+      Array.from({ length: 16 }, (_, i) => (
+        <Cursor key={i} $disable={!this._time.value} $active={floor(this._time.value) === i} />
+      ))
+    )
+  ));
 
   _view = () => (
     computed(() => (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-        {
-          this.lines.map((line, index) => {
-            var key = line >> 16;
-            var value = line & 0xFFFF;
+        <table style={{ borderSpacing: 0 }}>
+          <tbody>
+            {
+              <CursorRow >
+                <td>
+                  <SignalPort value={this._time} title="time" />
+                </td>
 
-            return (
-              <SequencerLine
-                main={this}
-                key={key}
-                value={value}
-                index={index} />
-            );
-          })
-        }
+                {this._cursor}
+              </CursorRow>
+            }
+            <Base>
+              {
+                this.lines.map((line, index) => {
+                  var key = line >> 16;
+                  var value = line & 0xFFFF;
+
+                  return (
+                    <SequencerLine
+                      main={this}
+                      key={key}
+                      value={value}
+                      index={index} />
+                  );
+                })
+              }
+            </Base>
+          </tbody>
+        </table>
         <button onClick={() => this.append()}>Append</button>
       </div>
     ))
