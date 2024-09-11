@@ -21,7 +21,7 @@ export default await defineWorklet({
     for (let i = 0; i < this.numFrames; i++) {
       var frame = this.param('time', i);
 
-      if (!frame)
+      if (frame <= 0 || frame >= 16)
         continue;
 
       frame |= 0;
@@ -33,9 +33,6 @@ export default await defineWorklet({
         this.context.frame = frame;
         continue;
       }
-
-      if (frame > 16)
-        continue;
 
       var frameValue = (value >>> frame) & 1;
 
