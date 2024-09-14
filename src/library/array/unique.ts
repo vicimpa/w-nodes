@@ -1,4 +1,3 @@
-export const unique = <T>(array: T[]) => {
-  var set = new Set(array);
-  return [...set];
-};
+export const unique = <T>(array: T[]) => (
+  [...new Set(array)]
+);

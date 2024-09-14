@@ -22,6 +22,7 @@ import Slider from "./nodes/Slider";
 import Smoothing from "./nodes/Smoothing";
 import StereoPanner from "./nodes/StereoPanner";
 import Timer from "./nodes/Timer";
+import Toggle from "./nodes/Toggle";
 import Turner from "./nodes/Turner";
 
 export default [
@@ -49,4 +50,5 @@ export default [
   Panner,
   Smoothing,
   Seqencer,
+  Toggle
 ] as typeof BaseNode[];

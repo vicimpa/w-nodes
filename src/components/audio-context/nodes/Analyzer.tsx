@@ -3,6 +3,8 @@ import { computed, signal } from "@preact/signals-react";
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Select } from "../lib/Select";
+import { SignalNode } from "../lib/signalNode";
+import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
@@ -19,6 +21,8 @@ export default class extends BaseNode {
 
   _data = new Uint8Array();
 
+  _start = new SignalNode(1, { default: 1 });
+
   @store _type = signal(0);
 
   canRef = signalRef<HTMLCanvasElement>();
@@ -34,6 +38,9 @@ export default class extends BaseNode {
         const { value: ctx } = this.ctxRef;
 
         if (!can || !ctx)
+          return;
+
+        if (!this._start.value)
           return;
 
         var { width, height } = can;
@@ -65,6 +72,8 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
+      <Toggle label="Start" value={this._start} />
+
       <canvas ref={this.canRef} width={200} height={70} />
 
       <Select

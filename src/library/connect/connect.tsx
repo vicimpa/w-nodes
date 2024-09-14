@@ -1,4 +1,4 @@
-import { Component, ReactNode, useEffect } from "react";
+import { Component, useEffect } from "react";
 
 export type TMixin<T> = (target: T) => void | (() => void);
 
@@ -17,19 +17,15 @@ export const connect = <
   I extends typeof Component,
 >(...plugins: TMixin<InstanceType<I>>[]) => {
   return (target: I) => {
-    return {
-      [target.name]: (
-        class extends (target as typeof Component) {
-          render(this: InstanceType<I>): ReactNode {
-            return (
-              <>
-                <Connect plugins={plugins} target={this} />
-                {super.render()}
-              </>
-            );
-          }
-        } as I
-      )
-    }[target.name];
+    const { render: originalRender } = target.prototype;
+
+    target.prototype.render = function render(this: InstanceType<I>) {
+      return (
+        <>
+          <Connect plugins={plugins} target={this} />
+          {originalRender.call(this)}
+        </>
+      );
+    };
   };
 };
