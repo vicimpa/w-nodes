@@ -1,9 +1,7 @@
-import { Component, ReactNode } from "react";
-import { computed, effect } from "@preact/signals-react";
-import { prop, reactive, signalRef } from "$library/signals";
+import { effect, useComputed, useSignal } from "@preact/signals-react";
 
-import { connect } from "$library/connect";
 import { frames } from "$library/frames";
+import { useEffect } from "react";
 
 export type TCanvasCtx = {
   can: HTMLCanvasElement;
@@ -17,48 +15,38 @@ export type TCanvasProps = {
   loop?: (ctx: TCanvasCtx) => any;
 } & Omit<JSX.IntrinsicElements['canvas'], 'ref'>;
 
-@connect((can) => (
-  effect(() => {
-    if (!can.ref.value || !can.ctx.value)
-      return;
+export const Canvas = ({ draw, loop, ...props }: TCanvasProps) => {
+  const ref = useSignal<HTMLCanvasElement | null>();
+  const ctx = useComputed(() => ref.value?.getContext('2d'));
 
-    const _ctx: TCanvasCtx = {
-      can: can.ref.value,
-      ctx: can.ctx.value,
-      dtime: 0,
-      time: 0
-    };
+  useEffect(() => (
+    effect(() => {
+      if (!ref.value || !ctx.value)
+        return;
 
-    can.props.draw?.(_ctx.ctx, _ctx.can);
+      draw?.(ctx.value, ref.value);
 
-    if (!can.loop)
-      return;
+      if (!loop)
+        return;
 
-    const _loop = can.loop;
+      const _loop = loop;
 
-    return frames((dtime, time) => {
-      _ctx.dtime = dtime;
-      _ctx.time = time;
-      _loop(_ctx);
-    });
-  })
-))
-@reactive()
-export class Canvas extends Component<TCanvasProps> {
-  ref = signalRef<HTMLCanvasElement>();
-  ctx = computed(() => this.ref.value?.getContext('2d'));
+      const _ctx: TCanvasCtx = {
+        can: ref.value,
+        ctx: ctx.value,
+        dtime: 0,
+        time: 0
+      };
 
-  @prop draw?: (ctx: CanvasRenderingContext2D, can: HTMLCanvasElement) => any;
-  @prop loop?: (_ctx: TCanvasCtx) => any;
+      return frames((dtime, time) => {
+        _ctx.dtime = dtime;
+        _ctx.time = time;
+        _loop(_ctx);
+      });
+    })
+  ), [draw, loop]);
 
-  render(): ReactNode {
-    const { draw, loop, ...props } = this.props;
-    if (draw !== this.draw)
-      this.draw = draw;
-    if (loop !== this.loop)
-      this.loop = loop;
-    return (
-      <canvas ref={this.ref} {...props} />
-    );
-  }
-}
+  return (
+    <canvas ref={(instance) => ref.value = instance} {...props} />
+  );
+};
