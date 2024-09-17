@@ -1,7 +1,8 @@
-import { effect, useComputed, useSignal } from "@preact/signals-react";
+import { effect, useComputed } from "@preact/signals-react";
+import { useEffect, useMemo } from "react";
 
 import { frames } from "$library/frames";
-import { useEffect } from "react";
+import { signalRef } from "$library/signals";
 
 export type TCanvasCtx = {
   can: HTMLCanvasElement;
@@ -16,7 +17,7 @@ export type TCanvasProps = {
 } & Omit<JSX.IntrinsicElements['canvas'], 'ref'>;
 
 export const Canvas = ({ draw, loop, ...props }: TCanvasProps) => {
-  const ref = useSignal<HTMLCanvasElement | null>();
+  const ref = useMemo(() => signalRef<HTMLCanvasElement | null>(), []);
   const ctx = useComputed(() => ref.value?.getContext('2d'));
 
   useEffect(() => (
