@@ -20,7 +20,7 @@ export default class extends BaseNode {
   #nodeLeft = new AnalyserNode(ctx);
   #nodeRight = new AnalyserNode(ctx);
 
-  _start = new SignalNode(0, { default: 0 });
+  @store _start = new SignalNode(1, { default: 1 });
 
   _dataX = new Float32Array(this.#nodeLeft.frequencyBinCount);
   _dataY = new Float32Array(this.#nodeRight.frequencyBinCount);

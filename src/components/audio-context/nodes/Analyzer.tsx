@@ -21,7 +21,7 @@ export default class extends BaseNode {
 
   _data = new Uint8Array();
 
-  _start = new SignalNode(1, { default: 1 });
+  @store _start = new SignalNode(1, { default: 1 });
 
   @store _type = signal(0);
 
