@@ -57,8 +57,8 @@ export default class extends BaseNode {
 
   _view = () => (
     <>
-      <input onChange={e => this.fileList = e.target.files} type="file" />
-      <audio ref={this.audio} controls />
+      <input onFocus={e => e.currentTarget.blur()} onChange={e => this.fileList = e.target.files} type="file" />
+      <audio onFocus={e => e.currentTarget.blur()} ref={this.audio} controls />
     </>
   );
 }
