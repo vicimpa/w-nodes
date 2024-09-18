@@ -1,5 +1,5 @@
 import { CSSProperties, Component, ReactNode } from "react";
-import { computed, effect, signal, untracked } from "@preact/signals-react";
+import { batch, computed, effect, signal, untracked } from "@preact/signals-react";
 import { prop, reactive } from "$library/signals";
 
 import { AudioPort } from "../ports/AudioPort";
@@ -81,7 +81,10 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
   }));
 
   delete() {
-    this.main.drums = this.main.drums.toSpliced(this.id, 1);
+    batch(() => {
+      this.main.items = this.main.items.toSpliced(this.id, 1);
+      this.main.drums = this.main.drums.toSpliced(this.id, 1);
+    });
   }
 
   render(): ReactNode {
@@ -118,23 +121,30 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
 @group('high')
 @reactive()
 export default class Drums extends BaseNode {
-  id = 0;
-
+  @store count = 0;
   @prop @store drums: Array<number> = [-1];
-  @prop items: DrumsItem[] = [];
+  @prop @store items: number[] = [this.count++];
+
+  // TODO ИСПРАВИТЬ СРОЧНО!!!! ИНАЧЕ БО-БО
+  append() {
+    batch(() => {
+      this.items = [...this.items, this.count++];
+      this.drums = [...this.drums, -1];
+    });
+  }
 
   _view = () => (
     <>
       <table style={{ width: 350 }}>
         <tbody>
           {
-            computed(() => this.drums.map((_, i) => (
-              <DrumsItem key={i} id={i} ctx={this} />
+            computed(() => this.items.map((key, i) => (
+              <DrumsItem key={key} id={i} ctx={this} />
             )))
           }
         </tbody>
       </table>
-      <button onClick={() => this.drums = [...this.drums, -1]}>Add</button>
+      <button onClick={() => this.append()}>Add</button>
     </>
   );
 }

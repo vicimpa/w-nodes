@@ -9,5 +9,3 @@ export const AudioContext = () => (
     <Debug />
   </AudioProject>
 );
-
-console.log(drums);
