@@ -28,14 +28,19 @@ export const Select = <T, const V extends TSelectVariant<T>>({
     variants.map((variant, id) => ({ variant, id: `value-${id}`, label: `${variant.label ?? variant.value}` }))
   ), [variants]);
 
-  const _value = useSignal(_variants.find(({ variant: e }) => e.value === value.value)!.id);
+  const _value = useSignal(_variants.find(({ variant: e }) => e.value === value.value)?.id ?? '');
 
   useSignalEffect(() => {
-    value.value = _variants.find(({ id }) => id === _value.value)!.variant.value;
+    const find = _variants.find(({ id }) => id === _value.value);
+    if (!find) return;
+    value.value = find.variant.value;
   });
 
   useSignalEffect(() => {
-    _value.value = _variants.find(({ variant: e }) => e.value === value.value)!.id;
+    const find = _variants.find(({ variant: e }) => e.value === value.value);
+    if (!find) return;
+
+    _value.value = find.id;
     change && change(value.value);
   });
 

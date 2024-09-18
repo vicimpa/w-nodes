@@ -1,4 +1,4 @@
 import { audioLoader } from "$library/loader";
 export default audioLoader(
-  import.meta.glob("./*.ogg")
+  import.meta.glob("./**/*.mp3")
 );

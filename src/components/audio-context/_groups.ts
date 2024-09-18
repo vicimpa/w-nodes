@@ -8,6 +8,7 @@ export const groups = {
   'base': 'Default/Base/Effect',
   'custom': 'Custom/Worklet',
   'ungroup': 'Ungroup/Other',
+  'high': 'High/Kit/Synth'
 } as const;
 
 const keys = Object.keys(groups);

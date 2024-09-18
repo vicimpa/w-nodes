@@ -6,6 +6,7 @@ import ChannelSplitter from "./nodes/ChannelSplitter";
 import Convolver from "./nodes/Convolver";
 import Delay from "./nodes/Delay";
 import Destination from "./nodes/Destination";
+import Drums from "./nodes/Drums";
 import DynamicsCompressor from "./nodes/DynamicsCompressor";
 import Gain from "./nodes/Gain";
 import Inpulse from "./nodes/Inpulse";
@@ -50,5 +51,6 @@ export default [
   Panner,
   Smoothing,
   Seqencer,
-  Toggle
+  Toggle,
+  Drums,
 ] as typeof BaseNode[];
