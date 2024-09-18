@@ -60,7 +60,8 @@ const drumsVariants = [
         .then(buff => {
           _ctx._src.buffer = buff;
         });
-    })
+    }),
+    () => _ctx._impulse.destroy()
   )
 ))
 class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
