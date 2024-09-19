@@ -21,6 +21,8 @@ export const operators = {
   'right': (a: number, b: number) => a >> b,
   'left': (a: number, b: number) => a << b,
   'uright': (a: number, b: number) => a >>> b,
+  'normify': (x: number) => x * 2 - 1,
+  'signify': (x: number) => (x - 1) / 2,
 } as const;
 
 
@@ -79,7 +81,7 @@ export const custom = {
   normalize: (a: number, b: number, c: number) => (a - b) / (c - b),
   remap(a: number, b: number, c: number, d: number, e: number) { return this.lerp(this.normalize(a, b, c), d, e); },
   clamp: (a: number, b: number, c: number) => Math.min(Math.max(a, Math.min(b, c)), Math.max(b, c)),
-  note: (a: number) => (2 ** (1 / 12)) ** a * 440
+  note: (a: number) => (2 ** (1 / 12)) ** a * 440,
 } as const;
 
 export const renamePorts: { op: MathOperation[], ports: { [key in keyof typeof params]?: string }; }[] = [
@@ -113,6 +115,12 @@ export const renamePorts: { op: MathOperation[], ports: { [key in keyof typeof p
     op: ['note'],
     ports: {
       a: 'note',
+    }
+  },
+  {
+    op: ['normify', 'signify'],
+    ports: {
+      a: 'x',
     }
   }
 ];

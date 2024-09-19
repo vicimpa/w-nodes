@@ -17,18 +17,29 @@ const variants = operations.map((value) => {
   const func = math[value];
   const findRename = renamePorts.find(e => e.op.includes(value));
   const str = func.toString();
-  const _args = Array.from({ length: func.length }, (_, i) => findRename?.ports[_params[i++]] ?? _params[i++]);
+  const _args = Array.from(
+    { length: func.length },
+    (_, i) => findRename?.ports[_params[i++]] ?? _params[i++]
+  );
   var i = 0;
   const label = value in constants ? (
     value
   ) : value in operators ? (
-    str.substring(str.indexOf('=>') + 2).replace(/\w/g, () => findRename?.ports[_params[i++]] ?? _params[i++])
+    str
+      .substring(str.indexOf('=>') + 2)
+      .replace(/[a-z]/g, () => findRename?.ports[_params[i++]] ?? _params[i++])
   ) : `${value}(${_args.join(', ')})`;
 
   return ({
     value,
     label,
-    group: value in constants ? 'Constants' : value in functions ? 'Functions' : value in custom ? 'Custom' : 'Operators'
+    group: value in constants ? (
+      'Constants'
+    ) : value in functions ? (
+      'Functions'
+    ) : value in custom ? (
+      'Custom'
+    ) : 'Operations'
   });
 });
 
