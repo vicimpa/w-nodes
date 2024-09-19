@@ -104,6 +104,7 @@ export const Menu = () => {
                   <Button
                     draggable
                     onKeyDown={e => e.preventDefault()}
+                    onFocus={e => e.currentTarget.blur()}
                     onDragEnd={(event) => {
                       project.append(node as any)
                         .then(e => {
@@ -137,10 +138,10 @@ export const Menu = () => {
         <div style={{ flexGrow: 1 }}>
           {menu}
         </div>
-        <Button $top onClick={() => window.open('https://github.com/vicimpa/w-nodes')}>
+        <Button onFocus={e => e.currentTarget.blur()} $top onClick={() => window.open('https://github.com/vicimpa/w-nodes')}>
           Open GitHub
         </Button>
       </Container>
-    </HudPortal>
+    </HudPortal >
   );
 };
