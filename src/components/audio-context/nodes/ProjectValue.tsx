@@ -17,7 +17,11 @@ import { store } from "$library/store";
     effect(() => {
       ctx._run.value = ctx.source.run & 1;
     }),
-    pipe(ctx.source.time, ctx._time)
+    pipe(ctx.source.time, ctx._time),
+    (
+      ctx.source.controlls++,
+      () => { ctx.source.controlls--; }
+    )
   )
 ))
 @group('high')
