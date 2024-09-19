@@ -17,6 +17,7 @@ import Oscillator from "./nodes/Oscillator";
 import Oscilloscope from "./nodes/Oscilloscope";
 import Panner from "./nodes/Panner";
 import Player from "./nodes/Player";
+import ProjectValue from "./nodes/ProjectValue";
 import Seqencer from "./nodes/Seqencer";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
@@ -53,4 +54,5 @@ export default [
   Seqencer,
   Toggle,
   Drums,
+  ProjectValue,
 ] as typeof BaseNode[];

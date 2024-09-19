@@ -86,14 +86,14 @@ export const Menu = () => {
   const project = useInject(AudioProject);
   const filter = useSignal('');
   const filteredNodes = useComputed(() => (
-    project.nodes.filter(e => !filter.value || (e.name + getGroup(e)).toLowerCase().includes(filter.value.toLowerCase()))
+    project.nodes.filter(e => !filter.value || (e.name + ' ' + getGroup(e)).toLowerCase().includes(filter.value.toLowerCase()))
   ));
   const menu = useComputed(() => {
     if (!filteredNodes.value.length)
       return <p>Not found</p>;
 
     return (
-      [...Map.groupBy(filteredNodes.value, (node) => getGroup(node))]
+      [...Map.groupBy(filteredNodes.value.sort((a, b) => a.name.localeCompare(b.name)), (node) => getGroup(node))]
         .sort((a, b) => groupIndex(a[0]) - groupIndex(b[0]))
         .map(([group, nodes]) => {
           return (
@@ -104,7 +104,6 @@ export const Menu = () => {
                   <Button
                     draggable
                     onKeyDown={e => e.preventDefault()}
-                    onFocus={e => e.currentTarget.blur()}
                     onDragEnd={(event) => {
                       project.append(node as any)
                         .then(e => {
@@ -113,7 +112,10 @@ export const Menu = () => {
                         });
                     }}
                     onClick={
-                      () => project.append(node as any).then(e => project.selection.select = [e])
+                      (e) => {
+                        e.currentTarget.blur();
+                        project.append(node as any).then(e => project.selection.select = [e]);
+                      }
                     }
                     key={node.name + project.nodes.indexOf(node)}
                   >
