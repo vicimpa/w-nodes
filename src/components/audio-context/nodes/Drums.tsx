@@ -44,6 +44,10 @@ const drumsVariants = [
     pipe(_ctx._impulse, _ctx._gain),
     pipe(_ctx._gain, _ctx._src),
     effect(() => {
+      const drums = untracked(() => _ctx.main.drums);
+      if (typeof drums[_ctx.id] === 'undefined')
+        return;
+
       untracked(() => _ctx.main.drums)[_ctx.id] = _ctx.value.value;
     }),
     effect(() => {
@@ -82,7 +86,6 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
 
   delete() {
     batch(() => {
-      this.main.items = this.main.items.toSpliced(this.id, 1);
       this.main.drums = this.main.drums.toSpliced(this.id, 1);
     });
   }
@@ -121,14 +124,10 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
 @group('high')
 @reactive()
 export default class Drums extends BaseNode {
-  @store count = 0;
   @prop @store drums: Array<number> = [-1];
-  @prop @store items: number[] = [this.count++];
 
-  // TODO ИСПРАВИТЬ СРОЧНО!!!! ИНАЧЕ БО-БО
   append() {
     batch(() => {
-      this.items = [...this.items, this.count++];
       this.drums = [...this.drums, -1];
     });
   }
@@ -138,8 +137,8 @@ export default class Drums extends BaseNode {
       <table style={{ width: 350 }}>
         <tbody>
           {
-            computed(() => this.items.map((key, i) => (
-              <DrumsItem key={key} id={i} ctx={this} />
+            computed(() => this.drums.map((_, i) => (
+              <DrumsItem key={i} id={i} ctx={this} />
             )))
           }
         </tbody>
