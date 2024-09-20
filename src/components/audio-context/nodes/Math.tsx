@@ -9,7 +9,7 @@ import { SignalNode } from "../lib/signalNode";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const operations = Object.keys(math) as MathOperation[];
 const _params = Object.keys(params) as (keyof typeof params)[];

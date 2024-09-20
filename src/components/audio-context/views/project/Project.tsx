@@ -1,15 +1,14 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
-import { prop, reactive } from "$library/signals";
+import { connect, provide } from "@vicimpa/react-decorators";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { ProjectControll } from "./ProjectControll";
 import { SignalNode } from "$components/audio-context/lib/signalNode";
 import TimerProcessor from "$components/audio-context/worklet/TimerProcessor";
 import { computed } from "@preact/signals-react";
-import { connect } from "$library/connect";
 import detectControlls from "./plugins/detectControlls";
 import detectMount from "./plugins/detectMount";
 import detectState from "./plugins/detectState";
-import { provide } from "$library/provider";
 
 @provide()
 @connect(

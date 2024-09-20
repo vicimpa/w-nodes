@@ -4,7 +4,7 @@ import { SignalPort } from "../ports/SignalPort";
 import { Toggle } from "../lib/Toggle";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Toggle')
 @group('controll')

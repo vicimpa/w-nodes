@@ -1,5 +1,5 @@
 export default {
-  encode(buffer: ArrayBuffer) {
+  fromBuffer(buffer: ArrayBuffer) {
     var binaryString = '';
     var bytes = new Uint8Array(buffer);
 
@@ -9,7 +9,7 @@ export default {
 
     return btoa(binaryString);
   },
-  decode(base64: string) {
+  toBuffer(base64: string) {
     var binaryString = atob(base64);
     var bytes = new Uint8Array(binaryString.length);
 

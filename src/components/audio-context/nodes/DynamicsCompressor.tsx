@@ -5,13 +5,13 @@ import { BaseNode } from "../lib/BaseNode";
 import { Canvas } from "$components/canvas";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('DynamicsCompressor')
 @group('base')

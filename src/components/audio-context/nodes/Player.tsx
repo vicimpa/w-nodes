@@ -1,5 +1,5 @@
 import { ctx, empty } from "../ctx";
-import { prop, reactive, signalRef } from "$library/signals";
+import { prop, reactive, } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -8,6 +8,7 @@ import { effect } from "@preact/signals-react";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
+import { signalRef } from "$library/signals";
 
 @name('Player')
 @group('input')

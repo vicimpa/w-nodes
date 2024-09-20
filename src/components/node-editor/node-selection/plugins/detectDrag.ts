@@ -1,11 +1,11 @@
-import { max, min } from "$library/math";
+import { max, min } from "@vicimpa/math";
 
 import { NodeSelection } from "../NodeSelection";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
+import { elementEvents } from "@vicimpa/events";
 import { frames } from "$library/frames";
-import { makeDrag } from "$library/drag";
+import { makeDrag } from "@vicimpa/easy-drag";
 
 const select = makeDrag<[ctx: NodeSelection]>(({ current }, ctx) => {
   const { map } = ctx;

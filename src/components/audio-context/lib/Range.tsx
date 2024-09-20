@@ -3,7 +3,7 @@ import { useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
 
 import { SignalNode } from "./signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { minMax } from "$library/math";
+import { clamp } from "@vicimpa/math";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
 import { selectText } from "$library/dom";
@@ -33,7 +33,7 @@ export const Range: FC<TRangeProps> = ({
   const step = 1 / (10 ** accuracy);
   const isConnected = useComputed(() => readonly || value.connected);
   const getValue = (val: number) => {
-    return strict ? minMax(val, value.min ?? -Infinity, value.max ?? Infinity) : val;
+    return strict ? clamp(val, value.min ?? -Infinity, value.max ?? Infinity) : val;
   };
 
   useSignalEffect(() => {

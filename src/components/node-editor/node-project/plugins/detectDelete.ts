@@ -1,5 +1,5 @@
 import { NodeProject } from "../NodeProject";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 const deleteKeys = ['Backspace', 'Delete'];
 

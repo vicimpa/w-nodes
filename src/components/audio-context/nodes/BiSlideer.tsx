@@ -1,14 +1,14 @@
 import { BaseNode } from "../lib/BaseNode";
 import { Canvas } from "$components/canvas";
-import { PI2 } from "$library/math";
+import { PI2 } from "@vicimpa/math";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { frames } from "$library/frames";
 import { group } from "../_groups";
-import { makeDrag } from "$library/drag";
+import { makeDrag } from "@vicimpa/easy-drag";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can, ctx) => {
   const loop = frames(() => {

@@ -1,4 +1,4 @@
-import { elementEvents, windowEvents } from "$library/events";
+import { elementEvents, windowEvents } from "@vicimpa/events";
 
 import { NodePort } from "../NodePort";
 import { dispose } from "$library/dispose";

@@ -1,17 +1,18 @@
 import { Component, PropsWithChildren, ReactNode, RefObject } from "react";
 import { NodeConnect, NodeLines } from "../node-lines";
-import { inject, provide } from "$library/provider";
-import { prop, reactive, signalRef } from "$library/signals";
+import { inject, provide } from "@vicimpa/react-decorators";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { NodeItem } from "../node-item";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
 import { NodeSelection } from "../node-selection";
-import { collectStore } from "$library/store";
 import { computed } from "@preact/signals-react";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import detectCopy from "./plugins/detectCopy";
 import detectDelete from "./plugins/detectDelete";
+import { makeWeekProtoStore } from "@vicimpa/week-store";
+import { signalRef } from "$library/signals";
 
 export type TConnect = [
   from: [n: number, p: number],
@@ -31,6 +32,9 @@ type TStateItem<T extends NodeItem = NodeItem> = {
 };
 
 var id = 0;
+
+const keyStore = makeWeekProtoStore<string | symbol>();
+export const store = keyStore.store;
 
 @provide()
 @connect(detectDelete, detectCopy)
@@ -89,7 +93,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
   save<T extends NodeItem>(node: T) {
     const data: { [key: string | symbol]: any; } = {};
 
-    for (const key of collectStore(node)) {
+    for (const key of keyStore.collect(node)) {
       if (!(key in node))
         continue;
 
@@ -141,7 +145,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
   }
 
   restore<T extends NodeItem>(node: T, data: { [key: string | symbol]: any; }) {
-    for (const key of collectStore(node)) {
+    for (const key of keyStore.collect(node)) {
       if (!(key in node) || !(key in data))
         continue;
 

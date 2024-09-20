@@ -1,5 +1,5 @@
 import { ctx, empty } from "../ctx";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -13,7 +13,7 @@ import { frequencies } from "../lib/frequencies";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 function freqName(n: number) {
   if (n >= 1000) return ((n / 1000) | 0) + "k";

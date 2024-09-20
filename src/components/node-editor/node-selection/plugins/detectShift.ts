@@ -1,6 +1,6 @@
 import { NodeSelection } from "../NodeSelection";
 import { dispose } from "$library/dispose";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 export default (ctx: NodeSelection) => (
   dispose(

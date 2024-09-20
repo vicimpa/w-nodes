@@ -1,8 +1,8 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
-import { inject, provide } from "$library/provider";
+import { inject, provide } from "@vicimpa/react-decorators";
 
 import { NodeList } from "./NodeList";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { createPortal } from "react-dom";
 import { dom } from "$library/dom";
 import { effect } from "@preact/signals-react";

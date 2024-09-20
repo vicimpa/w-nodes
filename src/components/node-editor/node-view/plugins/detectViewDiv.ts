@@ -1,5 +1,5 @@
 import type { NodeView } from "..";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
 
 export default (ctx: NodeView) => (

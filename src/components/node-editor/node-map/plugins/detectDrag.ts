@@ -1,8 +1,8 @@
 import type { NodeMap } from "..";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
-import { makeDrag } from "$library/drag";
+import { elementEvents } from "@vicimpa/events";
+import { makeDrag } from "@vicimpa/easy-drag";
 
 const drag = makeDrag<[ctx: NodeMap]>((_, ctx) => {
   const start = new Vec2(ctx);

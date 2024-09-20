@@ -1,6 +1,6 @@
 import { NodeItem } from "../NodeItem";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
+import { elementEvents } from "@vicimpa/events";
 
 var storeType: typeof NodeItem | null;
 var storeConfig: object | null;

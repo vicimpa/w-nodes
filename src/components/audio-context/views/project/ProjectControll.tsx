@@ -3,9 +3,9 @@ import { useComputed, useSignalEffect } from "@preact/signals-react";
 
 import { HudPortal } from "$components/node-editor/node-hud/HudPortal";
 import { Project } from "./Project";
-import { minMax } from "$library/math";
+import { clamp } from "@vicimpa/math";
 import styled from "styled-components";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 const Container = styled.div`
   position: absolute;
@@ -129,7 +129,7 @@ export const ProjectControll: FC<{ project: Project; }> = ({ project }) => {
               if (isNaN(val)) {
                 e.currentTarget.value = `${project.temp}`;
               } else {
-                project.temp = minMax(val, 1, 999);
+                project.temp = clamp(val, 1, 999);
               }
             }}
           />

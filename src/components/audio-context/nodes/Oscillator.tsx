@@ -1,4 +1,4 @@
-import { PI, asin, sign, sin } from "$library/math";
+import { PI, asin, sign, sin } from "@vicimpa/math";
 import { computed, signal } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
 
@@ -13,10 +13,10 @@ import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
-import { reactive } from "$library/signals";
+import { reactive } from "@vicimpa/decorators";
 import rsp from "@vicimpa/rsp";
 import { start } from "../lib/start";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const _noteCount = new Set<string>();
 const notes = `

@@ -1,5 +1,4 @@
-import { TypeValue } from "$library/datapack/lib/defineType";
-import { t } from "$library/datapack";
+import { TypeValue, t } from "@vicimpa/data-pack";
 
 const moduleDTO = t.obj({
   default: t.str()

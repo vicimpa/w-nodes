@@ -5,7 +5,7 @@ import { SignalNode } from "../lib/signalNode";
 import { ctx } from "../ctx";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Gain')
 @group('base')

@@ -4,7 +4,7 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Slider')
 @group('controll')

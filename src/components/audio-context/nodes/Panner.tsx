@@ -1,7 +1,6 @@
-import { PI2, PI_2 } from "$library/math";
-
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
+import { PI2 } from "@vicimpa/math";
 import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
@@ -10,7 +9,7 @@ import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const distanceModels = ['linear', 'inverse', 'exponential'] as const;
 const panningModels = ['equalpower', 'HRTF'] as const;
@@ -23,8 +22,8 @@ const panningModelVariants = panningModels.map((value) => ({ value }));
 export default class extends BaseNode {
   #panner = new PannerNode(ctx);
 
-  @store _innerAngle = new SignalNode(this.#panner.coneInnerAngle, { min: -PI2 * 180, max: PI_2 * 360 });
-  @store _outerAngle = new SignalNode(this.#panner.coneOuterAngle, { min: -PI2 * 180, max: PI_2 * 360 });
+  @store _innerAngle = new SignalNode(this.#panner.coneInnerAngle, { min: -PI2 * 180, max: PI2 * 180 });
+  @store _outerAngle = new SignalNode(this.#panner.coneOuterAngle, { min: -PI2 * 180, max: PI2 * 180 });
   @store _outerGain = new SignalNode(this.#panner.coneOuterGain, { min: -100, max: 100 });
 
   @store _distanceModel = signal(this.#panner.distanceModel);

@@ -10,19 +10,29 @@
   },
   "dependencies": {
     "@preact/signals-react": "^2.2.0",
-    "@vicimpa/rsp": "^0.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@vicimpa/data-buffer": "^0.0.3",
+    "@vicimpa/data-pack": "^0.0.4",
+    "@vicimpa/decorators": "^0.0.1",
+    "@vicimpa/easy-drag": "^0.1.3",
+    "@vicimpa/events": "^0.0.6",
+    "@vicimpa/lib-vec2": "^0.2.2",
+    "@vicimpa/math": "^0.0.6",
+    "@vicimpa/observers": "^0.0.4",
+    "@vicimpa/react-decorators": "^0.1.2",
+    "@vicimpa/rsp": "^0.0.5",
+    "@vicimpa/week-store": "^0.0.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "sass": "^1.77.8",
-    "typescript": "^5.2.2",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
+    "sass-embedded": "^1.79.2",
+    "typescript": "^5.6.2",
     "typescript-plugin-css-modules": "^5.1.0",
-    "vite": "^5.2.0",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite": "^5.4.7",
+    "vite-tsconfig-paths": "^5.0.1"
   }
 }

@@ -1,5 +1,5 @@
 import { computed, effect, signal } from "@preact/signals-react";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -10,7 +10,7 @@ import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const modes = {
   split: (out: ChannelSplitter) => {

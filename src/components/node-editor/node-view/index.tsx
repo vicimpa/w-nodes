@@ -1,10 +1,10 @@
 import { Component, PropsWithChildren } from "react";
 
 import { NodeMap } from "../node-map";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import detectViewDiv from "./plugins/detectViewDiv";
 import detectViewSvg from "./plugins/detectViewSvg";
-import { inject } from "$library/provider";
+import { inject } from "@vicimpa/react-decorators";
 import s from "./NodeView.module.sass";
 import { signalRef } from "$library/signals";
 

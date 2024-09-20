@@ -1,7 +1,7 @@
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Canvas } from "$components/canvas";
-import { PI2 } from "$library/math";
+import { PI2 } from "@vicimpa/math";
 import { SignalNode } from "../lib/signalNode";
 import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
@@ -10,7 +10,7 @@ import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { signal } from "@preact/signals-react";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Oscilloscope')
 @group('analyze')

@@ -1,5 +1,5 @@
 import { computed, effect, signal } from "@preact/signals-react";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -10,7 +10,7 @@ import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const type = Object.keys(convolver);
 const variants = type.map(value => ({ value, label: value.split('/').at(-1)?.split('.').slice(0, -1).join('.') }));

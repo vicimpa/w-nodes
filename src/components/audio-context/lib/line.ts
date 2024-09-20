@@ -1,4 +1,4 @@
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 
 export type LineOptions = {
   size?: number;

@@ -1,11 +1,11 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
 
 import { NodeHud } from "./NodeHud";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { createPortal } from "react-dom";
 import { dom } from "$library/dom";
 import { effect } from "@preact/signals-react";
-import { inject } from "$library/provider";
+import { inject } from "@vicimpa/react-decorators";
 import s from "./NodeHud.module.sass";
 
 @connect((ctx) => (

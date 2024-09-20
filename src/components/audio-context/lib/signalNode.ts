@@ -1,5 +1,5 @@
 import { Signal, effect } from "@preact/signals-react";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";

@@ -1,6 +1,6 @@
 import { NodeBack } from "..";
 import { effect } from "@preact/signals-react";
-import { resizeObserver } from "$library/observers";
+import { resizeObserver } from "@vicimpa/observers";
 
 export default (ctx: NodeBack<any>) => (
   effect(() => (

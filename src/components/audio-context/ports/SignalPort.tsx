@@ -1,9 +1,9 @@
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "./AudioPort";
 import { BasePort } from "../lib/BasePort";
 import { SignalNode } from "../lib/signalNode";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { start } from "../lib/start";
 
 @connect(ctx => start(ctx.value))

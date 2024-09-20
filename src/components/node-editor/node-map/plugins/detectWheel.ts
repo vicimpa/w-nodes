@@ -1,8 +1,8 @@
 import type { NodeMap } from "..";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
+import { clamp } from "@vicimpa/math";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
-import { minMax } from "$library/math";
+import { elementEvents } from "@vicimpa/events";
 
 export default (ctx: NodeMap) => (
   effect(() => (
@@ -24,7 +24,7 @@ export default (ctx: NodeMap) => (
       }
 
       ctx.toScale(v => (
-        minMax(v - e.deltaY * v * .001, .05, 2)
+        clamp(v - e.deltaY * v * .001, .05, 2)
       ), Vec2.fromPageXY(e));
     })
   ))

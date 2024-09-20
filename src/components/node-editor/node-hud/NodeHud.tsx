@@ -1,6 +1,6 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
 
-import { provide } from "$library/provider";
+import { provide } from "@vicimpa/react-decorators";
 import s from "./NodeHud.module.sass";
 import { signalRef } from "$library/signals";
 

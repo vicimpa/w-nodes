@@ -2,7 +2,7 @@ import { FC } from "react";
 import { NodeLine } from "./NodeLine";
 import { NodeLines } from "./NodeLines";
 import { NodePort } from "../node-port";
-import { useInject } from "$library/provider";
+import { useInject } from "@vicimpa/react-decorators";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export const NodeLineForward: FC<{ from: NodePort; }> = ({ from }) => {

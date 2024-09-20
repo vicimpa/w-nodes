@@ -1,8 +1,8 @@
 import { Canvas } from "$components/canvas";
 import { NodeMap } from "../node-map";
-import { PI2 } from "$library/math";
-import { Vec2 } from "$library/vec2";
-import { useInject } from "$library/provider";
+import { PI2 } from "@vicimpa/math";
+import { Vec2 } from "@vicimpa/lib-vec2";
+import { useInject } from "@vicimpa/react-decorators";
 
 export const NodeBack2 = () => {
   const map = useInject(NodeMap);

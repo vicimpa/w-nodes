@@ -4,9 +4,9 @@ import { useComputed, useSignal } from "@preact/signals-react";
 
 import { AudioProject } from "$components/audio-context/AudioProject";
 import { HudPortal } from "$components/node-editor/node-hud/HudPortal";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import rsp from "@vicimpa/rsp";
-import { useInject } from "$library/provider";
+import { useInject } from "@vicimpa/react-decorators";
 
 export const GroupNaming = {
   'input': 'Input/Source',

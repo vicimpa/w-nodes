@@ -1,23 +1,23 @@
 import { Component, ReactNode } from "react";
 import { batch, computed, effect, untracked } from "@preact/signals-react";
-import { ceil, floor } from "$library/math";
-import { prop, reactive } from "$library/signals";
+import { ceil, floor } from "@vicimpa/math";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import SequenceProcessor from "../worklet/SequenceProcessor";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { start } from "../lib/start";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 import styled from "styled-components";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 const from = Array.from({ length: 16 }, (_, i) => i);
 

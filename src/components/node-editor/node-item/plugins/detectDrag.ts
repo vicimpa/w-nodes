@@ -1,9 +1,9 @@
 import { NodeItem } from "../NodeItem";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
+import { elementEvents } from "@vicimpa/events";
 import { frames } from "$library/frames";
-import { makeDrag } from "$library/drag";
+import { makeDrag } from "@vicimpa/easy-drag";
 
 export const dragNodeItem = makeDrag<[ctx: NodeItem, elem: HTMLElement]>(({ start, current }, ctx, elem) => {
   elem.style.cursor = 'grabbing';

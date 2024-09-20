@@ -1,13 +1,13 @@
 import { Component, FC, ReactNode } from "react";
 import { NodeList, NodeListItem } from "../node-list";
-import { inject, provide } from "$library/provider";
-import { prop, reactive, signalRef } from "$library/signals";
+import { inject, provide } from "@vicimpa/react-decorators";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
 import { NodeProject } from "../node-project";
 import { NodeSelection } from "../node-selection";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import detectCopy from "./plugins/detectCopy";
 import detectDrag from "./plugins/detectDrag";
 import detectMount from "./plugins/detectMount";
@@ -16,7 +16,8 @@ import detectSelect from "./plugins/detectSelect";
 import detectView from "./plugins/detectView";
 import detectViewDiv from "./plugins/detectViewDiv";
 import s from "./NodeItem.module.sass";
-import { store } from "$library/store";
+import { signalRef } from "$library/signals";
+import { store } from "$components/node-editor";
 
 export interface INodeItemProps {
   x?: number;

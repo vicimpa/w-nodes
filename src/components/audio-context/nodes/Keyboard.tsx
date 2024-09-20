@@ -1,17 +1,17 @@
 import { CSSProperties, Component, ReactNode } from "react";
 import { computed, effect } from "@preact/signals-react";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { BaseNode } from "../lib/BaseNode";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import rsp from "@vicimpa/rsp";
-import { store } from "$library/store";
-import { windowEvents } from "$library/events";
+import { store } from "$components/node-editor";
+import { windowEvents } from "@vicimpa/events";
 
 @connect((ctx) => {
   dispose(

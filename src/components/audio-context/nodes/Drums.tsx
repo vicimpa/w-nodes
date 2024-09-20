@@ -1,6 +1,6 @@
 import { CSSProperties, Component, ReactNode } from "react";
 import { batch, computed, effect, signal, untracked } from "@preact/signals-react";
-import { prop, reactive } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
@@ -8,7 +8,7 @@ import ImpulseProcessor from "../worklet/ImpulseProcessor";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import drums from "../assets/drums";
@@ -16,7 +16,7 @@ import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import rsp from "@vicimpa/rsp";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const drumsNames = Object.keys(drums);
 const drumsVariants = [

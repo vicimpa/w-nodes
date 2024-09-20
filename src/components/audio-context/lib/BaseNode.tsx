@@ -2,8 +2,8 @@ import { FC, ReactNode } from "react";
 
 import { NodeItem } from "$components/node-editor";
 import { computed } from "@preact/signals-react";
-import { connect } from "$library/connect";
-import { reactive } from "$library/signals";
+import { connect } from "@vicimpa/react-decorators";
+import { reactive } from "@vicimpa/decorators";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
 

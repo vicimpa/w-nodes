@@ -1,6 +1,6 @@
 import { NodeLayersItem } from "../node-layers";
 import { NodeSelection } from "./NodeSelection";
-import { useInject } from "$library/provider";
+import { useInject } from "@vicimpa/react-decorators";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export const NodeSelectionView = () => {

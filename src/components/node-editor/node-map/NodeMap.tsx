@@ -1,16 +1,17 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
 import { TFV, fv } from "$library/fv";
-import { prop, reactive, signalRef } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { MouseEvent as ReactMouseEvent } from "react";
-import { Vec2 } from "$library/vec2";
-import { connect } from "$library/connect";
+import { Vec2 } from "@vicimpa/lib-vec2";
+import { connect } from "@vicimpa/react-decorators";
 import detectDrag from "./plugins/detectDrag";
 import detectResize from "./plugins/detectResize";
 import detectView from "./plugins/detectView";
 import detectWheel from "./plugins/detectWheel";
-import { provide } from "$library/provider";
+import { provide } from "@vicimpa/react-decorators";
 import s from "./NodeMap.module.sass";
+import { signalRef } from "$library/signals";
 
 export interface INodeMapProps extends PropsWithChildren {
   x?: number;

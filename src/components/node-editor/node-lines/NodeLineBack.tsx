@@ -4,7 +4,7 @@ import { NodeConnect, NodeLines } from "./NodeLines";
 import { NodeLayersItem } from "../node-layers";
 import { NodeLine } from "./NodeLine";
 import { NodeMap } from "../node-map";
-import { useInject } from "$library/provider";
+import { useInject } from "@vicimpa/react-decorators";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export const NodeLineBack: FC<{ connect: NodeConnect; }> = ({ connect }) => {

@@ -12,7 +12,7 @@ import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 const types = Object.keys(functions) as FunctionType[];
 const variants = types.map(value => ({ value }));

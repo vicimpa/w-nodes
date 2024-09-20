@@ -1,12 +1,13 @@
 import { Component, PropsWithChildren, ReactNode, createElement } from "react";
-import { prop, reactive, signalRef } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { BackVariants } from "./BackVariants";
 import { NodeMap } from "../node-map";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import detectResize from "./plugins/detectResize";
 import detectUpdate from "./plugins/detectUpdate";
-import { inject } from "$library/provider";
+import { inject } from "@vicimpa/react-decorators";
+import { signalRef } from "$library/signals";
 
 var count = 0;
 

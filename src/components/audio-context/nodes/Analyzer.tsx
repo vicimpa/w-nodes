@@ -12,7 +12,7 @@ import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signalRef } from "$library/signals";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Analyzer')
 @group('analyze')

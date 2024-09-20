@@ -2,7 +2,7 @@ import { Component, PropsWithChildren, ReactNode } from "react";
 
 import { NodeItem } from "../node-item";
 import { NodeView } from "../node-view";
-import { provide } from "$library/provider";
+import { provide } from "@vicimpa/react-decorators";
 import { signalRef } from "$library/signals";
 
 @provide()

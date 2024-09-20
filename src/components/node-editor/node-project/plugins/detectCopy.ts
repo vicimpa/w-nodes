@@ -1,14 +1,14 @@
 import { NodeProject, TConnect } from "../NodeProject";
-import { makePack, t } from "$library/datapack";
+import { makeDataPack, t } from "@vicimpa/data-pack";
 
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import base64 from "$library/base64";
 import { delay } from "$library/function";
 import { dispose } from "$library/dispose";
 import gzip from "$library/gzip";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
-const copyPack = makePack(
+const copyPack = makeDataPack(
   t.obj({
     nodes: t.array(t.uint()),
     connect: t.array(
@@ -75,7 +75,7 @@ export default (ctx: NodeProject) => (
             connect: connectsStore
           }))
           .then(buff => gzip.encode(buff))
-          .then(buff => base64.encode(buff))
+          .then(buff => base64.fromBuffer(buff))
           .then(base64 => navigator.clipboard.writeText(storeString = base64));
       }
     }),
@@ -106,7 +106,7 @@ export default (ctx: NodeProject) => (
             connect: connectsStore
           }))
           .then(buff => gzip.encode(buff))
-          .then(buff => base64.encode(buff))
+          .then(buff => base64.fromBuffer(buff))
           .then(base64 => navigator.clipboard.writeText(storeString = base64));
       }
     }),
@@ -120,7 +120,7 @@ export default (ctx: NodeProject) => (
               store
             ) : (
               Promise.resolve(text)
-                .then((text) => base64.decode(text))
+                .then((text) => base64.toBuffer(text))
                 .then(buff => gzip.decode(buff))
                 .then(buff => copyPack.read(buff))
             )

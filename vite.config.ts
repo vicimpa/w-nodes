@@ -6,6 +6,16 @@ export default defineConfig({
   root: './src',
   publicDir: '../public',
   base: './',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern'
+      },
+      sass: {
+        api: 'modern'
+      }
+    }
+  },
   build: {
     emptyOutDir: true,
     outDir: '../dist',

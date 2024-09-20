@@ -1,19 +1,20 @@
 import { Component, ReactNode } from "react";
-import { prop, reactive, signalRef } from "$library/signals";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { NodeItem } from "../node-item";
 import { NodeLines } from "../node-lines";
 import { NodeMap } from "../node-map";
 import { computed } from "@preact/signals-react";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import detectConnect from "./plugins/detectConnect";
 import detectDrag from "./plugins/detectDrag";
 import detectHover from "./plugins/detectHover";
 import detectMount from "./plugins/detectMount";
 import detectPosition from "./plugins/detectPosition";
 import detectRemove from "./plugins/detectRemove";
-import { inject } from "$library/provider";
+import { inject } from "@vicimpa/react-decorators";
 import s from "./NodePort.module.sass";
+import { signalRef } from "$library/signals";
 
 export interface INodePortProps {
   value?: any;

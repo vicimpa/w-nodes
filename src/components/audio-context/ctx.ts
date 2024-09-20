@@ -1,5 +1,5 @@
 import { dispose } from "$library/dispose";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 declare global {
   var _ctx: AudioContext | undefined;

@@ -2,7 +2,7 @@ import { Fragment, createElement } from "react";
 
 import { NodeLineForward } from "./NodeLineForward";
 import { NodeLines } from "./NodeLines";
-import { useInject } from "$library/provider";
+import { useInject } from "@vicimpa/react-decorators";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export const NodeLinesForward = () => {

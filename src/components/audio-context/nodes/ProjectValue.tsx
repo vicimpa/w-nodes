@@ -2,14 +2,14 @@ import { BaseNode } from "../lib/BaseNode";
 import { Project } from "../views/project";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { connect } from "$library/connect";
+import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
 import { group } from "../_groups";
-import { inject } from "$library/provider";
+import { inject } from "@vicimpa/react-decorators";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Project')
 @connect(ctx => (

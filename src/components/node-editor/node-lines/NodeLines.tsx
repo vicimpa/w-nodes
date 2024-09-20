@@ -1,17 +1,17 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
-import { inject, provide } from "$library/provider";
-import { prop, reactive } from "$library/signals";
+import { inject, provide } from "@vicimpa/react-decorators";
+import { prop, reactive } from "@vicimpa/decorators";
 
 import { NodeLayersItem } from "../node-layers";
 import { NodeLinesBack } from "./NodeLinesBack";
 import { NodeLinesForward } from "./NodeLinesForward";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
-import { Vec2 } from "$library/vec2";
-import { connect } from "$library/connect";
+import { Vec2 } from "@vicimpa/lib-vec2";
+import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
-import { makeDrag } from "$library/drag";
+import { makeDrag } from "@vicimpa/easy-drag";
 
 export type NodeConnect = [from: NodePort, to: NodePort];
 

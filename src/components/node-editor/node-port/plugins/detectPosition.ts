@@ -1,8 +1,8 @@
 import { NodePort } from "../NodePort";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
-import { intersectionObserver } from "$library/observers/intersectionObserver";
+import { intersectionObserver } from "@vicimpa/observers";
 
 export default (ctx: NodePort) => (
   effect(() => {

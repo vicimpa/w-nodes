@@ -1,6 +1,6 @@
 import { NodePort } from "../NodePort";
 import { effect } from "@preact/signals-react";
-import { elementEvents } from "$library/events";
+import { elementEvents } from "@vicimpa/events";
 
 export default (ctx: NodePort) => (
   effect(() => {

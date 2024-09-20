@@ -1,5 +1,5 @@
 import { NodeBack } from "..";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
 

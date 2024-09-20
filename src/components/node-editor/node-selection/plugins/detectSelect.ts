@@ -1,8 +1,8 @@
 import { NodeSelection } from "../NodeSelection";
-import { Vec2 } from "$library/vec2";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
-import { windowEvents } from "$library/events";
+import { windowEvents } from "@vicimpa/events";
 
 export default (ctx: NodeSelection) => (
   dispose(

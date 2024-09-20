@@ -6,7 +6,7 @@ import { SignalNode } from "../lib/signalNode";
 import { dispose } from "$library/dispose";
 import { group } from "../_groups";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Inpulse')
 @group('custom')

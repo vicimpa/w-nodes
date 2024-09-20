@@ -1,8 +1,8 @@
 import { CSSProperties, FC, MouseEvent } from "react";
 
 import { NodePort } from "../node-port";
-import { Vec2 } from "$library/vec2";
-import { max } from "$library/math";
+import { Vec2 } from "@vicimpa/lib-vec2";
+import { max } from "@vicimpa/math";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export type TNodeLineProps = {

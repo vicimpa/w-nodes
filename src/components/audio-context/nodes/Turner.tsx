@@ -6,7 +6,7 @@ import { SignalPort } from "../ports/SignalPort";
 import { group } from "../_groups";
 import { line } from "../lib/line";
 import { name } from "$library/function";
-import { store } from "$library/store";
+import { store } from "$components/node-editor";
 
 @name('Turner')
 @group('analyze')
