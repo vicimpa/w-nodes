@@ -1,4 +1,3 @@
-import { Signal, batch } from "@preact/signals-react";
 import { abs, ceil, cos, floor, hypot, iters, max, min, rem, rems, round, sign, sin } from "$library/math";
 
 export type TMutation = (x: number, y: number) => any;
@@ -19,8 +18,6 @@ export type TParameter = (
   | [vec: Vec2]
   | [xy: TPointVec2]
   | [xy: number]
-  | [xy: Signal<number>]
-  | [x: Signal<number>, y: Signal<number>]
   | TTupleVec2
 );
 
@@ -31,13 +28,6 @@ export function mutation<F extends TMutation>(args: TParameter, mutation: F): Re
     if (typeof args[1] === 'number')
       return mutation.call(null, first, args[1]);
     return mutation.call(null, first, first);
-  }
-
-  if (first instanceof Signal) {
-    if (args[1] instanceof Signal)
-      return mutation.call(null, first.peek(), args[1].peek());
-
-    return mutation.call(null, first.peek(), first.peek());
   }
 
   if (first && ('x' in first) && ('y' in first))
@@ -302,20 +292,10 @@ export class Vec2 {
     return max(...this);
   }
 
-  toSignals(x: Signal<number>, y: Signal<number>) {
-    return batch(() => {
-      x.value = this.x;
-      y.value = this.y;
-      return this;
-    });
-  }
-
   toObject(o: { x: number, y: number; }) {
-    return batch(() => {
-      o.x = this.x;
-      o.y = this.y;
-      return this;
-    });
+    o.x = this.x;
+    o.y = this.y;
+    return this;
   }
 
   toRect(...args: TParameter) {
@@ -346,10 +326,6 @@ export class Vec2 {
 
   static fromPageXY(page: TPageXY, vec = new this()) {
     return vec.set(page.pageX, page.pageY);
-  }
-
-  static fromSignals(x: Signal<number>, y: Signal<number>, vec = new this()) {
-    return vec.set(x.value, y.value);
   }
 
   static fromOffsetXY(offset: TOffsetXY, vec = new this()) {

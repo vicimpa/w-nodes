@@ -14,15 +14,16 @@ const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can
   const loop = frames(() => {
     const rect = can.getBoundingClientRect();
     const end = Vec2.fromSize(rect);
-
-    current
+    const data = current
       .cminus(rect)
       .div(end)
       .cropMin(0)
       .cropMax(1)
       .times(2)
-      .minus(1)
-      .toSignals(ctx._x, ctx._y);
+      .minus(1);
+
+    ctx._x.value = data.x;
+    ctx._y.value = data.y;
   });
 
   return ({ current: newCurrent }) => {
