@@ -15,7 +15,7 @@
     "@vicimpa/decorators": "^0.0.4",
     "@vicimpa/easy-drag": "^0.1.6",
     "@vicimpa/events": "^0.0.9",
-    "@vicimpa/lib-vec2": "^0.2.6",
+    "@vicimpa/lib-vec2": "^0.2.7",
     "@vicimpa/math": "^0.0.9",
     "@vicimpa/observers": "^0.0.7",
     "@vicimpa/react-decorators": "^0.1.5",
