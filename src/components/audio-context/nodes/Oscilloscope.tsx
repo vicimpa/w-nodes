@@ -6,6 +6,7 @@ import { SignalNode } from "../lib/signalNode";
 import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
+import { dom } from "$library/dom";
 import { group } from "../_groups";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
@@ -28,6 +29,9 @@ export default class extends BaseNode {
   @store _type = signal(0);
   @store _swap = new SignalNode(0, { default: 0 });
   @store _invert = new SignalNode(0, { default: 0 });
+
+  buff = dom('canvas', {});
+  buffCtx = this.buff.getContext('2d')!;
 
   _connect = () => {
     this.#nodeLeft.fftSize = 2048;
@@ -53,6 +57,7 @@ export default class extends BaseNode {
           const bufferLength = this._dataX.length;
           const leftChannelData = this._dataX;
           const rightChannelData = this._dataY;
+          const { buff, buffCtx } = this;
 
           if (!this._start.value)
             return;
@@ -60,44 +65,39 @@ export default class extends BaseNode {
           this.#nodeLeft.getFloatTimeDomainData(leftChannelData);
           this.#nodeRight.getFloatTimeDomainData(rightChannelData);
 
+          buff.width = width;
+          buff.height = height;
+          buffCtx.clearRect(0, 0, width, height);
+          buffCtx.globalAlpha = .3;
+          buffCtx.drawImage(can, 0, 0, width, height);
           ctx.clearRect(0, 0, width, height);
+          ctx.drawImage(buff, 0, 0, width, height);
 
           ctx.lineWidth = 1;
-          ctx.fillStyle = '#fff';
-          ctx.strokeStyle = '#fff';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
 
-          ctx.beginPath();
-          var sX = 0;
-          var sY = 0;
           var inv = this._invert.value ? -1 : 1;
           var swap = this._swap.value && 1;
 
-
-          for (let i = 0; i < bufferLength; i++) {
+          var svg = Array.from({ length: bufferLength }, (_, i) => {
             var vX = leftChannelData[i];
             var vY = rightChannelData[i];
 
             if (swap) {
               [vX, vY] = [vY, vX];
-              vX *= inv;
-              vY *= inv;
             }
+
+            vY *= inv;
 
             var yX = (vX + 1) * height / 2;
             var yY = (-vY + 1) * height / 2;
 
 
-            if (i === 0) {
-              ctx.moveTo(yX, yY);
-            } else {
-              ctx.lineTo(yX, yY);
-            }
+            return i ? `L ${yX},${yY}` : `M ${yX},${yY}`;
+          }).join(' ');
 
-            sX += yX;
-            sY += yY;
-          }
-          ctx.stroke();
-          ctx.closePath();
+          ctx.stroke(new Path2D(svg));
 
           for (let i = 0; i < bufferLength; i++) {
             var vX = leftChannelData[i];
@@ -105,9 +105,9 @@ export default class extends BaseNode {
 
             if (swap) {
               [vX, vY] = [vY, vX];
-              vX *= inv;
-              vY *= inv;
             }
+
+            vY *= inv;
 
             var yX = (vX + 1) * height / 2;
             var yY = (-vY + 1) * height / 2;
