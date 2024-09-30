@@ -19,6 +19,8 @@ const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can
       .div(end)
       .cropMin(0)
       .cropMax(1)
+      .times(1, -1)
+      .plus(0, 1)
       .times(2)
       .minus(1);
 
@@ -54,7 +56,7 @@ export default class BiSlider extends BaseNode {
     const { radius } = this;
     const size = Vec2.fromSize(can);
     const center = size.ctimes(.5);
-    const value = center.ctimes(this._x.value, this._y.value);
+    const value = center.ctimes(this._x.value, -this._y.value);
 
     ctx.resetTransform();
     ctx.clearRect(0, 0, size);

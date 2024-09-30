@@ -84,7 +84,7 @@ export default class extends BaseNode {
             }
 
             var yX = (vX + 1) * height / 2;
-            var yY = (vY + 1) * height / 2;
+            var yY = (-vY + 1) * height / 2;
 
 
             if (i === 0) {
@@ -110,7 +110,7 @@ export default class extends BaseNode {
             }
 
             var yX = (vX + 1) * height / 2;
-            var yY = (vY + 1) * height / 2;
+            var yY = (-vY + 1) * height / 2;
 
             ctx.beginPath();
             ctx.arc(yX, yY, 1, 0, PI2);
