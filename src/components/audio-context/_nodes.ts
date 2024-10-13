@@ -19,7 +19,7 @@ import Oscilloscope from "./nodes/Oscilloscope";
 import Panner from "./nodes/Panner";
 import Player from "./nodes/Player";
 import ProjectValue from "./nodes/ProjectValue";
-import Recorder from "./nodes/Recorder";
+// import Recorder from "./nodes/Recorder";
 import Seqencer from "./nodes/Seqencer";
 import ShowValue from "./nodes/ShowValue";
 import Slider from "./nodes/Slider";
