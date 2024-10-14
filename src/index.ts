@@ -8,7 +8,8 @@ oncontextmenu = (e) => e.preventDefault();
 createRoot(
   dom('div', {
     style: {
-      display: 'contents'
+      display: 'contents',
+      border: 'none'
     },
     ref(elem) {
       document.body.appendChild(elem);
