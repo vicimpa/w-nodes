@@ -101,7 +101,7 @@ function groupFor(nodes: ReactNode[], groupSize = 4) {
   )
 ))
 @reactive()
-class SequencerLine extends Component<{ main: Seqencer; value: number; index: number; signalValue: number; }> {
+class SequencerLine extends Component<{ main: Sequencer; value: number; index: number; signalValue: number; }> {
   processor = new SequenceProcessor();
 
   main = this.props.main;
@@ -116,7 +116,8 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
           key={i}
           $active={(this.value >> i) & 1}
           data-item={i}
-          onMouseDown={() => {
+          onMouseDown={(e) => {
+            if (e.button) return;
             var val = +!((this.value >> i) & 1);
             var def = ~(1 << i) & this.value;
             this.value = def | (val << i);
@@ -188,7 +189,7 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
   }
 }
 
-@name('Seqencer')
+@name('Sequencer')
 @group('custom')
 @connect((ctx) => (
   dispose(
@@ -197,7 +198,7 @@ class SequencerLine extends Component<{ main: Seqencer; value: number; index: nu
   )
 ))
 @reactive()
-export default class Seqencer extends BaseNode {
+export default class Sequencer extends BaseNode {
   _time = new SignalNode(0, { default: 0 });
   _constant = new ConstantSourceNode(ctx, { offset: -16 });
   _timeOut = new SignalNode(0, { default: 0 });
