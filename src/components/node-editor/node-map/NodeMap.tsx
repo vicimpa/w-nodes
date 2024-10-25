@@ -7,7 +7,6 @@ import { Vec2 } from "@vicimpa/lib-vec2";
 import { connect } from "@vicimpa/react-decorators";
 import detectDrag from "./plugins/detectDrag";
 import detectResize from "./plugins/detectResize";
-import detectView from "./plugins/detectView";
 import detectWheel from "./plugins/detectWheel";
 import { provide } from "@vicimpa/react-decorators";
 import s from "./NodeMap.module.sass";
@@ -22,7 +21,6 @@ export interface INodeMapProps extends PropsWithChildren {
 @provide()
 @connect(
   detectResize,
-  detectView,
   detectDrag,
   detectWheel,
 )
@@ -37,8 +35,27 @@ export class NodeMap extends Component<INodeMapProps> {
   @prop y = this.props.y ?? 0;
   @prop s = this.props.s ?? 1;
 
-  @prop rect = new DOMRect();
-  @prop view = new DOMRect();
+  @prop top = 0;
+  @prop left = 0;
+  @prop width = 0;
+  @prop height = 0;
+
+  @prop
+  get rect() {
+    return new DOMRect(
+      this.left,
+      this.top,
+      this.width,
+      this.height
+    );
+  };
+
+  @prop
+  get view() {
+    const size = Vec2.fromSize(this.rect).div(this.s);
+    const pos = size.cdiv(-2).plus(this);
+    return new DOMRect(...pos, ...size);
+  };
 
   private viewPad = 50;
   private viewOver = 4;
