@@ -27,7 +27,6 @@ export interface INodeMapProps extends PropsWithChildren {
 @reactive()
 export class NodeMap extends Component<INodeMapProps> {
   div = signalRef<HTMLDivElement>();
-  svg = signalRef<SVGSVGElement>();
 
   @prop move = false;
 
