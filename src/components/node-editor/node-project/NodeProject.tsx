@@ -1,5 +1,6 @@
 import { Component, PropsWithChildren, ReactNode, RefObject } from "react";
 import { NodeConnect, NodeLines } from "../node-lines";
+import { computed, untracked } from "@preact/signals-react";
 import { inject, provide } from "@vicimpa/react-decorators";
 import { prop, reactive } from "@vicimpa/decorators";
 
@@ -7,7 +8,6 @@ import { NodeItem } from "../node-item";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
 import { NodeSelection } from "../node-selection";
-import { computed } from "@preact/signals-react";
 import { connect } from "@vicimpa/react-decorators";
 import detectCopy from "./plugins/detectCopy";
 import detectDelete from "./plugins/detectDelete";
@@ -115,7 +115,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
     nodes.forEach((node, i) => {
       node.sortPorts.forEach((port, j) => {
-        port.connects.peek().forEach(connect => {
+        untracked(() => port.connects).forEach(connect => {
           const ports = connect.item.sortPorts;
           const k = nodes.indexOf(connect.item as T);
           const _c = this.lines.connects.find(e => (

@@ -4,7 +4,6 @@ import { prop, reactive } from "@vicimpa/decorators";
 import { NodeItem } from "../node-item";
 import { NodeLines } from "../node-lines";
 import { NodeMap } from "../node-map";
-import { computed } from "@preact/signals-react";
 import { connect } from "@vicimpa/react-decorators";
 import detectConnect from "./plugins/detectConnect";
 import detectDrag from "./plugins/detectDrag";
@@ -51,13 +50,13 @@ export class NodePort extends Component<INodePortProps> {
 
   @prop value: any = this.props.value;
 
-  connects = computed(() => {
+  @prop get connects() {
     if (!this.lines) return [];
 
     return this.lines.connects
       .filter(e => e.includes(this))
       .map(e => e[0] === this ? e[1] : e[0]);
-  });
+  };
 
   onConnect(port: NodePort) {
     try {
