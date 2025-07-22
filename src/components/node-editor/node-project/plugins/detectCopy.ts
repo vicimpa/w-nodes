@@ -119,7 +119,7 @@ export default (ctx: NodeProject) => (
             store && text === storeString ? (
               store
             ) : (
-              Promise.resolve(text)
+              Promise.resolve(text.trim())
                 .then((text) => base64.toBuffer(text))
                 .then(buff => gzip.decode(buff))
                 .then(buff => copyPack.read(buff))
