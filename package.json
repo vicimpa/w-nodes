@@ -13,7 +13,7 @@
     "@vicimpa/data-buffer": "^0.0.6",
     "@vicimpa/data-pack": "^0.0.8",
     "@vicimpa/decorators": "^0.0.5",
-    "@vicimpa/easy-drag": "^0.1.10",
+    "@vicimpa/easy-drag": "^0.1.11",
     "@vicimpa/events": "^0.0.11",
     "@vicimpa/lib-vec2": "^0.3.3",
     "@vicimpa/math": "^0.0.9",

@@ -5,8 +5,9 @@ import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
 import { pipe } from "./pipe";
+import { RefValue } from "./refValue";
 
-const value = (v: number | AudioParam) => (
+const value = (v: number | AudioParam | RefValue) => (
   typeof v === 'number' ? v : v.value
 );
 
@@ -20,6 +21,7 @@ export type SignalNodeParams = {
 @reactive()
 export class SignalNode extends Signal<number> {
   node = new ConstantSourceNode(ctx);
+  refValue?: RefValue;
   param?: AudioParam;
 
   #analyze = new AnalyserNode(ctx);
@@ -108,6 +110,12 @@ export class SignalNode extends Signal<number> {
         }
       }),
       effect(() => {
+        if (!this.refValue)
+          return;
+
+        this.refValue.value = this.value;
+      }),
+      effect(() => {
         if (this.connected)
           return;
 
@@ -133,7 +141,7 @@ export class SignalNode extends Signal<number> {
     );
   }
 
-  constructor(param: number | AudioParam, params?: SignalNodeParams) {
+  constructor(param: number | AudioParam | RefValue, params?: SignalNodeParams) {
     super(value(param));
     this.node.start();
     this.#analyze.fftSize = 32;
@@ -144,10 +152,16 @@ export class SignalNode extends Signal<number> {
       this.min = params?.min ?? param.minValue;
       this.max = params?.max ?? param.maxValue;
       this.default = params?.default ?? param.defaultValue;
+    } else if (param instanceof RefValue) {
+      this.refValue = param;
+      this.min = params?.min ?? param.minValue;
+      this.max = params?.max ?? param.maxValue;
+      this.default = params?.default ?? param.defaultValue;
     } else {
       this.min = params?.min ?? this.node.offset.minValue;
       this.max = params?.max ?? this.node.offset.maxValue;
       this.default = params?.default ?? this.node.offset.defaultValue;
+      console.log(arguments, this);
     }
   }
 }
