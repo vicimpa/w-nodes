@@ -3,14 +3,15 @@ import { Canvas } from "$components/canvas";
 import { PI2 } from "@vicimpa/math";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { Vec2 } from "@vicimpa/lib-vec2";
+import { vec2, Vec2 } from "@vicimpa/lib-vec2";
 import { frames } from "$library/frames";
 import { group } from "../_groups";
 import { makeDrag } from "@vicimpa/easy-drag";
 import { name } from "$library/function";
 import { store } from "$components/node-editor";
 
-const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current }, can, ctx) => {
+const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current: now }, can, ctx) => {
+  const current = vec2(now);
   const loop = frames(() => {
     const rect = can.getBoundingClientRect();
     const end = Vec2.fromSize(rect);

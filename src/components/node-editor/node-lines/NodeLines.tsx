@@ -7,7 +7,7 @@ import { NodeLinesBack } from "./NodeLinesBack";
 import { NodeLinesForward } from "./NodeLinesForward";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
-import { Vec2 } from "@vicimpa/lib-vec2";
+import { vec2, Vec2 } from "@vicimpa/lib-vec2";
 import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
@@ -26,7 +26,7 @@ export class NodeLines extends Component<PropsWithChildren> {
   @prop from: NodePort[] = [];
   @prop connects: NodeConnect[] = [];
 
-  fromStart = makeDrag<NodePort[]>(({ current }, ...from) => {
+  fromStart = makeDrag<NodePort[]>(({ current: now }, ...from) => {
     this.from = from ?? [];
 
     if (!this.from.length)
@@ -35,6 +35,8 @@ export class NodeLines extends Component<PropsWithChildren> {
 
         };
       };
+
+    const current = vec2(now);
 
     const _dispose = dispose(
       frames((dtime) => {

@@ -1,5 +1,5 @@
 import type { NodeMap } from "..";
-import { Vec2 } from "@vicimpa/lib-vec2";
+import { vec2, Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
 import { elementEvents } from "@vicimpa/events";
 import { makeDrag } from "@vicimpa/easy-drag";
@@ -10,7 +10,7 @@ const drag = makeDrag<[ctx: NodeMap]>((_, ctx) => {
   if (ctx.div.value)
     ctx.div.value.style.cursor = 'move';
   return ({ delta }) => {
-    delta.div(ctx.s)
+    vec2(delta).div(ctx.s)
       .plus(start)
       .toObject(ctx);
 

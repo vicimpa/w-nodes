@@ -1,17 +1,18 @@
 import { NodeItem } from "../NodeItem";
-import { Vec2 } from "@vicimpa/lib-vec2";
+import { vec2, Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
 import { elementEvents } from "@vicimpa/events";
 import { frames } from "$library/frames";
 import { makeDrag } from "@vicimpa/easy-drag";
 
-export const dragNodeItem = makeDrag<[ctx: NodeItem, elem: HTMLElement]>(({ start, current }, ctx, elem) => {
+export const dragNodeItem = makeDrag<[ctx: NodeItem, elem: HTMLElement]>(({ start, current: now }, ctx, elem) => {
   elem.style.cursor = 'grabbing';
 
   const { map } = ctx;
-  const offset = map.offset(start);
+  const offset = map.offset(vec2(start));
   const items = [...ctx.selection.select];
   const corrects = items.map(e => new Vec2(e).minus(offset));
+  const current = vec2(now);
 
   const dispose = frames((dtime) => {
     map.calcViewTransitionVec(current, dtime)

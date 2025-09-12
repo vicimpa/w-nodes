@@ -1,15 +1,16 @@
 import { max, min } from "@vicimpa/math";
 
 import { NodeSelection } from "../NodeSelection";
-import { Vec2 } from "@vicimpa/lib-vec2";
+import { vec2, Vec2 } from "@vicimpa/lib-vec2";
 import { effect } from "@preact/signals-react";
 import { elementEvents } from "@vicimpa/events";
 import { frames } from "$library/frames";
 import { makeDrag } from "@vicimpa/easy-drag";
 
-const select = makeDrag<[ctx: NodeSelection]>(({ current }, ctx) => {
+const select = makeDrag<[ctx: NodeSelection]>(({ current: now }, ctx) => {
   const { map } = ctx;
 
+  const current = vec2(now);
   const a = map.offset(current);
 
   const dispose = frames((dtime) => {
