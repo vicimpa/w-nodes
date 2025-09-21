@@ -1,6 +1,5 @@
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
-import { PI2 } from "@vicimpa/math";
 import { Range } from "../lib/Range";
 import { Select } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
