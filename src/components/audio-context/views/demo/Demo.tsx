@@ -1,5 +1,6 @@
 import { AudioProject } from "$components/audio-context/AudioProject";
 import { examples } from "$components/audio-context/examples";
+import { LoadEvent } from "$components/node-editor";
 import { HudPortal } from "$components/node-editor/node-hud/HudPortal";
 import { useInject } from "@vicimpa/react-decorators";
 import styled from "styled-components";
@@ -52,9 +53,8 @@ export const Demo = () => {
                   const req = await fetch(module.default);
                   const text = await req.text();
                   project.clean();
-                  navigator.clipboard.writeText(text);
                   location.hash = '#' + name;
-                  dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyV', ctrlKey: true }));
+                  LoadEvent.emit(text);
                 }}
               >
                 {name}

@@ -28,6 +28,7 @@ import StereoPanner from "./nodes/StereoPanner";
 import Timer from "./nodes/Timer";
 import Toggle from "./nodes/Toggle";
 import Turner from "./nodes/Turner";
+import Note from "./nodes/Note";
 
 export default [
   BiquadFilter,
@@ -58,5 +59,6 @@ export default [
   Drums,
   ProjectValue,
   Input,
+  Note,
   // Recorder,
 ] as typeof BaseNode[];

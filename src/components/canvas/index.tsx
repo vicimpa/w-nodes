@@ -1,5 +1,5 @@
 import { effect, useComputed } from "@preact/signals-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, JSX } from "react";
 
 import { frames } from "$library/frames";
 import { signalRef } from "$library/signals";
@@ -48,6 +48,6 @@ export const Canvas = ({ draw, loop, ...props }: TCanvasProps) => {
   ), [draw, loop]);
 
   return (
-    <canvas ref={(instance) => ref.value = instance} {...props} />
+    <canvas ref={(instance) => { ref.value = instance; }} {...props} />
   );
 };

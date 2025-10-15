@@ -12,7 +12,7 @@ export default (ctx: NodeBack<any>) => (
         .minus(ctx.block / 2);
 
       const size = Vec2.fromSize(ctx)
-        .cropMin(1)
+        .clampMax(1)
         .plus(ctx)
         .times(ctx.block);
 

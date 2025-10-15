@@ -7,6 +7,7 @@ import { delay } from "$library/function";
 import { dispose } from "$library/dispose";
 import gzip from "$library/gzip";
 import { windowEvents } from "@vicimpa/events";
+import { LoadEvent } from "../utils/LoadEvent";
 
 const copyPack = makeDataPack(
   t.obj({
@@ -114,7 +115,15 @@ export default (ctx: NodeProject) => (
       if ((e.metaKey || e.ctrlKey) && e.code == 'KeyV') {
         e.preventDefault();
 
-        navigator.clipboard.readText()
+        const read = async () => {
+          console.log(e);
+          if (e instanceof LoadEvent)
+            return e.loadCode;
+
+          return navigator.clipboard.readText();
+        };
+
+        read()
           .then(text => (
             store && text === storeString ? (
               store

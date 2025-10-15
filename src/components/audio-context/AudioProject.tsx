@@ -11,9 +11,7 @@ export class AudioProject extends NodeProject {
 
   render(): ReactNode {
     return (
-      <>
-        {super.render()}
-      </>
+      super.render()
     );
   }
 }

@@ -1,11 +1,13 @@
 import { Signal, signal } from "@preact/signals-react";
 
-import { createRef } from "react";
+import { createRef, RefObject } from "react";
+
+export type SignalRef<T> = Signal<T | null> & RefObject<T>;
 
 export const signalRef = <T = unknown>() => {
   return Object.defineProperty(
     Object.assign(
-      signal<T>(),
+      signal<T | null>(),
       createRef<T>()
     ),
     'current',
@@ -17,5 +19,5 @@ export const signalRef = <T = unknown>() => {
         this.value = v;
       },
     }
-  );
+  ) as SignalRef<T>;
 };

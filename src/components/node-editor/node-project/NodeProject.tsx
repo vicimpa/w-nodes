@@ -58,7 +58,7 @@ export class NodeProject extends Component<TNodeProjectProps> {
         id: id++,
         node,
         props: { x: this.map.x, y: this.map.y, ...props, onMount },
-        ref: signalRef(),
+        ref: signalRef<NodeItem>(),
       }];
     });
   }

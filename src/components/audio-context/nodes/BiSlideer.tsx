@@ -18,8 +18,7 @@ const drag = makeDrag<[can: HTMLCanvasElement, ctx: BiSlider]>(({ current: now }
     const data = current
       .cminus(rect)
       .div(end)
-      .cropMin(0)
-      .cropMax(1)
+      .clamp(0, 1)
       .times(1, -1)
       .plus(0, 1)
       .times(2)

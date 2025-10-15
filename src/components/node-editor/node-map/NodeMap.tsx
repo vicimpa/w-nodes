@@ -1,7 +1,6 @@
 import { Component, PropsWithChildren, ReactNode } from "react";
 import { TFV, fv } from "$library/fv";
 import { prop, reactive } from "@vicimpa/decorators";
-
 import { MouseEvent as ReactMouseEvent } from "react";
 import { Vec2 } from "@vicimpa/lib-vec2";
 import { connect } from "@vicimpa/react-decorators";
@@ -18,13 +17,13 @@ export interface INodeMapProps extends PropsWithChildren {
   s?: number;
 }
 
-@provide()
 @connect(
   detectResize,
   detectDrag,
   detectWheel,
 )
 @reactive()
+@provide()
 export class NodeMap extends Component<INodeMapProps> {
   div = signalRef<HTMLDivElement>();
 
@@ -79,8 +78,8 @@ export class NodeMap extends Component<INodeMapProps> {
     return new Vec2(this)
       .plus(
         current
-          .cminus(min).minus(this.viewPad).cropMax(0).cropMin(-this.viewPad * this.viewOver)
-          .plus(current.cminus(max).plus(this.viewPad).cropMin(0).cropMax(this.viewPad * this.viewOver))
+          .cminus(min).minus(this.viewPad).clamp(-this.viewPad * this.viewOver, 0)
+          .plus(current.cminus(max).plus(this.viewPad).clamp(0, this.viewPad * this.viewOver))
           .times(dtime * .01 / this.s)
       );
   }
