@@ -30,27 +30,37 @@ export const Demo = () => {
       <Container>
         <h4>Demo projects:</h4>
         {
-          items.map(([key, value], i) => (
-            <a
-              key={i}
-              href="#"
-              onClick={async (e) => {
-                e.preventDefault();
-                const module: any = await value();
+          items.map(([key, value], i) => {
+            const name = key.split('/').at(-1);
 
-                if (!('default' in module))
-                  return;
+            return (
+              <a
+                key={i}
+                href="#"
+                ref={el => {
+                  if (!el) return;
+                  if ('#' + name === location.hash)
+                    el.click();
+                }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const module: any = await value();
 
-                const req = await fetch(module.default);
-                const text = await req.text();
-                project.clean();
-                navigator.clipboard.writeText(text);
-                dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyV', ctrlKey: true }));
-              }}
-            >
-              {key}
-            </a>
-          ))
+                  if (!('default' in module))
+                    return;
+
+                  const req = await fetch(module.default);
+                  const text = await req.text();
+                  project.clean();
+                  navigator.clipboard.writeText(text);
+                  location.hash = '#' + name;
+                  dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyV', ctrlKey: true }));
+                }}
+              >
+                {name}
+              </a>
+            );
+          })
         }
       </Container>
     </HudPortal>
