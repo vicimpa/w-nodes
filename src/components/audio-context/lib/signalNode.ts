@@ -161,7 +161,6 @@ export class SignalNode extends Signal<number> {
       this.min = params?.min ?? this.node.offset.minValue;
       this.max = params?.max ?? this.node.offset.maxValue;
       this.default = params?.default ?? this.node.offset.defaultValue;
-      console.log(arguments, this);
     }
   }
 }

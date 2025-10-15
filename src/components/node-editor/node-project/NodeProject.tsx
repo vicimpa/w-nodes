@@ -170,6 +170,10 @@ export class NodeProject extends Component<TNodeProjectProps> {
     });
   }
 
+  clean() {
+    this.store = [];
+  }
+
   render(): ReactNode {
     return (
       <>
