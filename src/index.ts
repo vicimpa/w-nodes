@@ -3,7 +3,6 @@ import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { dom } from "$library/dom";
 
-oncontextmenu = (e) => e.preventDefault();
 createRoot(
   dom('div', {
     style: {
