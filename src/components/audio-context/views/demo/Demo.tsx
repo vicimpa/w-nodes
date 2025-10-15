@@ -37,7 +37,7 @@ export const Demo = () => {
             return (
               <a
                 key={i}
-                href="#"
+                href={'#' + name}
                 ref={el => {
                   if (!el) return;
                   if ('#' + name === location.hash)
@@ -53,7 +53,6 @@ export const Demo = () => {
                   const req = await fetch(module.default);
                   const text = await req.text();
                   project.clean();
-                  location.hash = '#' + name;
                   LoadEvent.emit(text);
                 }}
               >
