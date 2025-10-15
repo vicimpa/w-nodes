@@ -1,11 +1,13 @@
+import { ctx } from "../ctx";
+
 export interface Startable {
-  start?(): any;
+  start?(n?: number): any;
   end?(): any;
   stop?(): any;
 }
 
 export const start = <T extends Startable>(target?: T) => {
-  var dispose = target?.start?.();
+  var dispose = target?.start?.(ctx.currentTime);
   return () => {
     dispose instanceof Function && dispose();
     target?.stop?.();
