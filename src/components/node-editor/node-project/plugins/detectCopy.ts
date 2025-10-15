@@ -116,7 +116,6 @@ export default (ctx: NodeProject) => (
         e.preventDefault();
 
         const read = async () => {
-          console.log(e);
           if (e instanceof LoadEvent)
             return e.loadCode;
 

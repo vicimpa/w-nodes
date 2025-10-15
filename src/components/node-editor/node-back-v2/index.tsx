@@ -22,6 +22,8 @@ export const NodeBack2 = () => {
         const size = Vec2.fromSize(rect);
         const offset = size.cdiv(-2 * s).plus(map.x, map.y).times(-1);
 
+
+
         var grid = 10;
 
         while (grid * s < 150)
