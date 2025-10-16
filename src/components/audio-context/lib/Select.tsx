@@ -32,6 +32,7 @@ export const Select = <T, const V extends TSelectVariant<T>>({
 
   useSignalEffect(() => {
     const find = _variants.find(({ id }) => id === _value.value);
+    console.log(_value.value);
     if (!find) return;
     value.value = find.variant.value;
   });
@@ -51,7 +52,8 @@ export const Select = <T, const V extends TSelectVariant<T>>({
           {label}:
         </span>
       </div>
-      <rsp.select bind-value={_value} onKeyDown={e => e.preventDefault()} onChange={e => e.currentTarget.blur()}>
+      {/* TODO разобраться почему не работает bind-value */}
+      <rsp.select bind-value={_value} onKeyDown={e => e.preventDefault()} onChange={e => { _value.value = e.currentTarget.value; e.currentTarget.blur(); }}>
         {
           groupBy ? (
             [
