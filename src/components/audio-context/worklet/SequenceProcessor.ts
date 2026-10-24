@@ -7,7 +7,7 @@ export default await defineWorklet({
     }
   },
   props: {
-    seqence: 0,
+    sequence: 0,
     value: 1,
   },
   context: {
@@ -26,8 +26,8 @@ export default await defineWorklet({
 
       frame |= 0;
 
-      var seqence = +this.props.seqence;
-      var value = isNaN(seqence) ? 0 : seqence & 0xFFFF;
+      var sequence = +this.props.sequence;
+      var value = isNaN(sequence) ? 0 : sequence & 0xFFFF;
 
       if (this.context.frame !== frame) {
         this.context.frame = frame;

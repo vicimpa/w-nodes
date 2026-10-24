@@ -1,159 +1,77 @@
 import { NodeProject, TConnect } from "../NodeProject";
-import { makeDataPack, t } from "@vicimpa/data-pack";
+import { NodePort } from "../../node-port";
+import { TProjectData, encodeProject } from "../utils/projectCodec";
 
 import { Vec2 } from "@vicimpa/lib-vec2";
-import base64 from "$library/base64";
-import { delay } from "$library/function";
 import { dispose } from "$library/dispose";
-import gzip from "$library/gzip";
+import { isFocused } from "../../node-map";
 import { windowEvents } from "@vicimpa/events";
-import { LoadEvent } from "../utils/LoadEvent";
 
-const copyPack = makeDataPack(
-  t.obj({
-    nodes: t.array(t.uint()),
-    connect: t.array(
-      t.tuple(
-        t.tuple(t.uint(), t.uint()),
-        t.tuple(t.uint(), t.uint()),
-      )
-    ),
-    configs: t.array(t.map())
+type TClip = {
+  text: string;
+  data: TProjectData;
+  external: TConnect[];
+  lines: NodeProject['lines'];
+};
+
+// Последнее скопированное в этой вкладке: при вставке той же строки
+// восстанавливаем ещё и связи с нодами вне выделения.
+var clip: TClip | null = null;
+
+// Связи с нодами вне выделения: только с живыми портами этого же редактора
+const liveExternal = (ctx: NodeProject, external: TConnect[]) => (
+  external.filter(([, port]) => (
+    port instanceof NodePort && port.lines === ctx.lines && !!port.port.value?.isConnected
+  ))
+);
+
+const offset = (data: TProjectData, delta: number) => {
+  for (const config of data.configs) {
+    if ('x' in config && 'y' in config)
+      new Vec2(config as Vec2).plus(delta).toObject(config as Vec2);
+  }
+
+  return data;
+};
+
+const hotkey = (ctx: NodeProject, code: string, callback: (e: KeyboardEvent) => unknown) => (
+  windowEvents('keydown', e => {
+    if (!(e.metaKey || e.ctrlKey) || e.code !== code || !isFocused(ctx.map))
+      return;
+
+    e.preventDefault();
+    Promise.resolve(callback(e)).catch(console.error);
   })
 );
 
-var store: { nodes: number[], connect: TConnect[], configs: any[]; } | null = null;
-var storeString: string = '';
+export default (ctx: NodeProject) => {
+  const copy = async (e: KeyboardEvent) => {
+    const { data, external } = ctx.serialize([...ctx.selection.select]);
+    const text = await encodeProject(await ctx.exportData(offset(data, 10), 'clipboard'));
 
-// TODO: ОТРЕФАКТОРИ СРОЧНО, ЗВЕЗДЮК!!!
+    clip = { text, data, external: e.shiftKey ? [] : external, lines: ctx.lines };
+    await navigator.clipboard.writeText(text);
+  };
 
-export default (ctx: NodeProject) => (
-  dispose(
-    windowEvents('keydown', async e => {
-      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyD') {
-        e.preventDefault();
-        const nodes = [...ctx.selection.select];
-        const connect = ctx.saveConnections(...nodes);
-        ctx.copy(...nodes)
-          .then(async select => {
-            ctx.selection.select = select;
-            select.forEach(e => e.x += 10);
-            select.forEach(e => e.y += 10);
-            await delay();
-
-            const connectsStore = connect
-              .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
-            await delay(100);
-            ctx.restoreConnections(e.shiftKey ? connectsStore : connect, ...select);
-          });
-      }
+  return dispose(
+    hotkey(ctx, 'KeyC', copy),
+    hotkey(ctx, 'KeyX', e => {
+      const nodes = [...ctx.selection.select];
+      const copied = copy(e);
+      ctx.destroy(...nodes);
+      return copied;
     }),
-    windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyX') {
-        e.preventDefault();
-        const copy = [...ctx.selection.select];
-        ctx.destroy(...copy);
-        const nodes = copy.map(e => ctx.nodes.indexOf(ctx.find(e)!));
-        const connect = ctx.saveConnections(...copy);
-        const configs = copy.map(e => {
-          const data = ctx.save(e);
-          if ('x' in data && 'y' in data) {
-            const _data = data as { x: number, y: number; };
-            new Vec2(_data).minus(ctx.map).plus(10).toObject(_data);
-          }
-          return data;
-        });
+    hotkey(ctx, 'KeyV', async e => {
+      const text = await navigator.clipboard.readText();
 
-        const connectsStore = connect
-          .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
+      if (clip && text === clip.text)
+        return ctx.load(clip.data, e.shiftKey || clip.lines !== ctx.lines ? [] : liveExternal(ctx, clip.external));
 
-        store = { nodes, connect: e.shiftKey ? connectsStore : connect, configs };
-
-        Promise.resolve()
-          .then(() => copyPack.write({
-            nodes,
-            configs,
-            connect: connectsStore
-          }))
-          .then(buff => gzip.encode(buff))
-          .then(buff => base64.fromBuffer(buff))
-          .then(base64 => navigator.clipboard.writeText(storeString = base64));
-      }
+      return ctx.paste(text);
     }),
-    windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyC') {
-        e.preventDefault();
-        const copy = [...ctx.selection.select];
-        const nodes = copy.map(e => ctx.nodes.indexOf(ctx.find(e)!));
-        const connect = ctx.saveConnections(...copy);
-        const configs = copy.map(e => {
-          const data = ctx.save(e);
-          if ('x' in data && 'y' in data) {
-            const _data = data as { x: number, y: number; };
-            new Vec2(_data).minus(ctx.map).plus(10).toObject(_data);
-          }
-          return data;
-        });
-
-        const connectsStore = connect
-          .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
-
-        store = { nodes, connect: e.shiftKey ? connectsStore : connect, configs };
-
-        Promise.resolve()
-          .then(() => copyPack.write({
-            nodes,
-            configs,
-            connect: connectsStore
-          }))
-          .then(buff => gzip.encode(buff))
-          .then(buff => base64.fromBuffer(buff))
-          .then(base64 => navigator.clipboard.writeText(storeString = base64));
-      }
+    hotkey(ctx, 'KeyD', e => {
+      const { data, external } = ctx.serialize([...ctx.selection.select]);
+      return ctx.load(offset(data, 10), e.shiftKey ? [] : liveExternal(ctx, external));
     }),
-    windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyV') {
-        e.preventDefault();
-
-        const read = async () => {
-          if (e instanceof LoadEvent)
-            return e.loadCode;
-
-          return navigator.clipboard.readText();
-        };
-
-        read()
-          .then(text => (
-            store && text === storeString ? (
-              store
-            ) : (
-              Promise.resolve(text.trim())
-                .then((text) => base64.toBuffer(text))
-                .then(buff => gzip.decode(buff))
-                .then(buff => copyPack.read(buff))
-            )
-          ))
-          .then(({ connect, ...other }) => {
-            if (e.shiftKey)
-              connect = connect
-                .filter(e => Array.isArray(e[0]) && Array.isArray(e[1])) as [[a: number, b: number], [c: number, d: number]][];
-
-            return { ...other, connect };
-          })
-          .then(({ nodes, configs, connect }) => (
-            Promise.all(nodes.map((e) => {
-              return ctx.append(ctx.nodes[e]);
-            })).then(async select => {
-              select.forEach((e, i) => {
-                ctx.restore(e, typeof configs[i] === 'object' ? configs[i] : {});
-                new Vec2(e).plus(ctx.map).toObject(e);
-              });
-              ctx.selection.select = select;
-              await delay(100);
-              ctx.restoreConnections(connect, ...select);
-            })
-          ));
-      }
-    }),
-  )
-);
+  );
+};

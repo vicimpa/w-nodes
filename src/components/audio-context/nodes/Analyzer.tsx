@@ -8,14 +8,16 @@ import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { frames } from "$library/frames";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { ChartColumn } from "lucide-react";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { signalRef } from "$library/signals";
 import { store } from "$components/node-editor";
 
 @name('Analyzer')
-@group('analyze')
+@group('monitor')
+@icon(ChartColumn)
 export default class extends BaseNode {
   #node = new AnalyserNode(ctx);
 

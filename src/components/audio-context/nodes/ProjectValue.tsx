@@ -5,7 +5,8 @@ import { SignalPort } from "../ports/SignalPort";
 import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Clapperboard } from "lucide-react";
 import { inject } from "@vicimpa/react-decorators";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
@@ -15,16 +16,17 @@ import { store } from "$components/node-editor";
 @connect(ctx => (
   dispose(
     effect(() => {
-      ctx._run.value = ctx.source.run & 1;
+      ctx._run.value = ctx.source.run;
     }),
     pipe(ctx.source.time, ctx._time),
     (
-      ctx.source.controlls++,
-      () => { ctx.source.controlls--; }
+      ctx.source.controls++,
+      () => { ctx.source.controls--; }
     )
   )
 ))
-@group('high')
+@group('time')
+@icon(Clapperboard)
 export default class extends BaseNode {
   @inject(() => Project) source!: Project;
 

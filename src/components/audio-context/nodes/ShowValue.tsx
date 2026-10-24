@@ -1,11 +1,13 @@
 import { BaseNode } from "../lib/BaseNode";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Eye } from "lucide-react";
 import { name } from "$library/function";
 
 @name('ShowValue')
-@group('analyze')
+@group('monitor')
+@icon(Eye)
 export default class extends BaseNode {
   _in = new SignalNode(0, { default: 0 });
 
@@ -15,21 +17,17 @@ export default class extends BaseNode {
 
   _view = () => (
     <div style={{
-      display: 'flex',
-      width: 250,
-      height: 100,
-      justifyContent: 'space-between',
-      alignItems: 'center'
+      width: 200,
+      padding: '10px 12px',
+      borderRadius: 'var(--radius-field)',
+      background: 'var(--bg-field)',
+      color: 'var(--accent)',
+      fontSize: 28,
+      textAlign: 'right',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     }}>
-      <h3 style={{
-        padding: '5px',
-        background: '#444',
-        fontFamily: 'monospace',
-        flexGrow: 1,
-        textAlign: 'right'
-      }}>
-        {this._in}
-      </h3>
+      {this._in}
     </div>
   );
 }

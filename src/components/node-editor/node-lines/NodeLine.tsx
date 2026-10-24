@@ -1,9 +1,9 @@
-import { CSSProperties, FC, MouseEvent } from "react";
+import { CSSProperties, FC, MouseEvent, useLayoutEffect, useRef } from "react";
 
 import { NodePort } from "../node-port";
 import { Vec2 } from "@vicimpa/lib-vec2";
+import { effect } from "@preact/signals-react";
 import { max } from "@vicimpa/math";
-import { useSignals } from "@preact/signals-react/runtime";
 
 export type TNodeLineProps = {
   from: NodePort | Vec2;
@@ -28,33 +28,45 @@ function drawBezierCurve(from: Vec2 | NodePort, to: Vec2 | NodePort) {
   return `M ${from.x} ${from.y} C ${step1.x} ${step1.y}, ${step2.x} ${step2.y}, ${to.x} ${to.y}`;
 }
 
+const lineColor = (from: Vec2 | NodePort, to: Vec2 | NodePort) => (
+  from instanceof NodePort ? from.color : to instanceof NodePort ? to.color : '#999'
+);
+
+// Путь и цвет обновляются подпиской на позиции портов, без перерисовки компонента:
+// при перетаскивании сотни проводов меняют только атрибут d
 export const NodeLine: FC<TNodeLineProps> = ({
   from,
   to,
-  color = '#fff',
   size = 3,
   onMouseDown,
 }) => {
-  useSignals();
+  const ref = useRef<SVGPathElement>(null);
+
+  useLayoutEffect(() => (
+    effect(() => {
+      const path = ref.current;
+
+      if (!path)
+        return;
+
+      path.setAttribute('d', drawBezierCurve(from, to));
+      path.setAttribute('stroke', lineColor(from, to));
+    })
+  ), [from, to]);
 
   const style: CSSProperties = {
     pointerEvents: onMouseDown ? 'visibleStroke' : 'none',
     cursor: 'pointer'
   };
 
-  const path = drawBezierCurve(from, to);
-  color = from instanceof NodePort ? from.color : to instanceof NodePort ? to.color : '#999';
-
   return (
     <path
+      ref={ref}
       style={style}
-      stroke={color}
       strokeWidth={size}
       fill="none"
       onMouseDown={onMouseDown}
       strokeLinecap="round"
-      shapeRendering="crispEdges"
-      d={path}
-    />
+      shapeRendering="crispEdges" />
   );
 };

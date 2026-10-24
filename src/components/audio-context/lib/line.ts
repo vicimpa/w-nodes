@@ -1,3 +1,4 @@
+import { accentOf } from "./accent";
 import { Vec2 } from "@vicimpa/lib-vec2";
 
 export type LineOptions = {
@@ -12,7 +13,7 @@ export const line = (
   options?: LineOptions
 ) => {
   var first = true;
-  var { size = 1, color = '#fff', dash = [] } = options ?? {};
+  var { size = 1, color = accentOf(ctx.canvas), dash = [] } = options ?? {};
   ctx.beginPath();
   const path = fn((...args) => {
     if (first) {

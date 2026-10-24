@@ -7,7 +7,6 @@ import { NodeMap } from "./node-map";
 import { NodeSelection } from "./node-selection";
 import { PropsWithChildren } from "react";
 
-export * from "./node-back";
 export * from "./node-hud";
 export * from "./node-item";
 export * from "./node-layers";
@@ -18,9 +17,9 @@ export * from "./node-port";
 export * from "./node-project";
 export * from "./node-selection";
 
-export const Editor = ({ children }: PropsWithChildren) => (
+export const Editor = ({ children, nested }: PropsWithChildren<{ nested?: boolean; }>) => (
   <NodeHud>
-    <NodeMap>
+    <NodeMap nested={nested}>
       <NodeBack2 />
       <NodeLayers>
         <NodeList>

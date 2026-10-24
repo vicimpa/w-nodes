@@ -9,18 +9,35 @@ import detectResize from "./plugins/detectResize";
 import detectWheel from "./plugins/detectWheel";
 import { provide } from "@vicimpa/react-decorators";
 import s from "./NodeMap.module.sass";
+import { signal } from "@preact/signals-react";
 import { signalRef } from "$library/signals";
 
 export interface INodeMapProps extends PropsWithChildren {
   x?: number;
   y?: number;
   s?: number;
+  nested?: boolean;
+}
+
+// Стек открытых редакторов: горячие клавиши обрабатывает только верхний
+export const focusedMaps = signal<NodeMap[]>([]);
+
+export const isFocused = (map: NodeMap) => focusedMaps.peek().at(-1) === map;
+
+export function focusMap(map: NodeMap) {
+  focusedMaps.value = [...focusedMaps.peek().filter(item => item !== map), map];
+  return () => blurMap(map);
+}
+
+export function blurMap(map: NodeMap) {
+  focusedMaps.value = focusedMaps.peek().filter(item => item !== map);
 }
 
 @connect(
   detectResize,
   detectDrag,
   detectWheel,
+  ctx => ctx.props.nested ? undefined : focusMap(ctx),
 )
 @reactive()
 @provide()

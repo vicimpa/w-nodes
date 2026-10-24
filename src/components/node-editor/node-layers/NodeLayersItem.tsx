@@ -30,8 +30,11 @@ export class NodeLayersItem extends Component<PropsWithChildren<{ post?: boolean
 
   @prop post = this.props.post ?? false;
 
-  render(): ReactNode {
+  componentDidUpdate() {
     this.post = this.props.post ?? false;
+  }
+
+  render(): ReactNode {
     return createPortal(this.props.children, this.elem);
   }
 }

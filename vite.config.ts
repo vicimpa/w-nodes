@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import paths from "vite-tsconfig-paths";
 import react from '@vitejs/plugin-react-swc';
@@ -23,6 +24,13 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0'
+  },
+  test: {
+    server: {
+      deps: {
+        inline: [/@vicimpa\//]
+      }
+    }
   },
   plugins: [
     paths({ root: '..' }),

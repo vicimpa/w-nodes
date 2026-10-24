@@ -1,9 +1,33 @@
 .port
   --color: #999
-  width: 15px
-  height: 15px
-  border-radius: 100%
-  background-color: var(--color)
+  position: relative
   display: inline-block
-  border: 2px solid rgba(0,0,0,0.6)
-  cursor: pointer
+  flex-shrink: 0
+  width: var(--port, 10px)
+  height: var(--port, 10px)
+  border-radius: 50%
+  background-color: var(--color)
+  cursor: crosshair
+  transition: transform .1s
+
+  // «ножка» от кружка до края ноды
+  &::after
+    content: ''
+    position: absolute
+    top: 50%
+    left: 100%
+    width: 6px
+    height: 2px
+    background-color: var(--color)
+    transform: translateY(-50%)
+
+  &[data-output]::after
+    left: auto
+    right: 100%
+
+  &[data-kind=audio]
+    background-color: var(--bg-node, #202020)
+    box-shadow: inset 0 0 0 2.5px var(--color)
+
+  &:hover
+    transform: scale(1.3)

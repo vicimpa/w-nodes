@@ -1,12 +1,11 @@
-import { FC, useRef } from "react";
-import { useComputed, useSignal, useSignalEffect } from "@preact/signals-react";
+import { CSSProperties, FC } from "react";
+import { NumberInput, Row } from "./Row";
+import { useComputed, useSignalEffect } from "@preact/signals-react";
 
 import { SignalNode } from "./signalNode";
-import { SignalPort } from "../ports/SignalPort";
 import { clamp } from "@vicimpa/math";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
-import { selectText } from "$library/dom";
 
 export type TRangeProps = {
   label: string;
@@ -18,7 +17,6 @@ export type TRangeProps = {
   onChange?: (v: number) => any;
 };
 
-
 export const Range: FC<TRangeProps> = ({
   label,
   value,
@@ -28,92 +26,39 @@ export const Range: FC<TRangeProps> = ({
   strict,
   accuracy = 0,
 }) => {
-  const valueString = useSignal(value.value.toString());
-  const ref = useRef<HTMLSpanElement>(null);
   const step = 1 / (10 ** accuracy);
-  const isConnected = useComputed(() => readonly || value.connected);
-  const getValue = (val: number) => {
-    return strict ? clamp(val, value.min ?? -Infinity, value.max ?? Infinity) : val;
-  };
+  const linked = useComputed(() => !!readonly || value.connected);
+  const limit = (val: number) => strict ? clamp(val, value.min, value.max) : val;
+  const text = useComputed(() => value.value.toFixed(accuracy));
+  const style = useComputed(() => ({
+    '--fill': `${clamp((value.value - value.min) / (value.max - value.min), 0, 1) * 100}%`
+  }) as CSSProperties);
 
   useSignalEffect(() => {
-    const val = +valueString.value;
-
-    if (isNaN(val)) {
-      valueString.value = value.peek().toString();
-    } else {
-      value.value = getValue(val);
-    }
+    onChange?.(limit(value.value));
   });
-
-  useSignalEffect(() => {
-    valueString.value = value.value.toString();
-    if (ref.current)
-      ref.current.innerText = value.value.toFixed(accuracy);
-    onChange?.(getValue(value.value));
-  });
-
-  const on = (target: HTMLSpanElement) => {
-    target.contentEditable = 'plaintext-only';
-    target.focus();
-    selectText(target);
-  };
-
-  const off = (target: HTMLSpanElement) => {
-    var val = +target.innerText;
-    if (!isNaN(val)) {
-      value.value = val;
-    } else {
-      target.innerText = value.value.toFixed(accuracy);
-    }
-    target.contentEditable = 'false';
-  };
 
   return (
-    <div className={s.input}>
-      <div className={s.type}>
-        <span>
-          <SignalPort value={value} />
-          {label}:
-        </span>
-        <span data-grow />
-        <rsp.span
-          ref={ref}
-          style={{ cursor: 'pointer', fontFamily: 'monospace' }}
-          onDoubleClick={(e) => {
-            if (isConnected.value)
-              return;
-            on(e.currentTarget);
-          }}
-          onKeyDown={e => {
-            if (e.code !== 'Enter')
-              return;
+    <Row label={label} port={value} linked={linked}>
+      <div className={s.field}>
+        <rsp.input
+          type="range"
+          className={s.slider}
+          style={style}
+          min={value.min}
+          max={value.max}
+          step={step}
+          value={value}
+          disabled={linked}
+          onKeyDown={e => e.preventDefault()}
+          onChange={e => value.value = limit(+e.currentTarget.value)}
+          onContextMenu={e => {
             e.preventDefault();
-            e.stopPropagation();
-            off(e.currentTarget);
-          }}
-          onBlur={e => {
-            e.preventDefault();
-            e.stopPropagation();
-            off(e.currentTarget);
-          }}
-        />
-        <small>
-          {postfix}
-        </small>
+            value.value = value.default;
+          }} />
+        <NumberInput text={text} disabled={linked} onCommit={v => value.value = limit(v)} />
+        {postfix && <small>{postfix}</small>}
       </div>
-      <rsp.input
-        type="range"
-        bind-value={valueString}
-        disabled={isConnected}
-        onKeyDown={e => e.preventDefault()}
-        min={value.min}
-        max={value.max}
-        onContextMenu={e => {
-          e.preventDefault();
-          value.value = value.default ?? value.value;
-        }}
-        step={step} />
-    </div>
+    </Row>
   );
 };

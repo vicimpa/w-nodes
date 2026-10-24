@@ -1,3 +1,4 @@
+import { accentOf } from "../lib/accent";
 import { ctx, empty } from "../ctx";
 import { prop, reactive } from "@vicimpa/decorators";
 
@@ -10,7 +11,8 @@ import { SignalNode } from "../lib/signalNode";
 import { avgArray } from "../lib/avgArray";
 import { dispose } from "$library/dispose";
 import { frequencies } from "../lib/frequencies";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Funnel } from "lucide-react";
 import { name } from "$library/function";
 import { signal } from "@preact/signals-react";
 import { store } from "$components/node-editor";
@@ -24,7 +26,8 @@ const type: BiquadFilterType[] = ["allpass", "bandpass", "highpass", "highshelf"
 const variants = type.map((value) => ({ value }));
 
 @name('BiquadFilter')
-@group('base')
+@group('effect')
+@icon(Funnel)
 @reactive()
 export default class extends BaseNode {
   #effect = ctx.createBiquadFilter();
@@ -81,15 +84,14 @@ export default class extends BaseNode {
           ctx.textBaseline = 'top';
           ctx.font = '10px Arial';
 
-          ctx.strokeStyle = '#fff';
-          ctx.lineWidth = 1;
+          ctx.fillStyle = '#7e7e7e';
 
           for (let i = 0; i < frequencies.length; i++) {
-            ctx.strokeText(freqName(frequencies[i]), getX(i, frequencies.length), 2);
+            ctx.fillText(freqName(frequencies[i]), getX(i, frequencies.length), 2);
           }
 
           ctx.lineWidth = .5;
-          ctx.strokeStyle = '#999';
+          ctx.strokeStyle = '#3a3a3a';
           ctx.beginPath();
 
           for (let i = 0; i < frequencies.length; i++) {
@@ -102,7 +104,7 @@ export default class extends BaseNode {
           ctx.closePath();
 
           ctx.lineWidth = 3;
-          ctx.strokeStyle = '#fff';
+          ctx.strokeStyle = accentOf(can);
 
           var points: [x: number, y: number][] = [];
 

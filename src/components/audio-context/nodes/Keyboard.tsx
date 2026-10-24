@@ -7,13 +7,14 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
 import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Keyboard as KeyboardIcon } from "lucide-react";
 import { name } from "$library/function";
 import rsp from "@vicimpa/rsp";
 import { store } from "$components/node-editor";
 import { windowEvents } from "@vicimpa/events";
 
-@connect((ctx) => {
+@connect((ctx) => (
   dispose(
     (
       ctx.keyboard.items = [
@@ -42,8 +43,8 @@ import { windowEvents } from "@vicimpa/events";
     windowEvents('blur', () => {
       ctx.port.value = 0;
     }),
-  );
-})
+  )
+))
 class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
   keyboard = this.props.ctx;
   id = this.props.id;
@@ -52,7 +53,7 @@ class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
   style = computed<CSSProperties>(() => ({
     padding: 5,
     width: '100%',
-    background: this.port.value ? '#060' : '#333'
+    background: this.port.value ? 'color-mix(in srgb, var(--accent) 35%, transparent)' : 'var(--bg-field)'
   }));
 
   delete() {
@@ -93,7 +94,8 @@ class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
 
 
 @name('Keyboard')
-@group('controll')
+@group('control')
+@icon(KeyboardIcon)
 @connect((ctx) => (
   effect(() => {
     const { activeItems } = ctx;
@@ -134,8 +136,8 @@ export default class Keyboard extends BaseNode {
       <table style={{ width: 350 }}>
         <tbody>
           <tr>
-            <td colSpan={4} style={{ textAlign: 'right', fontSize: '10px', fontFamily: 'monospace' }}>
-              <p>lastIndex <b style={{ color: 'green' }}>{this._activeKey}</b></p>
+            <td colSpan={4} style={{ textAlign: 'right', color: 'var(--text-muted)' }}>
+              <p>Last key <b style={{ color: 'var(--accent)' }}>{this._activeKey}</b></p>
             </td>
             <td>
               <SignalPort value={this._activeKey} output />

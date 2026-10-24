@@ -26,3 +26,30 @@ export const NodeSelectionView = () => {
     </NodeLayersItem>
   );
 };
+
+// Направляющие магнитов: тонкие линии, толщина не зависит от масштаба
+export const NodeSnapGuides = () => {
+  useSignals();
+  const select = useInject(NodeSelection);
+
+  if (!select.guides.length)
+    return null;
+
+  return (
+    <NodeLayersItem post>
+      {select.guides.map((guide, i) => (
+        <line
+          key={i}
+          x1={guide.axis === 'x' ? guide.at : guide.from}
+          x2={guide.axis === 'x' ? guide.at : guide.to}
+          y1={guide.axis === 'x' ? guide.from : guide.at}
+          y2={guide.axis === 'x' ? guide.to : guide.at}
+          stroke="#ffffff"
+          strokeOpacity={.55}
+          strokeWidth={1}
+          strokeDasharray="4 4"
+          vectorEffect="non-scaling-stroke" />
+      ))}
+    </NodeLayersItem>
+  );
+};

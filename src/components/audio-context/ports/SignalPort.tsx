@@ -1,4 +1,4 @@
-import { prop, reactive } from "@vicimpa/decorators";
+import { reactive } from "@vicimpa/decorators";
 
 import { AudioPort } from "./AudioPort";
 import { BasePort } from "../lib/BasePort";
@@ -9,7 +9,7 @@ import { start } from "../lib/start";
 @connect(ctx => start(ctx.value))
 @reactive()
 export class SignalPort extends BasePort {
-  @prop color = '#4f4';
+  kind = 'signal';
   value: SignalNode = this.props.value;
 
   _onConnect(port: AudioPort | SignalPort) {

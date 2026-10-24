@@ -19,6 +19,8 @@ import s from "./NodeItem.module.sass";
 import { signalRef } from "$library/signals";
 import { store } from "$components/node-editor";
 
+const nonTextInputs = ['range', 'checkbox', 'radio', 'button'];
+
 export interface INodeItemProps {
   x?: number;
   y?: number;
@@ -91,30 +93,15 @@ export class NodeItem extends Component<INodeItemProps> {
             style={{ padding: this.padding }}
             className={s.fill}
             onKeyDown={e => {
-              if (!(e.target instanceof HTMLElement))
-                return;
+              const { target } = e;
 
-              if (e.target.contentEditable === 'false')
-                return;
-
-              if (e.target.contentEditable === 'inherit')
-                return;
-
-              if (e.target.tagName === 'textarea')
-                return e.stopPropagation();
-
-              if (e.target instanceof HTMLInputElement) {
-                if (e.target.type === 'range')
-                  return;
-                if (e.target.type === 'buntton')
-                  return;
-                if (e.target.type === 'checkbox')
-                  return;
-                if (e.target.type === 'radio')
-                  return;
-              }
-
-              e.stopPropagation();
+              // Ввод в поля ноды не должен запускать горячие клавиши редактора (Delete, Ctrl+C...)
+              if (
+                target instanceof HTMLTextAreaElement ||
+                (target instanceof HTMLInputElement && !nonTextInputs.includes(target.type)) ||
+                (target instanceof HTMLElement && target.isContentEditable)
+              )
+                e.stopPropagation();
             }}
           >
             {<this.view />}

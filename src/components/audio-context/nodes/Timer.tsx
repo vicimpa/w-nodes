@@ -5,13 +5,15 @@ import { SignalNode } from "../lib/signalNode";
 import TimerProcessor from "../worklet/TimerProcessor";
 import { Toggle } from "../lib/Toggle";
 import { dispose } from "$library/dispose";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Timer } from "lucide-react";
 import { name } from "$library/function";
 import { reactive } from "@vicimpa/decorators";
 import { store } from "$components/node-editor";
 
 @name('Timer')
-@group('custom')
+@group('time')
+@icon(Timer)
 @reactive()
 export default class extends BaseNode {
   #src = new TimerProcessor();

@@ -3,12 +3,14 @@ import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { ctx } from "../ctx";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Hourglass } from "lucide-react";
 import { name } from "$library/function";
 import { store } from "$components/node-editor";
 
 @name('Delay')
-@group('base')
+@group('time')
+@icon(Hourglass)
 export default class extends BaseNode {
   #delay = new DelayNode(ctx);
 

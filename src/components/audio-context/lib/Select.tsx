@@ -1,8 +1,8 @@
-import { Signal, useSignal, useSignalEffect } from "@preact/signals-react";
+import { Signal, useComputed, useSignalEffect } from "@preact/signals-react";
 
+import { Row } from "./Row";
 import rsp from "@vicimpa/rsp";
 import s from "../styles.module.sass";
-import { useMemo } from "react";
 
 export type TSelectVariant<T> = {
   value: T,
@@ -15,6 +15,8 @@ export type TSelectProps<T, V extends TSelectVariant<T>> = {
   value: Signal<T>;
   groupBy?: (val: V) => string;
   change?: ((v: T) => any);
+  // Не растягивать ноду под самый длинный пункт
+  shrink?: boolean;
 };
 
 export const Select = <T, const V extends TSelectVariant<T>>({
@@ -23,57 +25,48 @@ export const Select = <T, const V extends TSelectVariant<T>>({
   variants,
   groupBy,
   change,
+  shrink,
 }: TSelectProps<T, V>) => {
-  const _variants = useMemo(() => (
-    variants.map((variant, id) => ({ variant, id: `value-${id}`, label: `${variant.label ?? variant.value}` }))
-  ), [variants]);
-
-  const _value = useSignal(_variants.find(({ variant: e }) => e.value === value.value)?.id ?? '');
-
-  useSignalEffect(() => {
-    const find = _variants.find(({ id }) => id === _value.value);
-    console.log(_value.value);
-    if (!find) return;
-    value.value = find.variant.value;
+  const index = useComputed(() => `${variants.findIndex(variant => variant.value === value.value)}`);
+  const title = useComputed(() => {
+    const variant = variants[+index.value];
+    return variant ? variant.label ?? `${variant.value}` : '';
   });
 
   useSignalEffect(() => {
-    const find = _variants.find(({ variant: e }) => e.value === value.value);
-    if (!find) return;
-
-    _value.value = find.id;
-    change && change(value.value);
+    change?.(value.value);
   });
+
+  const option = (variant: V) => {
+    const i = variants.indexOf(variant);
+    return <option value={i} key={i}>{variant.label ?? `${variant.value}`}</option>;
+  };
 
   return (
-    <div className={s.input}>
-      <div className={s.type}>
-        <span>
-          {label}:
-        </span>
+    <Row label={label}>
+      <div className={s.field}>
+        <rsp.select
+          value={index}
+          data-shrink={shrink || undefined}
+          title={shrink ? title : undefined}
+          onKeyDown={e => e.preventDefault()}
+          onChange={e => {
+            const variant = variants[+e.currentTarget.value];
+            if (variant) value.value = variant.value;
+            e.currentTarget.blur();
+          }}
+        >
+          {
+            groupBy ? (
+              [...Map.groupBy(variants, groupBy)].map(([group, items]) => (
+                <optgroup key={group} label={group}>
+                  {items.map(option)}
+                </optgroup>
+              ))
+            ) : variants.map(option)
+          }
+        </rsp.select>
       </div>
-      {/* TODO разобраться почему не работает bind-value */}
-      <rsp.select bind-value={_value} onKeyDown={e => e.preventDefault()} onChange={e => { _value.value = e.currentTarget.value; e.currentTarget.blur(); }}>
-        {
-          groupBy ? (
-            [
-              ...Map.groupBy(_variants, ({ variant }) => groupBy(variant))
-            ].map(([group, variants], index) => (
-              <optgroup key={index} label={group}>
-                {
-                  variants.map(({ label, id }) => (
-                    <option value={id} key={id}>{label}</option>
-                  ))
-                }
-              </optgroup>
-            ))
-          ) : (
-            _variants.map(({ id, label }) => (
-              <option value={id} key={id}>{label}</option>
-            ))
-          )
-        }
-      </rsp.select>
-    </div>
+    </Row>
   );
 };

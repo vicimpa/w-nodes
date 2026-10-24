@@ -10,6 +10,21 @@ var processorCount = globalThis.processorCount ?? (
   globalThis.processorCount = 0
 );
 
+// Уникальное имя для registerProcessor
+export const nextProcessorName = (prefix = 'CustomWorklet') => `${prefix}${processorCount++}`;
+
+// Загружает исходник модуля в AudioWorklet. Только доверенный код!
+export async function addWorkletModule(code: string) {
+  const blob = new Blob([code], { type: "application/javascript" });
+  const url = URL.createObjectURL(blob);
+
+  try {
+    await ctx.audioWorklet.addModule(url);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 export type ParamDescriptor = {
   defaultValue: number;
   automationRate?: "a-rate" | "k-rate";
@@ -96,7 +111,7 @@ export async function defineWorklet<
     ))
     .join(',\n');
 
-  const processorName = `CustomWorklet${processorCount++}`;
+  const processorName = nextProcessorName();
   const functions = Object.entries<Function>(options.functions ?? {})
     .map(([name, func]) => {
       const code = func.toString();
@@ -128,7 +143,8 @@ export async function defineWorklet<
     registerProcessor(
       "${processorName}",
       class ${processorName} extends AudioWorkletProcessor {
-        context = ${JSON.stringify(options.context ?? {})};
+        initialContext = ${JSON.stringify(options.context ?? {})};
+        context = JSON.parse(JSON.stringify(this.initialContext));
         props = {...data.props};
 
         static get parameterDescriptors() {
@@ -142,6 +158,11 @@ export async function defineWorklet<
           this.port.onmessage = (data) => {
             if(data.data === '[STOP]') {
               this.running = false;
+              return;
+            }
+
+            if(data.data === '[RESET]') {
+              this.context = JSON.parse(JSON.stringify(this.initialContext));
               return;
             }
 
@@ -186,10 +207,7 @@ export async function defineWorklet<
     )
   `.split(/\n+/).map(e => e.trim()).join('\n');
 
-  const blob = new Blob([code], { type: "application/javascript" });
-  const url = URL.createObjectURL(blob);
-
-  await ctx.audioWorklet.addModule(url);
+  await addWorkletModule(code);
 
   const pool: InstanceType<CustomWorkletConstructor>[] = [];
 
@@ -204,6 +222,7 @@ export async function defineWorklet<
     destroy() {
       using.value--;
       pool.push(this as InstanceType<CustomWorkletConstructor>);
+      this.port.postMessage('[RESET]');
 
       for (let key in options.params ?? {}) {
         var param = this.parameters.get(key);
@@ -260,5 +279,5 @@ export async function defineWorklet<
     }
   }
 
-  return name(options.name ?? 'unname')(CustomAudioWorkletNode) as CustomWorkletConstructor;
+  return name(options.name ?? 'unnamed')(CustomAudioWorkletNode) as CustomWorkletConstructor;
 }

@@ -4,12 +4,14 @@ import MemoryProcessor from "../worklet/MemoryProcessor";
 import { Number } from "../lib/Number";
 import { SignalNode } from "../lib/signalNode";
 import { dispose } from "$library/dispose";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { MemoryStick } from "lucide-react";
 import { name } from "$library/function";
 import { store } from "$components/node-editor";
 
 @name('Memory')
-@group('custom')
+@group('math')
+@icon(MemoryStick)
 export default class extends BaseNode {
   #processor = new MemoryProcessor();
 

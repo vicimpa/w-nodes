@@ -52,45 +52,9 @@ export class SignalNode extends Signal<number> {
     this._input = this._input.toSpliced(index, 1);
   }
 
-  connect(to: SignalNode | AudioNode | AudioParam) {
-    if (to instanceof AudioNode) {
-      this.node.connect(to);
-      return;
-    }
-
-    if (to instanceof AudioParam) {
-      this.node.connect(to);
-      return;
-    }
-
-    if (to instanceof SignalNode) {
-      this.node.connect(to.node.offset);
-      to.addInput(to);
-      return;
-    }
-
-    throw new Error('Cant connect');
-  }
-
-  disconnect(to: SignalNode | AudioNode | AudioParam) {
-    if (to instanceof AudioNode) {
-      this.node.disconnect(to);
-      return;
-    }
-
-    if (to instanceof AudioParam) {
-      this.node.disconnect(to);
-      return;
-    }
-
-    if (to instanceof SignalNode) {
-      this.node.disconnect(to.node.offset);
-      to.deleteInput(to);
-      return;
-    }
-  }
-
   start() {
+    var wasConnected = false;
+
     return dispose(
       this.param && !this.signalOnly ? dispose(
         pipe(this.node, this.param),
@@ -104,10 +68,17 @@ export class SignalNode extends Signal<number> {
       effect(() => {
         if (this.connected) {
           this.node.offset.value = 0;
+          wasConnected = true;
           return;
-        } else {
-          this.value = this.default;
         }
+
+        // К значению по умолчанию возвращаемся, только когда провод сняли.
+        // При запуске порта значение не трогаем: его могли только что восстановить из проекта
+        // (входы c–e у Math появляются уже после загрузки настроек).
+        if (wasConnected)
+          this.value = this.default;
+
+        wasConnected = false;
       }),
       effect(() => {
         if (!this.refValue)

@@ -7,14 +7,16 @@ import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Gauge } from "lucide-react";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { store } from "$components/node-editor";
 
 @name('DynamicsCompressor')
-@group('base')
+@group('effect')
+@icon(Gauge)
 export default class extends BaseNode {
   #effect = ctx.createDynamicsCompressor();
 

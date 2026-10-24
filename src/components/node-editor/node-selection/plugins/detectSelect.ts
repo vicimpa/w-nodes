@@ -2,6 +2,7 @@ import { NodeSelection } from "../NodeSelection";
 import { Vec2 } from "@vicimpa/lib-vec2";
 import { dispose } from "$library/dispose";
 import { effect } from "@preact/signals-react";
+import { isFocused } from "../../node-map";
 import { windowEvents } from "@vicimpa/events";
 
 export default (ctx: NodeSelection) => (
@@ -25,7 +26,7 @@ export default (ctx: NodeSelection) => (
       }));
     }),
     windowEvents('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyA') {
+      if ((e.metaKey || e.ctrlKey) && e.code == 'KeyA' && isFocused(ctx.map)) {
         e.preventDefault();
         ctx.select = [...ctx.list.items];
 

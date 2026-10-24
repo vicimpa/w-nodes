@@ -5,7 +5,8 @@ import { prop, reactive } from "@vicimpa/decorators";
 import { NodeItem } from "../node-item";
 import { NodeList } from "../node-list";
 import { NodeMap } from "../node-map";
-import { NodeSelectionView } from "./NodeSelectionView";
+import { NodeSelectionView, NodeSnapGuides } from "./NodeSelectionView";
+import { TGuide } from "../utils/snap";
 import { Vec2 } from "@vicimpa/lib-vec2";
 import { connect } from "@vicimpa/react-decorators";
 import detectDrag from "./plugins/detectDrag";
@@ -26,6 +27,8 @@ export class NodeSelection extends Component<PropsWithChildren> {
 
   @prop view: [from: Vec2, to: Vec2] | null = null;
   @prop select: NodeItem[] = [];
+  // Направляющие магнитов при перетаскивании
+  @prop guides: TGuide[] = [];
 
   toSelect(...items: NodeItem[]) {
     if (!this.shiftKey) {
@@ -51,6 +54,7 @@ export class NodeSelection extends Component<PropsWithChildren> {
       <>
         {this.props.children}
         <NodeSelectionView />
+        <NodeSnapGuides />
       </>
     );
   }

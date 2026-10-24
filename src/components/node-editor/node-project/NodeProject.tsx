@@ -1,6 +1,8 @@
 import { Component, PropsWithChildren, ReactNode, RefObject } from "react";
 import { NodeConnect, NodeLines } from "../node-lines";
-import { computed, untracked } from "@preact/signals-react";
+import { batch, computed, untracked } from "@preact/signals-react";
+import { TLayoutEdge, arrange as arrangeLayout } from "../utils/layout";
+import { frames } from "$library/frames";
 import { inject, provide } from "@vicimpa/react-decorators";
 import { prop, reactive } from "@vicimpa/decorators";
 
@@ -8,7 +10,10 @@ import { NodeItem } from "../node-item";
 import { NodeMap } from "../node-map";
 import { NodePort } from "../node-port";
 import { NodeSelection } from "../node-selection";
+import { TLink, TProjectData, decodeProject } from "./utils/projectCodec";
+import { Vec2 } from "@vicimpa/lib-vec2";
 import { connect } from "@vicimpa/react-decorators";
+import { delay } from "$library/function";
 import detectCopy from "./plugins/detectCopy";
 import detectDelete from "./plugins/detectDelete";
 import { makeWeekProtoStore } from "@vicimpa/week-store";
@@ -18,6 +23,9 @@ export type TConnect = [
   from: [n: number, p: number],
   to: [n: number, p: number] | NodePort,
 ];
+
+// Для чего готовим данные проекта: от этого зависит, вшивать ли медиа
+export type TExportPurpose = 'clipboard' | 'file' | 'link' | 'autosave';
 
 export type TNodeProjectProps = {
   nodes?: typeof NodeItem[];
@@ -33,6 +41,32 @@ type TStateItem<T extends NodeItem = NodeItem> = {
 
 var id = 0;
 
+const isBox = (val: unknown): val is { value: unknown; } => (
+  val !== null && typeof val === 'object' && 'value' in val
+);
+
+const copy = <T,>(val: T): T => {
+  try {
+    return structuredClone(val);
+  } catch {
+    return val;
+  }
+};
+
+// Значение из сохранённого (возможно, чужого) проекта применяем, только если его тип совпадает с текущим
+const fits = (current: unknown, next: unknown) => {
+  if (current === null || current === undefined)
+    return true;
+
+  if (next === null || next === undefined)
+    return false;
+
+  if (Array.isArray(current) !== Array.isArray(next))
+    return false;
+
+  return typeof current === typeof next;
+};
+
 const keyStore = makeWeekProtoStore<string | symbol>();
 export const store = keyStore.store;
 
@@ -46,6 +80,9 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
   nodes = this.props.nodes ?? [];
   ports = this.props.ports ?? [];
+  legacyNodes: readonly string[] = [];
+  // Сколько загрузок сейчас идёт: история не снимает состояние посреди загрузки
+  busy = 0;
 
   @prop store: TStateItem[] = [];
 
@@ -67,27 +104,12 @@ export class NodeProject extends Component<TNodeProjectProps> {
     return this.nodes.find(j => node instanceof j);
   }
 
-  destroy<T extends NodeItem>(...nodes: T[]) {
-    this.store = this.store.filter(e => !nodes.includes(e.ref.current! as T));
+  typeById(id: string) {
+    return this.nodes.find(type => type.name === id);
   }
 
-  copy<T extends NodeItem>(...items: T[]) {
-    const copys = items
-      .map(e => ({
-        node: this.find(e)!,
-        props: { x: e.x, y: e.y },
-        _item: e
-      }))
-      .filter(e => e.node);
-
-    const datas = copys.map(e => this.save(e._item));
-
-    return Promise.all(
-      copys.map(e => this.append(e.node, e.props))
-    ).then(e => {
-      e.forEach((e, i) => this.restore(e, datas[i]));
-      return e;
-    });
+  destroy<T extends NodeItem>(...nodes: T[]) {
+    this.store = this.store.filter(e => !nodes.includes(e.ref.current! as T));
   }
 
   save<T extends NodeItem>(node: T) {
@@ -99,11 +121,8 @@ export class NodeProject extends Component<TNodeProjectProps> {
 
       const val = (node as any)[key];
 
-      if (typeof val === 'object' && 'value' in val) {
-        data[key] = val.value;
-      } else {
-        data[key] = val;
-      }
+      // Копия: иначе дубликат и оригинал делят один массив (Sequencer правит его на месте)
+      data[key] = copy(isBox(val) ? val.value : val);
     }
 
     return data;
@@ -150,11 +169,13 @@ export class NodeProject extends Component<TNodeProjectProps> {
         continue;
 
       const val = (node as any)[key];
+      const next = data[key];
 
-      if (typeof val === 'object' && 'value' in val) {
-        val.value = data[key];
-      } else {
-        (node as any)[key] = data[key];
+      if (isBox(val)) {
+        if (fits(val.value, next))
+          val.value = copy(next);
+      } else if (fits(val, next)) {
+        (node as any)[key] = copy(next);
       }
     }
 
@@ -168,6 +189,110 @@ export class NodeProject extends Component<TNodeProjectProps> {
       this.lines.from = [from];
       this.lines.connect(to);
     });
+  }
+
+  serialize(nodes: NodeItem[]) {
+    const links = this.saveConnections(...nodes);
+    const data: TProjectData = {
+      nodes: nodes.map(node => this.find(node)!.name),
+      connect: links.filter((link): link is TLink => Array.isArray(link[1])),
+      configs: nodes.map(node => {
+        const config = this.save(node);
+
+        if ('x' in config && 'y' in config)
+          new Vec2(config as Vec2).minus(this.map).toObject(config as Vec2);
+
+        return config;
+      }),
+      media: [],
+    };
+
+    return {
+      data,
+      external: links.filter(link => !Array.isArray(link[1])),
+    };
+  }
+
+  async load(data: TProjectData, external: TConnect[] = []) {
+    const types = data.nodes.map(id => {
+      const type = this.typeById(id);
+
+      if (!type)
+        throw new Error(`Unknown node type "${id}"`);
+
+      return type;
+    });
+
+    this.busy++;
+
+    try {
+      const nodes = await Promise.all(types.map(type => this.append(type)));
+
+      nodes.forEach((node, i) => {
+        this.restore(node, data.configs[i] ?? {});
+        new Vec2(node).plus(this.map).toObject(node);
+      });
+
+      this.selection.select = nodes;
+      await delay(100);
+      this.restoreConnections([...data.connect, ...external], ...nodes);
+      return nodes;
+    } finally {
+      this.busy--;
+    }
+  }
+
+  async exportData(data: TProjectData, _purpose: TExportPurpose) {
+    return data;
+  }
+
+  async importData(data: TProjectData) {
+    return data;
+  }
+
+  async paste(text: string) {
+    return this.load(await this.importData(await decodeProject(text, this.legacyNodes)));
+  }
+
+  // Красивая расстановка: выделенные ноды (если их больше одной) или все. Ноды плавно переезжают.
+  async arrange(nodes = this.selection.select.length > 1 ? [...this.selection.select] : this.store.flatMap(item => item.ref.current ?? [])) {
+    if (nodes.length < 2)
+      return;
+
+    const index = new Map(nodes.map((node, i) => [node, i]));
+    const edges = this.lines.connects.flatMap(([from, to]) => (
+      index.has(from.item) && index.has(to.item) ? [[index.get(from.item)!, index.get(to.item)!] as TLayoutEdge] : []
+    ));
+    const target = arrangeLayout(nodes.map((node, id) => ({ id, x: node.x, y: node.y, width: node.width, height: node.height })), edges);
+    const from = nodes.map(node => ({ x: node.x, y: node.y }));
+    const duration = 280;
+
+    this.busy++;
+
+    try {
+      await new Promise<void>(resolve => {
+        const started = performance.now();
+        const stop = frames(() => {
+          const t = Math.min((performance.now() - started) / duration, 1);
+          const k = 1 - (1 - t) ** 3;
+
+          batch(() => {
+            nodes.forEach((node, i) => {
+              const to = target.get(i)!;
+              node.x = from[i].x + (to.x - from[i].x) * k;
+              node.y = from[i].y + (to.y - from[i].y) * k;
+            });
+          });
+
+          if (t >= 1) {
+            stop();
+            resolve();
+          }
+        });
+      });
+    } finally {
+      this.busy--;
+    }
   }
 
   clean() {

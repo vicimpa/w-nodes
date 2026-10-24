@@ -1,3 +1,7 @@
+import "@fontsource/inter/800.css";
+import "@fontsource/fira-sans-condensed/400.css";
+import "@fontsource/fira-sans-condensed/500.css";
+
 import { App } from "$App";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";

@@ -19,6 +19,7 @@ export interface INodePortProps {
   value?: any;
   output?: boolean;
   title?: string;
+  bare?: boolean;
   onConnect?: (port: NodePort) => any;
   onDisconnect?: (port: NodePort) => any;
 }
@@ -49,6 +50,8 @@ export class NodePort extends Component<INodePortProps> {
   @prop hover = false;
 
   @prop value: any = this.props.value;
+
+  kind?: string;
 
   @prop get connects() {
     if (!this.lines) return [];
@@ -114,11 +117,20 @@ export class NodePort extends Component<INodePortProps> {
     return true;
   }
 
-  render(): ReactNode {
-    this.value = this.props.value;
+  componentDidUpdate() {
+    if (this.value !== this.props.value)
+      this.value = this.props.value;
+  }
 
+  render(): ReactNode {
     return (
-      <span title={this.props.title} ref={this.port} style={{ ['--color']: this.color } as any} className={s.port} />
+      <span
+        title={this.props.title}
+        ref={this.port}
+        style={{ ['--color']: this.color } as any}
+        className={s.port}
+        data-output={this.props.output || undefined}
+        data-kind={this.kind} />
     );
   }
 }

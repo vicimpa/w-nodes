@@ -3,7 +3,7 @@ import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "./SignalPort";
 
 export class AudioPort extends BasePort {
-  color = '#44f';
+  kind = 'audio';
   value: AudioNode = this.props.value;
 
   _onConnect(port: AudioPort | SignalPort) {
@@ -25,11 +25,23 @@ export class AudioPort extends BasePort {
     return false;
   }
 
+  // Та же пара «узел → цель» ещё нужна другой связи (у входа и выхода блока общий GainNode)
+  _isShared(port: AudioPort | SignalPort) {
+    return this.lines.connects.some(([a, b]) => (
+      (a !== this || b !== port) &&
+      a.value === this.value &&
+      b.value === port.value
+    ));
+  }
+
   _onDisconnect(port: AudioPort | SignalPort) {
     if (!this.props.output)
       return true;
 
     if (this.value && port.value) {
+      if (this._isShared(port))
+        return true;
+
       if (port.value instanceof AudioNode) {
         this.value.disconnect(port.value);
         return true;

@@ -1,23 +1,28 @@
 import { FC } from "react";
+import { Row } from "./Row";
 import { SignalNode } from "./signalNode";
-import { SignalPort } from "../ports/SignalPort";
+import rsp from "@vicimpa/rsp";
+import s from "../styles.module.sass";
 import { useComputed } from "@preact/signals-react";
 
-export const Toggle: FC<{ value: SignalNode, label?: string; }> = ({ value, label = 'Ebabled' }) => {
+export const Toggle: FC<{ value: SignalNode, label?: string; }> = ({ value, label = 'Enabled' }) => {
+  const linked = useComputed(() => value.connected);
+  const on = useComputed(() => !!value.value || undefined);
+  const text = useComputed(() => value.value ? 'ON' : 'OFF');
 
-  return useComputed(() => {
-    var connected = value.connected;
-
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 5, backgroundColor: '#222', padding: 4 }}>
-        <SignalPort value={value} />
-        <label
-          style={{ flexGrow: 1, display: 'flex', gap: 5, cursor: connected ? '' : 'pointer' }}
-        >
-          <input style={{ cursor: connected ? '' : 'pointer' }} type="checkbox" onChange={() => value.value = +!value.value} checked={!!value.value} disabled={connected} />
-          {connected ? 'Signal' : label}
-        </label>
-      </div>
-    );
-  });
+  return (
+    <Row label={label} port={value} linked={linked}>
+      <rsp.button
+        className={s.toggle}
+        data-on={on}
+        disabled={linked}
+        onClick={e => {
+          value.value = +!value.value;
+          e.currentTarget.blur();
+        }}
+      >
+        {text}
+      </rsp.button>
+    </Row>
+  );
 };

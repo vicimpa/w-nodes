@@ -3,12 +3,14 @@ import { BaseNode } from "../lib/BaseNode";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { ctx } from "../ctx";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Volume1 } from "lucide-react";
 import { name } from "$library/function";
 import { store } from "$components/node-editor";
 
 @name('Gain')
-@group('base')
+@group('effect')
+@icon(Volume1)
 export default class extends BaseNode {
   #gain = new GainNode(ctx);
 

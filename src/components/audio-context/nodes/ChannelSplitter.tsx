@@ -7,14 +7,24 @@ import { ReactNode } from "react";
 import { Select } from "../lib/Select";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Split } from "lucide-react";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { store } from "$components/node-editor";
 
+// Вход split/swap: моно-сигнал раскладывается в оба канала, стерео проходит как есть.
+// Сам ChannelSplitterNode делит каналы дискретно, и моно уходило бы только в левый.
+const stereoInput = () => new GainNode(ctx, {
+  channelCount: 2,
+  channelCountMode: 'explicit',
+  channelInterpretation: 'speakers',
+});
+
 const modes = {
   split: (out: ChannelSplitter) => {
-    const input = ctx.createChannelSplitter(2);
+    const input = stereoInput();
+    const splitter = ctx.createChannelSplitter(2);
     const outLeft = ctx.createGain();
     const outRight = ctx.createGain();
 
@@ -32,8 +42,9 @@ const modes = {
     );
 
     return dispose(
-      pipe(input, outLeft, 0, 0),
-      pipe(input, outRight, 1, 0)
+      pipe(input, splitter),
+      pipe(splitter, outLeft, 0, 0),
+      pipe(splitter, outRight, 1, 0)
     );
   },
   merge: (out: ChannelSplitter) => {
@@ -60,7 +71,8 @@ const modes = {
     );
   },
   swap: (out: ChannelSplitter) => {
-    const input = ctx.createChannelSplitter(2);
+    const input = stereoInput();
+    const splitter = ctx.createChannelSplitter(2);
     const output = ctx.createChannelMerger(2);
 
     out._input = (
@@ -76,10 +88,11 @@ const modes = {
     );
 
     return dispose(
+      pipe(input, splitter),
       (
-        input.connect(output, 0, 1),
-        input.connect(output, 1, 0),
-        () => input.disconnect(output)
+        splitter.connect(output, 0, 1),
+        splitter.connect(output, 1, 0),
+        () => splitter.disconnect(output)
       )
     );
   },
@@ -88,7 +101,8 @@ const modes = {
 type Mode = keyof typeof modes;
 
 @name('ChannelSplitter')
-@group('base')
+@group('sequence')
+@icon(Split)
 @reactive()
 export default class ChannelSplitter extends BaseNode {
   @store _mode = signal(Object.keys(modes)[0] as Mode);

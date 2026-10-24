@@ -1,3 +1,4 @@
+import { accentOf } from "../lib/accent";
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Canvas } from "$components/canvas";
@@ -7,14 +8,16 @@ import { Toggle } from "../lib/Toggle";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { dom } from "$library/dom";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Monitor } from "lucide-react";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { signal } from "@preact/signals-react";
 import { store } from "$components/node-editor";
 
 @name('Oscilloscope')
-@group('analyze')
+@group('monitor')
+@icon(Monitor)
 export default class extends BaseNode {
   #node = ctx.createChannelSplitter(2); // Создаем мерджер для стерео
 
@@ -74,8 +77,8 @@ export default class extends BaseNode {
           ctx.drawImage(buff, 0, 0, width, height);
 
           ctx.lineWidth = 1;
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.fillStyle = accentOf(can, .4);
+          ctx.strokeStyle = accentOf(can, .2);
 
           var inv = this._invert.value ? -1 : 1;
           var swap = this._swap.value && 1;

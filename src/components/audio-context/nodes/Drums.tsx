@@ -12,14 +12,16 @@ import { connect } from "@vicimpa/react-decorators";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import drums from "../assets/drums";
-import { group } from "../_groups";
+import { decodeMedia, mediaList, mediaRef, parseMediaRef } from "$library/media";
+import { group, icon } from "../_groups";
+import { Drum } from "lucide-react";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import rsp from "@vicimpa/rsp";
 import { store } from "$components/node-editor";
 
 const drumsNames = Object.keys(drums);
-const drumsVariants = [
+const drumsVariants: { group: string, label: string, value: number | string; }[] = [
   {
     group: '',
     label: 'No Select',
@@ -55,15 +57,24 @@ const drumsVariants = [
     }),
     effect(() => {
       const { value } = _ctx.value;
-      _ctx._src.buffer = null;
-      const name = drumsNames[value];
-      const func = drums[name];
-      if (!func) return;
+      const hash = parseMediaRef(value);
+      var cancelled = false;
 
-      func(ctx)
-        .then(buff => {
+      _ctx._src.buffer = null;
+
+      // Свой файл (local:<hash>) ждёт появления в медиатеке; число — встроенный сэмпл
+      const load = hash ? (
+        mediaList.value.some(item => item.hash === hash) ? decodeMedia(hash, ctx) : null
+      ) : drums[drumsNames[value as number]]?.(ctx);
+
+      load?.then(buff => {
+        if (!cancelled)
           _ctx._src.buffer = buff;
-        });
+      }).catch(console.error);
+
+      return () => {
+        cancelled = true;
+      };
     }),
     () => _ctx._impulse.destroy()
   )
@@ -81,7 +92,7 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
   style = computed<CSSProperties>(() => ({
     padding: 5,
     width: '100%',
-    background: this.input.value ? '#060' : '#333'
+    background: this.input.value ? 'color-mix(in srgb, var(--accent) 35%, transparent)' : 'var(--bg-field)'
   }));
 
   delete() {
@@ -102,12 +113,18 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
           <SignalPort value={input} />
         </td>
         <rsp.td style={style}>
-          <Select
-            label="Type"
-            value={value}
-            variants={drumsVariants}
-            groupBy={e => e.group}
-          />
+          {computed(() => (
+            <Select
+              key={mediaList.value.length}
+              label="Type"
+              value={value}
+              variants={[
+                ...drumsVariants,
+                ...mediaList.value.map(item => ({ group: 'My files', label: item.name, value: mediaRef(item.hash) as number | string })),
+              ]}
+              groupBy={e => e.group}
+            />
+          ))}
         </rsp.td>
         <td>
           <button onClick={() => this.delete()}>Delete</button>
@@ -121,10 +138,12 @@ class DrumsItem extends Component<{ id: number; ctx: Drums; }> {
 };
 
 @name('Drums')
-@group('high')
+@group('sequence')
+@icon(Drum)
 @reactive()
 export default class Drums extends BaseNode {
-  @prop @store drums: Array<number> = [-1];
+  // Номер встроенного сэмпла или ссылка local:<hash> на файл из медиатеки
+  @prop @store drums: Array<number | string> = [-1];
 
   append() {
     batch(() => {

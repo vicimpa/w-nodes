@@ -1,0 +1,35 @@
+// Сохранённые проекты (формат v0) ссылаются на тип ноды по индексу в этом списке.
+// Порядок повторяет _nodes.ts — переставлять и удалять нельзя, только дописывать в конец.
+export const legacyNodeIds = [
+  'BiquadFilter',
+  'Convolver',
+  'Destination',
+  'DynamicsCompressor',
+  'Gain',
+  'Oscillator',
+  'Keyboard',
+  'Math',
+  'Analyzer',
+  'Slider',
+  'Turner',
+  'ShowValue',
+  'Delay',
+  'Timer',
+  'Impulse',
+  'Memory',
+  'ChannelSplitter',
+  'BiSlider',
+  'Oscilloscope',
+  'Player',
+  'StereoPanner',
+  'Panner',
+  'Smoothing',
+  'Sequencer',
+  'Toggle',
+  'Drums',
+  'Project',
+  'Input',
+  'Note',
+] as const;
+
+export type LegacyNodeId = typeof legacyNodeIds[number];

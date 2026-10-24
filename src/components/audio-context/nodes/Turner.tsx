@@ -3,13 +3,15 @@ import { Canvas } from "$components/canvas";
 import { Range } from "../lib/Range";
 import { SignalNode } from "../lib/signalNode";
 import { SignalPort } from "../ports/SignalPort";
-import { group } from "../_groups";
+import { group, icon } from "../_groups";
+import { Activity } from "lucide-react";
 import { line } from "../lib/line";
 import { name } from "$library/function";
 import { store } from "$components/node-editor";
 
 @name('Turner')
-@group('analyze')
+@group('monitor')
+@icon(Activity)
 export default class extends BaseNode {
   _in = new SignalNode(0, { default: 0 });
 
@@ -41,7 +43,7 @@ export default class extends BaseNode {
           for (var i = 0, x = 0; x <= width + 100 && i < data.length; x += data[i][1] ?? 0, i++)
             m(x, data[i][0] * this._sensitivity.value);
           data.splice(i);
-        }, { size: 2, color: '#777' });
+        }, { size: 2 });
       }} />
       <Range label="Sensitivity" value={this._sensitivity} strict accuracy={5} />
       <Range label="Speed" value={this._speed} strict accuracy={2} />
