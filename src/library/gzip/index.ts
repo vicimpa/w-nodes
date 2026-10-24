@@ -1,45 +1,31 @@
+// Прогоняет байты через поток (де)компрессии.
+// Node 22 принимает в такой поток только типизированный массив, а не голый ArrayBuffer;
+// ошибка записи должна всплыть, а не оставить чтение висеть.
+async function pipe(stream: CompressionStream | DecompressionStream, data: ArrayBuffer) {
+  const writer = stream.writable.getWriter();
+  const written = Promise.all([
+    writer.write(new Uint8Array(data)),
+    writer.close(),
+  ]);
+
+  const chunks = [];
+  const reader = stream.readable.getReader();
+
+  var result: ReadableStreamReadResult<any>;
+
+  while (!(result = await reader.read()).done) {
+    chunks.push(result.value);
+  }
+
+  await written;
+  return new Blob(chunks).arrayBuffer();
+}
+
 export default {
-  async encode(data: ArrayBuffer) {
-    const compressionStream = new CompressionStream('gzip');
-    const writableStream = compressionStream.writable;
-    const writer = writableStream.getWriter();
-
-    writer.write(data);
-    writer.close();
-
-    const compressedStream = compressionStream.readable;
-    const compressedChunks = [];
-
-    const reader = compressedStream.getReader();
-
-    var result: ReadableStreamReadResult<any>;
-
-    while (!(result = await reader.read()).done) {
-      compressedChunks.push(result.value);
-    }
-
-    return new Blob(compressedChunks).arrayBuffer();
-
+  encode(data: ArrayBuffer) {
+    return pipe(new CompressionStream('gzip'), data);
   },
-  async decode(data: ArrayBuffer) {
-    const decompressionStream = new DecompressionStream('gzip');
-    const writableStream = decompressionStream.writable;
-    const writer = writableStream.getWriter();
-
-    writer.write(new Uint8Array(data));
-    writer.close();
-
-    const decompressedStream = decompressionStream.readable;
-    const decompressedChunks = [];
-
-    const reader = decompressedStream.getReader();
-
-    var result: ReadableStreamReadResult<any>;
-
-    while (!(result = await reader.read()).done) {
-      decompressedChunks.push(result.value);
-    }
-
-    return new Blob(decompressedChunks).arrayBuffer();
+  decode(data: ArrayBuffer) {
+    return pipe(new DecompressionStream('gzip'), data);
   }
 };
