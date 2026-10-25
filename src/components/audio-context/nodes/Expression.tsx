@@ -18,15 +18,8 @@ import s from "../styles.module.sass";
 import { store } from "$components/node-editor";
 import { useRef } from "react";
 
-type Program = {
-  node: AudioWorkletNode;
-  unwire: () => void;
-};
-
-const stop = ({ node, unwire }: Program) => {
-  unwire();
-  node.port.postMessage(STOP_MESSAGE);
-};
+// Один процессор на все ноды Expression: формулы приходят ему сообщением
+const processor = () => defineRuntimeWorklet('expression', name => processorSource(name));
 
 type TExpressionFieldProps = {
   text: ReadonlySignal<string>;
@@ -84,7 +77,6 @@ const ExpressionField = ({ text, draft, invalid, onCommit }: TExpressionFieldPro
 @reactive()
 export default class extends BaseNode {
   #out = new GainNode(ctx);
-  #program: Program | null = null;
   #version = 0;
 
   @store _a = new SignalNode(220, { default: 220 });
@@ -118,58 +110,87 @@ export default class extends BaseNode {
     this._error.value && <div className={s.expressionError}>{this._error.value}</div>
   ));
 
-  async #load(kernel: string) {
-    const version = ++this.#version;
+  // Ядро, которое должно играть; уходит в процессор, как только тот загрузится
+  #kernel: string | null = null;
+  #node: AudioWorkletNode | null = null;
+  #sent = 0;
 
+  #send() {
+    if (!this.#node || this.#kernel === null)
+      return;
+
+    this.#node.port.postMessage({ kernel: this.#kernel, id: ++this.#sent });
+  }
+
+  async #start(version: number) {
     try {
-      const processor = await defineRuntimeWorklet(kernel, name => processorSource(name, kernel));
+      const name = await processor();
 
       if (version !== this.#version)
         return;
 
-      const node = new AudioWorkletNode(ctx, processor, {
+      const node = new AudioWorkletNode(ctx, name, {
         numberOfInputs: 0,
         numberOfOutputs: 1,
         outputChannelCount: [1],
       });
 
-      // Сначала подключаем новую программу, потом снимаем старую
-      const program: Program = {
-        node,
-        unwire: dispose(
-          ...PROCESSOR_INPUTS.map(key => pipe(this[`_${key}`], node.parameters.get(key)!)),
-          pipe(node, this.#out),
-        ),
+      const unwire = dispose(
+        ...PROCESSOR_INPUTS.map(key => pipe(this[`_${key}`], node.parameters.get(key)!)),
+        pipe(node, this.#out),
+      );
+
+      node.port.onmessage = ({ data }) => {
+        // Ответ на устаревшее ядро не интересен
+        if (data?.id !== this.#sent)
+          return;
+
+        if (!data.ok) console.error(data.error);
+        this._loadError.value = data.ok ? '' : 'Failed to load the compiled expression';
       };
 
-      const old = this.#program;
-      this.#program = program;
-      if (old) stop(old);
+      this.#node = node;
+      this.#stopNode = () => {
+        node.port.onmessage = null;
+        unwire();
+        node.port.postMessage(STOP_MESSAGE);
+      };
 
-      this._loadError.value = '';
+      this.#send();
     } catch (error) {
       if (version !== this.#version)
         return;
 
       console.error(error);
-      this._loadError.value = 'Failed to load the compiled expression';
+      this._loadError.value = 'Failed to load the expression processor';
     }
   }
 
-  _connect = () => dispose(
-    effect(() => {
-      const result = this._compiled.value;
+  #stopNode: (() => void) | null = null;
 
-      // С ошибкой разбора продолжает играть последняя рабочая программа
-      if (result.ok)
-        this.#load(result.kernel);
-    }),
-    () => {
-      this.#version++;
-      if (this.#program) stop(this.#program);
-      this.#program = null;
-    },
-  );
+  _connect = () => {
+    const version = ++this.#version;
+    this.#start(version);
+
+    return dispose(
+      effect(() => {
+        const result = this._compiled.value;
+
+        // С ошибкой разбора продолжает играть последняя рабочая формула
+        if (!result.ok)
+          return;
+
+        this.#kernel = result.kernel;
+        this.#send();
+      }),
+      () => {
+        this.#version++;
+        this.#stopNode?.();
+        this.#stopNode = null;
+        this.#node = null;
+      },
+    );
+  };
 
   output = (
     <AudioPort value={this.#out} output />

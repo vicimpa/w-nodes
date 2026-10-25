@@ -1,10 +1,11 @@
-// Исходник модуля AudioWorklet для ядра из buildKernel. Только доверенный код: ядро из генератора,
-// имя процессора из счётчика.
+// Исходник единственного процессора Expression. Ядро из buildKernel приходит сообщением
+// { kernel } и собирается внутри worklet — новая формула не регистрирует новый процессор.
+// Только доверенный код: ядро из генератора, имя процессора из счётчика.
 
 export const PROCESSOR_INPUTS = ['a', 'b', 'c', 'd'] as const;
 export const STOP_MESSAGE = '[STOP]';
 
-export const processorSource = (name: string, kernel: string) => {
+export const processorSource = (name: string) => {
   if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name))
     throw new Error(`Invalid processor name '${name}'`);
 
@@ -14,21 +15,33 @@ export const processorSource = (name: string, kernel: string) => {
     .join(',\n        ');
 
   return `
-const kernel = ${kernel};
-
 registerProcessor(${JSON.stringify(name)}, class extends AudioWorkletProcessor {
   static get parameterDescriptors() {
     return ${JSON.stringify(descriptors)};
   }
 
   running = true;
+  kernel = null;
   y1 = 0;
 
   constructor(options) {
     super(options);
     this.port.onmessage = (event) => {
-      if (event.data === ${JSON.stringify(STOP_MESSAGE)})
+      const data = event.data;
+
+      if (data === ${JSON.stringify(STOP_MESSAGE)}) {
         this.running = false;
+        return;
+      }
+
+      if (data && typeof data.kernel === 'string') {
+        try {
+          this.kernel = new Function('return ' + data.kernel)();
+          this.port.postMessage({ ok: true, id: data.id });
+        } catch (error) {
+          this.port.postMessage({ ok: false, id: data.id, error: String(error) });
+        }
+      }
     };
   }
 
@@ -41,6 +54,14 @@ registerProcessor(${JSON.stringify(name)}, class extends AudioWorkletProcessor {
 
     if (!out)
       return true;
+
+    const kernel = this.kernel;
+
+    if (!kernel) {
+      for (let ch = 0; ch < output.length; ch++)
+        output[ch].fill(0);
+      return true;
+    }
 
     ${PROCESSOR_INPUTS.map(key => `const p_${key} = parameters[${JSON.stringify(key)}];`).join('\n    ')}
     const sr = sampleRate;

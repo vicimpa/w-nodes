@@ -75,10 +75,12 @@ export const NumberInput = ({ text, disabled, onCommit }: TNumberInputProps) => 
 export type TTextInputProps = {
   text: ReadonlySignal<string>;
   onCommit: (value: string) => void;
+  // Разрешить сохранить пустую строку
+  allowEmpty?: boolean;
 };
 
 // Текстовое поле с тем же поведением, что у NumberInput
-export const TextInput = ({ text, onCommit }: TTextInputProps) => {
+export const TextInput = ({ text, onCommit, allowEmpty }: TTextInputProps) => {
   const ref = useRef<HTMLInputElement>(null);
 
   useSignalEffect(() => {
@@ -108,7 +110,7 @@ export const TextInput = ({ text, onCommit }: TTextInputProps) => {
       onBlur={e => {
         const value = e.currentTarget.value.trim();
 
-        if (value && value !== text.peek())
+        if ((value || allowEmpty) && value !== text.peek())
           onCommit(value);
 
         e.currentTarget.value = text.peek();

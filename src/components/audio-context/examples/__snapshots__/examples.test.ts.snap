@@ -52,6 +52,11 @@ exports[`demo projects > keep the stored fields that node classes rely on 1`] = 
     "x",
     "y",
   ],
+  "Dashboard": [
+    "widgets",
+    "x",
+    "y",
+  ],
   "Delay": [
     "_gain",
     "x",

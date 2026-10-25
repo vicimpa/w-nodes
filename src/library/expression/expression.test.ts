@@ -255,7 +255,7 @@ describe('generated code', () => {
 
 describe('expression processor', () => {
   type Processor = {
-    port: { onmessage: ((event: { data: unknown; }) => void) | null; };
+    port: { onmessage: ((event: { data: unknown; }) => void) | null; postMessage(data: unknown): void; };
     process(inputs: unknown[], outputs: Float32Array[][], parameters: Record<string, Float32Array>): boolean;
   };
 
@@ -266,17 +266,20 @@ describe('expression processor', () => {
     const registered: Record<string, new (options?: unknown) => Processor> = {};
 
     class AudioWorkletProcessor {
-      port = { onmessage: null };
+      port = { onmessage: null, postMessage: () => { } };
     }
 
     run(
-      `(() => { ${processorSource('ExpressionTest', result.kernel)} })()`,
-      ['registerProcessor', 'AudioWorkletProcessor', 'sampleRate', 'currentFrame'],
-      [(name: string, ctor: never) => registered[name] = ctor, AudioWorkletProcessor, sampleRate, currentFrame]
+      `(() => { ${processorSource('ExpressionTest')} })()`,
+      // Процессор сам собирает ядро через Function
+      ['registerProcessor', 'AudioWorkletProcessor', 'sampleRate', 'currentFrame', 'Function'],
+      [(name: string, ctor: never) => registered[name] = ctor, AudioWorkletProcessor, sampleRate, currentFrame, Function]
     );
 
     expect(Object.keys(registered)).toEqual(['ExpressionTest']);
-    return new registered.ExpressionTest();
+    const processor = new registered.ExpressionTest();
+    processor.port.onmessage!({ data: { kernel: result.kernel } });
+    return processor;
   };
 
   const params = (values: Partial<Record<typeof PROCESSOR_INPUTS[number], Float32Array>> = {}) => (
@@ -318,7 +321,17 @@ describe('expression processor', () => {
     expect(processor.process([], [[new Float32Array(2)]], params())).toBe(false);
   });
 
+  it('swaps the kernel in place and keeps y1', () => {
+    const processor = load('y1 + 1');
+    const out = [new Float32Array(2)];
+
+    processor.process([], [out], params());
+    processor.port.onmessage!({ data: { kernel: (compile('y1 * 10') as { kernel: string; }).kernel } });
+    processor.process([], [out], params());
+    expect([...out[0]]).toEqual([20, 200]);
+  });
+
   it('rejects unsafe processor names', () => {
-    expect(() => processorSource('a"); alert(1); ("', '0')).toThrow();
+    expect(() => processorSource('a"); alert(1); ("')).toThrow();
   });
 });

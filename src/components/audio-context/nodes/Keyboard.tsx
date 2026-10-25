@@ -8,7 +8,7 @@ import { SignalPort } from "../ports/SignalPort";
 import { connect } from "@vicimpa/react-decorators";
 import { dispose } from "$library/dispose";
 import { group, icon } from "../_groups";
-import { Keyboard as KeyboardIcon } from "lucide-react";
+import { Keyboard as KeyboardIcon, X } from "lucide-react";
 import { name } from "$library/function";
 import rsp from "@vicimpa/rsp";
 import { store } from "$components/node-editor";
@@ -82,9 +82,16 @@ class KeyboardItem extends Component<{ id: number; ctx: Keyboard; }> {
           </rsp.button>
         </td>
         <td>
-          <button onClick={() => this.delete()}>Delete</button>
+          <button
+            title="Delete"
+            onClick={() => this.delete()}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <X size={14} />
+          </button>
         </td>
-        <td>
+        {/* У порта отрицательный отступ: без паддинга он заезжает на кнопку */}
+        <td style={{ paddingLeft: 'var(--pad)' }}>
           <SignalPort value={port} output />
         </td>
       </tr>
@@ -139,7 +146,7 @@ export default class Keyboard extends BaseNode {
             <td colSpan={4} style={{ textAlign: 'right', color: 'var(--text-muted)' }}>
               <p>Last key <b style={{ color: 'var(--accent)' }}>{this._activeKey}</b></p>
             </td>
-            <td>
+            <td style={{ paddingLeft: 'var(--pad)' }}>
               <SignalPort value={this._activeKey} output />
             </td>
           </tr>

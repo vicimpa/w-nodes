@@ -383,3 +383,74 @@
   gap: 6px
   height: var(--row)
   color: var(--accent-text)
+
+// Dashboard
+.dash
+  display: flex
+  flex-direction: column
+  gap: 6px
+  min-width: 200px
+
+.dashWidget
+  display: flex
+  flex-direction: column
+  gap: 3px
+
+.dashNumber
+  padding: 6px 10px
+  border-radius: var(--radius-field)
+  background: var(--bg-field)
+  color: var(--accent)
+  font-size: 28px
+  text-align: right
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.dashBar
+  position: relative
+  height: 22px
+  border-radius: var(--radius-field)
+  background: var(--bg-field)
+  overflow: hidden
+
+  span
+    position: absolute
+    inset: 0 6px
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    color: var(--text)
+    font-size: 11px
+
+.dashBarFill
+  height: 100%
+  background: var(--accent-soft)
+  border-right: 2px solid var(--accent)
+
+  &[data-red]
+    background: color-mix(in srgb, var(--danger) 30%, transparent)
+    border-color: var(--danger)
+
+.dashLamp
+  width: 18px
+  height: 18px
+  margin: 2px auto
+  border-radius: 50%
+  background: var(--bg-field)
+
+  &[data-on]
+    background: var(--accent)
+    box-shadow: 0 0 10px var(--accent)
+
+.dashEditor
+  display: flex
+  flex-direction: column
+  gap: 2px
+  padding: 4px 0 6px
+  border-bottom: 1px solid var(--bg-field)
+
+.dashButtons
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 4px

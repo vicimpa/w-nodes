@@ -40,6 +40,7 @@ import LFO from "./nodes/LFO";
 import ADSR from "./nodes/ADSR";
 import Random from "./nodes/Random";
 import Counter from "./nodes/Counter";
+import Dashboard from "./nodes/Dashboard";
 
 export default [
   BiquadFilter,
@@ -84,4 +85,5 @@ export default [
   Random,
   Counter,
   Constant,
+  Dashboard,
 ] as typeof BaseNode[];

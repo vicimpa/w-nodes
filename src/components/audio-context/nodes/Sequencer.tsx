@@ -12,7 +12,7 @@ import { connect } from "@vicimpa/react-decorators";
 import { ctx } from "../ctx";
 import { dispose } from "$library/dispose";
 import { group, icon } from "../_groups";
-import { Grid3x3 } from "lucide-react";
+import { Grid3x3, X } from "lucide-react";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { start } from "../lib/start";
@@ -60,9 +60,11 @@ const CursorRow = styled.tr`
   }
 `;
 
+// Отступ между строками — у всех ячеек, а не только у сетки: иначе число, кнопка и порт выше её центра
 const Base = styled.tr`
-  ${Row} {
-    margin-bottom: 5px;
+  & > td {
+    padding-bottom: 5px;
+    vertical-align: middle;
   }
 `;
 
@@ -73,7 +75,7 @@ function groupFor(nodes: ReactNode[], groupSize = 4) {
         Array.from(
           { length: ceil(nodes.length / groupSize) },
           (_, i) => (
-            <td key={i} data-group={i} style={{ padding: '0 2px' }}>
+            <td key={i} data-group={i} style={{ paddingLeft: 2, paddingRight: 2 }}>
               <Row>
                 {nodes.slice(i++ * groupSize, i * groupSize)}
               </Row>
@@ -190,13 +192,16 @@ class SequencerLine extends Component<{ main: Sequencer; value: number; index: n
 
         <td>
           <button
+            title="Remove"
             disabled={!(this.main.lines.length - 1)}
             onClick={() => this.main.remove(this.index)}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            Remove
+            <X size={14} />
           </button>
         </td>
-        <td>
+        {/* У порта отрицательный отступ: без паддинга он заезжает на кнопку */}
+        <td style={{ paddingLeft: 'var(--pad)' }}>
           <AudioPort value={this.processor} output />
         </td>
       </>
@@ -267,15 +272,15 @@ export default class Sequencer extends BaseNode {
           <tbody>
             {
               <CursorRow >
-                <td>
+                {/* Порт time занимает и пустую колонку, и колонку числа: строки не сдвигаются вправо */}
+                <td colSpan={2}>
                   <SignalPort value={this._time} title="time" />
                 </td>
-                <td />
 
                 {this._cursor}
 
                 <td></td>
-                <td>
+                <td style={{ paddingLeft: 'var(--pad)' }}>
                   <SignalPort value={this._timeOut} output title="time" />
                 </td>
               </CursorRow>
