@@ -31,7 +31,6 @@ import Turner from "./nodes/Turner";
 import Note from "./nodes/Note";
 import Sampler from "./nodes/Sampler";
 import Constant from "./nodes/Constant";
-import Group from "./blocks/Group";
 import { GroupInput, GroupOutput } from "./blocks/GroupIO";
 import MidiIn from "./nodes/MidiIn";
 import MidiCC from "./nodes/MidiCC";
@@ -77,7 +76,6 @@ export default [
   MidiIn,
   MidiCC,
   Expression,
-  Group,
   GroupInput,
   GroupOutput,
   LFO,

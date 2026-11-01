@@ -1,13 +1,14 @@
 import { accentOf } from "../lib/accent";
 import { PI, asin, floor, sign, sin } from "@vicimpa/math";
-import { computed, signal } from "@preact/signals-react";
+import { ReadonlySignal, Signal, computed, signal, useComputed } from "@preact/signals-react";
 import { ctx, empty } from "../ctx";
 
 import { AudioPort } from "../ports/AudioPort";
 import { BaseNode } from "../lib/BaseNode";
 import { Canvas } from "$components/canvas";
+import GateProcessor from "../worklet/GateProcessor";
 import { Range } from "../lib/Range";
-import { Select } from "../lib/Select";
+import { Select, SelectControl } from "../lib/Select";
 import { SignalNode } from "../lib/signalNode";
 import { Toggle } from "../lib/Toggle";
 import { dispose } from "$library/dispose";
@@ -16,7 +17,6 @@ import { AudioWaveform } from "lucide-react";
 import { name } from "$library/function";
 import { pipe } from "../lib/pipe";
 import { reactive } from "@vicimpa/decorators";
-import rsp from "@vicimpa/rsp";
 import { start } from "../lib/start";
 import { store } from "$components/node-editor";
 
@@ -60,6 +60,35 @@ const notes = Array.from({ length: 97 }, (_, i) => {
   };
 });
 
+const noteVariants = notes.map(note => ({
+  value: note.note,
+  label: `${note.name} (${note.description})`,
+  group: note.group,
+}));
+
+type TNoteSelectProps = {
+  value: Signal<number>;
+  disabled: ReadonlySignal<boolean>;
+  change: (note: number) => void;
+};
+
+const NoteSelect = ({ value, disabled, change }: TNoteSelectProps) => {
+  const control = useComputed(() => (
+    <SelectControl
+      label="Select note"
+      value={value.value}
+      variants={noteVariants}
+      groupBy={variant => variant.group}
+      disabled={disabled.value}
+      placeholder="Select note"
+      change={change}
+      shrink
+    />
+  ));
+
+  return <>{control}</>;
+};
+
 @name('Oscillator')
 @group('io')
 @icon(AudioWaveform)
@@ -67,11 +96,12 @@ const notes = Array.from({ length: 97 }, (_, i) => {
 export default class extends BaseNode {
   #src = ctx.createOscillator();
   #out = new GainNode(ctx, { gain: 0 });
+  #gate = new GateProcessor();
 
   @store _type = signal(this.#src.type as keyof typeof this._waves);
   @store _freq = new SignalNode(this.#src.frequency, { min: 0 });
   @store _detune = new SignalNode(this.#src.detune, { min: -1200, max: 1200 });
-  @store _active = new SignalNode(this.#out.gain, { default: 0 });
+  @store _active = new SignalNode(this.#gate.gate, { default: 0 });
 
   blockNoteSelect = computed(() => this._freq.connected);
 
@@ -87,37 +117,22 @@ export default class extends BaseNode {
   }));
 
   head = (
-    <rsp.select
+    <NoteSelect
       value={this._freq}
-      onKeyDown={e => e.preventDefault()}
-      onChange={e => {
-        const find = notes.find(j => j.note === +e.currentTarget.value);
-
-        if (find) {
-          this._freq.value = find.note;
-          this._detune.value = 0;
-        }
-      }}
       disabled={this.blockNoteSelect}
-    >
-      <option >Select note</option>
-      {
-        [...Map.groupBy(notes, (note) => note.group)].map(([group, items], index) => (
-          <optgroup label={group} key={index}>
-            {items.map((item, key) => (
-              <option value={item.note} key={key}>{item.name} ({item.description})</option>
-            ))}
-          </optgroup>
-        ))
-
-      }
-    </rsp.select>
+      change={note => {
+        this._freq.value = note;
+        this._detune.value = 0;
+      }}
+    />
   );
 
   _connect = () => dispose(
     pipe(this.#src, empty),
     pipe(this.#src, this.#out),
+    pipe(this.#gate, this.#out.gain),
     start(this.#src),
+    () => this.#gate.destroy(),
   );
 
   output = (

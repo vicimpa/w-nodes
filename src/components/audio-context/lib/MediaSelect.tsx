@@ -2,6 +2,7 @@ import { addMedia, mediaList, mediaRef, parseMediaRef } from "$library/media";
 
 import { FolderOpen } from "lucide-react";
 import { Row } from "./Row";
+import { SelectControl } from "./Select";
 import { dom } from "$library/dom";
 import s from "../styles.module.sass";
 import { useComputed } from "@preact/signals-react";
@@ -35,23 +36,20 @@ export const MediaSelect = ({ label = 'File', get, set }: TMediaSelectProps) => 
     const hash = parseMediaRef(ref);
     const item = mediaList.value.find(item => item.hash === hash);
 
+    const variants = [
+      { value: '', label: '— none —' },
+      ...(ref && !item ? [{ value: ref, label: 'Missing file' }] : []),
+      ...mediaList.value.map(item => ({ value: mediaRef(item.hash), label: item.name })),
+    ];
+
     return (
-      <select
+      <SelectControl
+        label={label}
         value={ref}
-        title={item?.name}
-        data-shrink
-        onKeyDown={e => e.preventDefault()}
-        onChange={e => {
-          set(e.currentTarget.value);
-          e.currentTarget.blur();
-        }}
-      >
-        <option value="">— none —</option>
-        {ref && !item && <option value={ref}>Missing file</option>}
-        {mediaList.value.map(item => (
-          <option key={item.hash} value={mediaRef(item.hash)}>{item.name}</option>
-        ))}
-      </select>
+        variants={variants}
+        change={set}
+        shrink
+      />
     );
   });
 
